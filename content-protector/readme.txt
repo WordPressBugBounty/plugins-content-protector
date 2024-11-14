@@ -1,12 +1,12 @@
 === Passster - Password Protect Pages and Content ===
 Contributors: patrickposner
 Tags: password protect, password, restrict content, sitewide, password protection
-Requires at least: 6.2
-Tested up to: 6.6
+Requires at least: 6.5
+Tested up to: 6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.6.6
+Stable tag: 4.2.7
 
 Password protect pages, your entire website or just parts of your content with a single password.
 
@@ -212,6 +212,15 @@ Passster is simple to install:
 1. Customise your settings and your good to go!
 
 == Changelog ==
+
+= 4.2.7 =
+
+* WP 6.7 compatibility
+* dependency updates
+* PHP 8.3 compatibility
+* make headline removable via design settings
+* default tag for headlines is now <span> for SEO purposes
+* fixed expiration with cookie usage (pro-only)
 
 = 4.2.6.6 =
 

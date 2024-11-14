@@ -91,7 +91,9 @@ class PS_Public {
             $form = str_replace( '[PASSSTER_REDIRECT]', '', $form );
         }
         // headline.
-        if ( !empty( $atts['headline'] ) ) {
+        if ( !empty( $options['hide_headline'] ) ) {
+            $form = str_replace( '[PASSSTER_FORM_HEADLINE]', '', $form );
+        } elseif ( !empty( $atts['headline'] ) ) {
             $form = str_replace( '[PASSSTER_FORM_HEADLINE]', esc_html( $atts['headline'] ), $form );
         } else {
             $form = str_replace( '[PASSSTER_FORM_HEADLINE]', $options['headline'], $form );
@@ -204,12 +206,12 @@ class PS_Public {
     public function check_global_proctection() {
         $options = get_option( 'passster' );
         // Allow Elementor editing the page.
-        $elementor_preview = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_STRING );
+        $elementor_preview = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
         if ( $elementor_preview ) {
             return;
         }
         // Allow Live Canvas Editor.
-        $live_canvas_preview = filter_input( INPUT_GET, 'lc_action_launch_editing', FILTER_SANITIZE_STRING );
+        $live_canvas_preview = filter_input( INPUT_GET, 'lc_action_launch_editing', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
         if ( $live_canvas_preview ) {
             return;
         }

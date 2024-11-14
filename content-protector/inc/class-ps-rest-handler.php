@@ -48,11 +48,15 @@ class PS_Rest_Handler {
 		// Global protection activated?
 		$settings           = get_option( 'passster' );
 		$protection_enabled = $settings['activate_global_protection'] ?? false;
-		$page_id            = $settings['global_protection_id'];
 
 		// Check if access is allowed.
-		$atts  = array( 'password' => get_post_meta( $page_id, 'passster_password', true ) );
-		$valid = PS_Conditional::is_valid( $atts );
+		$valid = false;
+
+		if ( ! empty( $settings['global_protection_id'] ) ) {
+			$page_id = esc_attr( $settings['global_protection_id'] );
+			$atts    = array( 'password' => get_post_meta( $page_id, 'passster_password', true ) );
+			$valid   = PS_Conditional::is_valid( $atts );
+		}
 
 		if ( $protection_enabled && ! $valid && ! is_user_logged_in() ) {
 			return new \WP_Error(

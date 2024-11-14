@@ -1,6 +1,6 @@
 <div class="passster-form[PASSSTER_HIDE]" id="[PASSSTER_ID]">
     <form class="password-form" method="post" autocomplete="off" target="_top">
-        <h4>[PASSSTER_FORM_HEADLINE]</h4>
+        <span class="ps-form-headline">[PASSSTER_FORM_HEADLINE]</span>
         <p>[PASSSTER_FORM_INSTRUCTIONS]</p>
         <fieldset>
             <span class="ps-loader"><img src="[PS_AJAX_LOADER]"/></span>

@@ -98,7 +98,7 @@ class PS_Dynamic_Styles {
                 border-radius: <?php echo esc_html($options['form_border_radius']); ?>px;
             }
 
-            .passster-form h4 {
+            .passster-form .ps-form-headline {
                 font-size: <?php echo esc_html($options['headline_font_size']); ?>px;
                 font-weight: <?php echo esc_html($options['headline_font_weight']); ?>;
                 color: <?php echo esc_html($options['headline_font_color']); ?>;
