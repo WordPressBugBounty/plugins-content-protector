@@ -2,20 +2,24 @@
 
 /**
  * Plugin Name:       Passster
- * Plugin URI:        https://patrickposner.dev
+ * Plugin URI:        https://passster.com/
  * Description:       A simple plugin to password-protect your complete website, some pages/posts or just parts of your content.
- * Version:           4.2.7
- * Author:            Patrick Posner
- * Author URI:        https://patrickposner.dev
+ * Version:           4.2.8
+ * Author:            WPChill
+ * Author URI:        https://wpchill.com
  * License:           GPL-2.0+
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       content-protector
  * Domain Path:       /languages
  *
+ *
+ *
+ * NOTE:
+ * Patrick Posner transferred ownership rights on: 6th of December, 2024 when ownership was handed over to WPChill
  */
 define( 'PASSSTER_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PASSSTER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'PASSSTER_VERSION', '4.2.7' );
+define( 'PASSSTER_VERSION', '4.2.8' );
 // run plugin.
 if ( !function_exists( 'passster_run_plugin' ) ) {
     add_action( 'plugins_loaded', 'passster_run_plugin' );
