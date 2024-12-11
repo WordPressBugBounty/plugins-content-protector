@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.9
+Stable tag: 4.2.10
 
 Password protect pages, your entire website or just parts of your content with a single password.
 
@@ -212,6 +212,9 @@ Passster is simple to install:
 1. Customise your settings and your good to go!
 
 == Changelog ==
+
+= 4.2.10 - 11.12.2024 =
+* Changed: Updated upsells information
 
 = 4.2.9 - 10.12.2024 =
 * Added: Settings upsells

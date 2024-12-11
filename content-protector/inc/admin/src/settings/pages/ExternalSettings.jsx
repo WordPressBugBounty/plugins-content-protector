@@ -84,7 +84,7 @@ function ExternalSettings() {
                     <p>{__('reCAPTCHA is only available within the pro version of Passster.', 'content-protector')}
                         <Button className="button button-primary" style={{marginLeft: "10px", paddingTop: "2px"}}
                                 href="https://patrickposner.dev/plugins/passster" target="_blank">
-                            {__('Get Passster Pro', 'content-protector')}
+                            {__('Get Passster PRO', 'content-protector')}
                         </Button>
                     </p>
                 }
@@ -111,7 +111,7 @@ function ExternalSettings() {
                     <p>{__('Bit.ly is only available within the pro version of Passster.', 'content-protector')}
                         <Button className="button button-primary" style={{marginLeft: "10px", paddingTop: "2px"}}
                                 href="https://patrickposner.dev/plugins/passster" target="_blank">
-                            {__('Get Passster Pro', 'content-protector')}
+                            {__('Get Passster PRO', 'content-protector')}
                         </Button>
                     </p>
                 }

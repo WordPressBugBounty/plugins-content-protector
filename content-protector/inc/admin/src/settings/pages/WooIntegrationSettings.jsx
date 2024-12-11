@@ -31,28 +31,39 @@ function WooIntegrationSettings() {
 				{ ! isCollapsed && (
 					<CardBody>
 						{ __( 'Enable protection features in your WooCommerce store through Passster.', 'content-protector' ) }
+						<Spacer margin={ 5 } />
+						{ __( 'Lite/free version' ) }
 						<ul className="upsell-settings-list">
-							<li className="upsell-settings-list-item">{ __( 'Protect your entire store.', 'content-protector' ) }</li>
-							<li className="upsell-settings-list-item">{ __( 'Protect individual products.', 'content-protector' ) }</li>
+							<li className="upsell-settings-list-item">{ __( 'Implement full store protection.', 'content-protector' ) }</li>
+							<li className="upsell-settings-list-item">{ __( 'Protect individual products with passwords.', 'content-protector' ) }</li>
+						</ul>
+						<Spacer margin={ 5 } />
+						{ __( 'Pro Version' ) }
+						<ul className="upsell-settings-list">
+							<li className="upsell-settings-list-item">{ __( 'Choose from multiple protection modes.', 'content-protector' ) }</li>
+							<li className="upsell-settings-list-item">{ __( 'Apply protection based on user roles.', 'content-protector' ) }</li>
 						</ul>
 						<Spacer margin={ 10 } />
-						<div>
-							<Button
-								href="https://passster.com/#free-vs-pro"
-								target="_blank"
-								className="button"
-								style={ { marginRight: '10px' } }
-							>
-								{ __( 'Free vs Premium', 'content-protector' ) }
-							</Button>
-							<Button
-								href="https://passster.com/#pricing"
-								target="_blank"
-								className="button-primary button"
-							>
-								{ __( 'Get Premium!', 'content-protector' ) }
-							</Button>
-						</div>
+						{ ! options.is_pro && (
+							<div>
+								<Button
+									href="https://passster.com/#free-vs-pro"
+									target="_blank"
+									className="button"
+									style={ { marginRight: '10px' } }
+								>
+									{ __( 'Lite vs Pro', 'content-protector' ) }
+								</Button>
+								<Button
+									href="https://passster.com/#pricing"
+									target="_blank"
+									className="button-primary button"
+								>
+									{ __( 'Get Passster PRO!', 'content-protector' ) }
+								</Button>
+							</div>
+						) }
+
 					</CardBody>
 				) }
 			</Card>

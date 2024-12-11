@@ -108,8 +108,8 @@ class PS_Upsells {
 								<p>
 									<?php
 
-									$buttons  = '<a target="_blank" href="https://passster.com/#free-vs-pro"  class="button">' . esc_html__( 'Free vs Premium', 'content-protector' ) . '</a>';
-									$buttons .= '<a target="_blank" href="https://passster.com/#pricing" style="margin-top:10px;" class="button-primary button">' . esc_html__( 'Get Premium!', 'content-protector' ) . '</a>';
+									$buttons  = '<a target="_blank" href="https://passster.com/#free-vs-pro"  class="button">' . esc_html__( 'Lite vs Pro', 'content-protector' ) . '</a>';
+									$buttons .= '<a target="_blank" href="https://passster.com/#pricing" style="margin-top:10px;" class="button-primary button">' . esc_html__( 'Get Passster PRO!', 'content-protector' ) . '</a>';
 
 									echo wp_kses_post( apply_filters( 'passster_upsell_buttons', $buttons, 'password-lists' ) );
 
@@ -153,8 +153,8 @@ class PS_Upsells {
 								<p>
 									<?php
 
-									$buttons  = '<a target="_blank" href="https://passster.com/#free-vs-pro"  class="button">' . esc_html__( 'Free vs Premium', 'content-protector' ) . '</a>';
-									$buttons .= '<a target="_blank" href="https://passster.com/#pricing" style="margin-top:10px;" class="button-primary button">' . esc_html__( 'Get Premium!', 'content-protector' ) . '</a>';
+									$buttons  = '<a target="_blank" href="https://passster.com/#free-vs-pro"  class="button">' . esc_html__( 'Lite vs Pro', 'content-protector' ) . '</a>';
+									$buttons .= '<a target="_blank" href="https://passster.com/#pricing" style="margin-top:10px;" class="button-primary button">' . esc_html__( 'Get Passster PRO!', 'content-protector' ) . '</a>';
 
 									echo wp_kses_post( apply_filters( 'passster_upsell_buttons', $buttons, 'statistics' ) );
 

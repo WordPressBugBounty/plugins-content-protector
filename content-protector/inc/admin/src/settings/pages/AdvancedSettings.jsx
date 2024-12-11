@@ -223,12 +223,12 @@ function AdvancedSettings() {
                                 target="_blank"
                                 className="button"
                                 style={{ marginRight: '10px' }}
-                            >{__('Free vs Premium', 'content-protector')}</Button>
+                            >{__('Lite vs Pro', 'content-protector')}</Button>
                             <Button
                                 href="https://passster.com/#pricing"
                                 target="_blank"
                                 className="button-primary button"
-                            >{__('Get Premium!', 'content-protector')}</Button>
+                            >{__('Get Passster PRO!', 'content-protector')}</Button>
                         </div>
                     </CardBody>
                 </Card>
