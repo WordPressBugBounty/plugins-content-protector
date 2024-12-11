@@ -6932,9 +6932,6 @@
                                 );
                             }
                         } else {
-                            if ( $this->should_add_sticky_optin_notice() ) {
-                                $this->add_sticky_optin_admin_notice();
-                            }
 
                             if ( $this->has_filter( 'optin_pointer_element' ) ) {
                                 // Don't show admin nag if plugin update.
@@ -6958,64 +6955,6 @@
                     $this->_show_theme_activation_optin_dialog();
                 }
             }
-        }
-
-        /**
-         * @author Vova Feldman (@svovaf)
-         * @since  2.0.0
-         *
-         * @return bool
-         */
-        private function should_add_sticky_optin_notice() {
-            if ( $this->is_addon() && $this->_parent->is_anonymous() ) {
-                return false;
-            }
-
-            if ( fs_is_network_admin() ) {
-                if ( ! $this->_is_network_active ) {
-                    return false;
-                }
-
-                if ( ! $this->is_network_activation_mode() ) {
-                    return false;
-                }
-
-                return ! isset( $this->_storage->sticky_optin_added_ms );
-            }
-
-            if ( ! $this->is_activation_mode() ) {
-                return false;
-            }
-
-            // If running from a blog admin and delegated the connection.
-            return ! isset( $this->_storage->sticky_optin_added );
-        }
-
-        /**
-         * @author Leo Fajardo (@leorw)
-         * @since  2.0.0
-         */
-        private function add_sticky_optin_admin_notice() {
-            if ( ! $this->_is_network_active || ! fs_is_network_admin() ) {
-                $this->_storage->sticky_optin_added = true;
-            } else {
-                $this->_storage->sticky_optin_added_ms = true;
-            }
-
-            // Show notice for new plugin installations.
-            $this->_admin_notices->add_sticky(
-                sprintf(
-                    $this->get_text_inline( 'We made a few tweaks to the %s, %s', 'few-plugin-tweaks' ),
-                    $this->_module_type,
-                    sprintf( '<b><a href="%s">%s</a></b>',
-                        $this->get_activation_url(),
-                        sprintf( $this->get_text_inline( 'Opt in to make "%s" better!', 'optin-x-now' ), $this->get_plugin_name() )
-                    )
-                ),
-                'connect_account',
-                '',
-                'update-nag'
-            );
         }
 
         /**
@@ -8136,11 +8075,6 @@
 
             $this->_admin_notices->clear_all_sticky();
 
-            $storage_keys_for_removal[] = 'sticky_optin_added';
-            if ( isset( $this->_storage->sticky_optin_added ) ) {
-                unset( $this->_storage->sticky_optin_added );
-            }
-
             if ( ! isset( $this->_storage->is_plugin_new_install ) ) {
                 // Remember that plugin was already installed.
                 $this->_storage->is_plugin_new_install = false;
@@ -8179,9 +8113,6 @@
             }
 
             if ( $is_network_deactivation ) {
-                if ( isset( $this->_storage->sticky_optin_added_ms ) ) {
-                    unset( $this->_storage->sticky_optin_added_ms );
-                }
 
                 if ( ! empty( $storage_keys_for_removal ) ) {
                     $sites = self::get_sites();

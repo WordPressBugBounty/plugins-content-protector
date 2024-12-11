@@ -4,7 +4,7 @@
  * Plugin Name:       Passster
  * Plugin URI:        https://passster.com/
  * Description:       A simple plugin to password-protect your complete website, some pages/posts or just parts of your content.
- * Version:           4.2.8
+ * Version:           4.2.9
  * Author:            WPChill
  * Author URI:        https://wpchill.com
  * License:           GPL-2.0+
@@ -19,7 +19,7 @@
  */
 define( 'PASSSTER_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PASSSTER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'PASSSTER_VERSION', '4.2.8' );
+define( 'PASSSTER_VERSION', '4.2.9' );
 // run plugin.
 if ( !function_exists( 'passster_run_plugin' ) ) {
     add_action( 'plugins_loaded', 'passster_run_plugin' );
@@ -41,6 +41,7 @@ if ( !function_exists( 'passster_run_plugin' ) ) {
         require_once PASSSTER_PATH . '/inc/class-ps-rest-handler.php';
         // admin.
         require_once PASSSTER_PATH . '/inc/admin/inc/class-ps-admin-settings.php';
+        require_once PASSSTER_PATH . '/inc/admin/inc/class-ps-upsells.php';
         require_once PASSSTER_PATH . '/inc/admin/inc/class-ps-admin.php';
         require_once PASSSTER_PATH . '/inc/admin/inc/class-ps-meta.php';
         require_once PASSSTER_PATH . '/inc/admin/inc/class-ps-dynamic-styles.php';
@@ -61,6 +62,7 @@ if ( !function_exists( 'passster_run_plugin' ) ) {
         passster\PS_Public::get_instance();
         passster\PS_Block_Editor::get_instance();
         passster\PS_Rest_Handler::get_instance();
+        passster\PS_Upsells::get_instance();
         // Maybe migrate settings.
         $options = get_option( 'passster' );
         if ( empty( $options ) ) {
