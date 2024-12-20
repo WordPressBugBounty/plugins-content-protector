@@ -69,4 +69,3 @@ class PS_Rest_Handler {
 		return $result;
 	}
 }
-

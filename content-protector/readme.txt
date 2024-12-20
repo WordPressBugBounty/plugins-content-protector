@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.10
+Stable tag: 4.2.11
 
 Password protect pages, your entire website or just parts of your content with a single password.
 
@@ -75,8 +75,6 @@ Change labels, description, colors of the form, headlines, buttons, modify the s
 Use the built-in cookie solution to unlock multiple password-protected areas or pages that share the same password.
 
 == Password Protected Features (Pro version) ==
-
-[youtube https://youtu.be/ihZc10pSKbg]
 
 Additionally to all the free features already mentioned there is also a pro version of Passster that enhances the feature set with:
 
@@ -212,6 +210,9 @@ Passster is simple to install:
 1. Customise your settings and your good to go!
 
 == Changelog ==
+
+= 4.2.11 - 20.12.2024 =
+* Changed: Security update
 
 = 4.2.10 - 11.12.2024 =
 * Changed: Updated upsells information
