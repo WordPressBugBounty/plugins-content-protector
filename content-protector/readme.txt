@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.12
+Stable tag: 4.2.13
 
 Password protect pages, your entire website or just parts of your content with a single password.
 
@@ -211,11 +211,11 @@ Passster is simple to install:
 
 == Changelog ==
 
+= 4.2.13 - 03.02.2025 =
+* FIxed: Global protection page was not being protected even if "Activate Protection" was on.
+
 = 4.2.12 - 20.12.2024 =
 * Changed: Security update - Updated Freemius SDK
-
-= 4.2.11 - 20.12.2024 =
-* Changed: Security update
 
 = 4.2.10 - 11.12.2024 =
 * Changed: Updated upsells information
