@@ -6,190 +6,81 @@ Tested up to: 6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.13
-
-Password protect pages, your entire website or just parts of your content with a single password.
+Stable tag: 4.2.14
 
 == Description ==
+## Password Protect Pages, Posts & Content in WordPress
 
-Passster is the **all-in-one** password protection plugin for WordPress - secure pages, your entire website or partial content with passwords in seconds.
-
+Passster is an all-in-one plugin to password protect pages, content, or your entire site in seconds—quick, secure, and easy to use.
 Passster offers three protection modes to cover every use case you may think of when it comes to password protecting your WordPress website.
 
-**Area protection**
-
-Areas are protected sections (partial content) that can be added via block or shortcode into a page.
-
-You can easily add your content and edit it with your pagebuilder of choice and you get a shortcode that can be copied and used within your page.
-
-**Page protection**
-
-Edit a page, activate the protection and add a password - that's it the password protection is set up.
-
-It will protect the entire page for you but will still display the header and footer of your website, so it fits perfectly with any kind of theme.
-
-**Global Protection**
-
-Navigate to Passster -> Settings -> Global Protection, activate the protection, select a page and optionally exclude pages from the protection.
-
-Once configured all visitors will be redirected to that page and need to provide the correct password to further navigate through your website.
-
-Perfect for membership-like websites without all the configuration hustle you experienced before.
-
-== Password Protected Features (Free version) ==
-
-= Password Protect parts of your website =
-
-Easily protect parts of your website with password protected areas.
-
-Create an area, copy and paste the generated shortcode into a page and it will be protected.
-
-= Password Protect pages =
-
-You can quickly protect entire pages with Passster by enabling the protection settings while editing it.
-
-= Password Protect child pages =
-
-Quickly set up password protection for child pages by enabling it on the parent page.
-
-Once you change the password on the parent page it will be automatically update all child pages for you.
-
-= Global Password Protection =
-
-Quickly lock down your entire website behind a password with the built-in global password protection.
-
-= Unlock Password Protected Content without Page Refresh =
-
-Let visitors unlock your password-protected content without refreshing the page (by using Ajax).
-
-That enhances the user expierence and offers a great way to restrict content without having to worry about caching conflicts.
-
-= Customize the password protection form =
-
-Passster offers a huge variety of settings to customize the password-protection form.
-
-Change labels, description, colors of the form, headlines, buttons, modify the spacing (margin/padding) and center the form without touching code.
-
-= Cookie-based password-protection =
-
-Use the built-in cookie solution to unlock multiple password-protected areas or pages that share the same password.
-
-== Password Protected Features (Pro version) ==
-
-Additionally to all the free features already mentioned there is also a pro version of Passster that enhances the feature set with:
-
-= Password protect content with multiple passwords =
-
-Use an unlimited number of passwords or bundle them within a password list for even easier management.
-
-= Quick Edit and Bulk Edit for password protection =
-
-Use the WordPress Quick Edit and Bulk Edit function to manage your protected pages or posts in no time.
-
-Select the pages, set the protection mode and add your password and you can protect every page without even editing it.
-
-= Unlock password-protected content by user role or e-mail =
-
-Automatically unlock protected content for specific user roles or by providing e-mail addresses.
-
-= Expire Passwords =
-
-Expire passwords by the number of usages, first usage or after a specific time intervall (hours, days, weeks, months..)
-
-Passster also includes detailed statistics so you know exactly:
-
- - which password was used
- - how often the password wad used
- - when it will expire
-
-= Generate unlock links =
-
-You can generate unlock links that include an encrypted version of the password within the URL.
-
-Once a visitor clicks on the link all protected areas and pages will be unlocked automatically without the necessity to manually add a password.
-
-You can also use Bit.ly to automatically shorten the URLs for you.
-
-= Password Protect WooCommerce =
-
-Password Protect your WooCommerce store with Passster.
-
-Protect products, cart, checkout, your store page and more with a password.
-
-= Sell access to protected content with WooCommerce =
-
-Passster automatically generates a password after purchasing the configured product and sends an e-mail to the user.
-
-This e-mail includes the generated password and an unlock link for quick access.
-
-It's easy to set up and entirely automated so you don't have spend hours getting into complex configuration setups you might know from membership plugins.
-
-= Password Usage Statistics =
-
-Get an detailed view into the password usage of your WordPress website.
-
-Track the number of usages, the first usage, the IP (optional) and the browser used to unlock the content.
-
-= Quick comparison (free vs. pro) =
-
-= Free version: =
-
-* Password-Protect sections of your page with areas and add them via shortcode or block
-* Password-Protect entire pages or posts
-* Automatically password-protect child pages with a single click
-* Password-Protect your entire website with a password
-* Use Ajax to unlock protected areas without a reload
-* Change the design, labels and descriptions globally, per area, per page or per block
-* Use a cookie to automatically unlock different password-protected areas and pages with the same password
-
-
-= Pro version: =
-
-Everything from the free version plus:
-
-* Password-Protect your content with multiple passwords or password lists (large sets of passwords)
-* Quickly setup password-protection via quick editing or bulk editing pages and posts
-* Protect your content with Google reCAPTCHA (v2/v3) or hCAPTCHA
-* Automatically unlock password-protected content by user role or user e-mail
-* Expire passwords by first time usage, after a number of usages or by interval (hours, days, weeks, months)
-* Create and share unlock links to unlock protected content automatically (optionally shorten them with Bit.ly)
-* Track and block concurrent password usages and prevent password sharing
-* Password-Protect WooCommerce products and the store page
-* Selling passswords with WooCommerce
-* Statistics about password usage (generally and per password list)
-
-
-Paired with exceptional support directly from the developer, regular updates and feature integrations, and extensive documentation you can't go wrong with Passster Pro.
-
-Get it now on [patrickposner.com/passster/](https://patrickposner.com/passster/)
-
-**Documentation**
-
-I regularly optimize the documentation and release extensive tutorials on how to use Passster in a multitude of use-cases.
-
-Learn more on [patrickposner.com/passster/docs](https://patrickposner.com/passster/docs/)
+### Passster Pro – Even more protection features when making a purchase
+
+**Multiple Passwords & Password Lists**  
+- Assign multiple passwords for different users.  
+- Create and manage large password lists for easy control.  
+
+**Quick & Bulk Edit for Password Protection**  
+- Use WordPress **Quick Edit** and **Bulk Edit** to protect multiple pages instantly.  
+
+**Unlock Content by User Role or Email**  
+- Automatically grant access to specific users or email addresses.  
+
+**Password Expiration & Usage Limits**  
+- Set passwords to expire after a number of uses, first use, or by a time limit (hours, days, weeks).  
+- Track which passwords were used and when they will expire.  
+
+**Generate Unlock Links**  
+- Create encrypted unlock links so users can access content without entering a password.  
+- Automatically shorten links with **Bit.ly** for easy sharing.  
+
+**WooCommerce Protection & Sales**  
+- Protect WooCommerce pages, products, and checkout with a password.  
+- Sell access to protected content—generate and email passwords automatically after purchase.  
+
+**Detailed Password Usage Statistics**  
+- Track when and how often passwords are used.  
+- View first usage date, IP (optional), and browser details.  
+
+## Quick Comparison (Free vs. Pro)
+
+### Free Version:
+✔ Protect sections of pages using shortcodes or blocks.  
+✔ Secure entire pages and posts.  
+✔ Automatically protect child pages with a single click.  
+✔ Lock down your entire site with a password.  
+✔ Unlock protected content without refreshing the page.  
+✔ Customize the design, labels, and descriptions of the password form.  
+✔ Use cookies to grant access across multiple protected areas.  
+
+### Pro Version:
+✔ Everything in the free version, plus:  
+✔ Protect content with **multiple passwords** or password lists.  
+✔ Quickly set up password protection via Quick Edit or Bulk Edit.  
+✔ Protect content using **Google reCAPTCHA or hCAPTCHA**.  
+✔ Unlock protected content by **user role or email**.  
+✔ Set passwords to **expire** based on usage limits or time intervals.  
+✔ Generate encrypted **unlock links** for seamless access.  
+✔ Track and prevent **concurrent password sharing**.  
+✔ Secure **WooCommerce products and store pages**.  
+✔ Sell access to protected content via **WooCommerce integration**.  
+✔ Detailed statistics on password usage and lists.  
+
+Get it now on [passster.com/](https://passster.com/)
+
+### Documentation
+
+Learn more about this plugin [in our official documentation](https://passster.com/kb/)
 
 == Support ==
+* Free users: [Ask in our forum](https://wordpress.org/support/plugin/content-protector/)
+* Pro users: [Get priority help](https://passster.com/contact-us/?utm_source=wordpress.org&utm_medium=web&utm_campaign=description&utm_term=contact+us)
 
-The free support is exclusively limited to the wordpress.org support forum.
+== Frequently Asked Questions ==
 
-Any kind of email priority support, customization, and integration help need a valid premium license.
-
-=== CODING STANDARDS MADE IN GERMANY ===
-
-The plugin is coded with **modern PHP** and **WordPress standards** in mind. It’s fully OOP coded.
-
-It’s highly extendable for developers through several actions and filter hooks.
-
-Passster keeps your website performance in mind. Every script is **loaded conditionally**, and all input and output data is secured.
-
-
-=== MULTI-LANGUAGE ===
-
+= Can I use Passster in multiple languages =
 All primary texts and information can be modified from the admin area of Passster.
-
 The plugin is fully translatable in your language. There are only en_EN and de_DE at the moment, but you can easily add your preferred language as a .po/.mo.
-
 It’s also fully compatible with WPML and Polylang.
 
 == Screenshots ==
@@ -203,16 +94,19 @@ It’s also fully compatible with WPML and Polylang.
 Passster is simple to install:
 
 1. Download the .zip'
-1. Unzip
-1. Upload the directory to your '/wp-content/plugins' directory
-1. Go to the plugin management page and enable the Passster Plugin
-1. Browse to Settings > Passster
-1. Customise your settings and your good to go!
+2. Unzip
+3. Upload the directory to your '/wp-content/plugins' directory
+4. Go to the plugin management page and enable the Passster Plugin
+5. Browse to Settings > Passster
+6. Customise your settings and your good to go!
 
 == Changelog ==
 
+= 4.2.14 - 25.02.2025 =
+* Fixed: Unlock link was not working properly.
+
 = 4.2.13 - 03.02.2025 =
-* FIxed: Global protection page was not being protected even if "Activate Protection" was on.
+* Fixed: Global protection page was not being protected even if "Activate Protection" was on.
 
 = 4.2.12 - 20.12.2024 =
 * Changed: Security update - Updated Freemius SDK
@@ -907,3 +801,8 @@ Added required images for JQuery UI theme and fixed some i18n strings.
 
 = 1.0 =
 Initial release.
+
+== Upgrade Notice ==
+
+= 4.2.13 =
+This resolved an issue with the "Activate Protection" option set for the Global protection page.
