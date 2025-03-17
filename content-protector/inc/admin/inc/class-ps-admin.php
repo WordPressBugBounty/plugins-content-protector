@@ -248,7 +248,8 @@ class PS_Admin {
                     'password_list'  => __( 'Password List', 'content-protector' ),
                     'password_lists' => __( 'Password Lists', 'content-protector' ),
                     'passwords'      => __( 'Passwords', 'content-protector' ),
-                    'recaptcha'      => __( 'ReCaptcha', 'content-protector' ),
+                    'recaptcha'      => __( 'reCaptcha', 'content-protector' ),
+                    'turnstile'      => __( 'Turnstile', 'content-protector' ),
                 );
                 echo esc_html( $protection_types[$type] );
                 break;
@@ -260,6 +261,7 @@ class PS_Admin {
                     'password_lists' => get_post_meta( $post_id, 'passster_password_lists', true ),
                     'passwords'      => get_post_meta( $post_id, 'passster_passwords', true ),
                     'recaptcha'      => '-',
+                    'turnstile'      => '-',
                 );
                 // Build the edit link if it's a password list.
                 if ( 'password_list' === $type ) {

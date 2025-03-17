@@ -370,6 +370,82 @@ jQuery(document).ready(function ($) {
 
     });
 
+    // turnstile
+    if ($('.turnstile-form').length > 0) {
+        window.turnstile.ready(function () {
+            window.turnstile.render('.passster-turnstile', {
+                'sitekey': ps_ajax.turnstile_key,
+                'callback': function (token) {
+                    ps_id = $(this).find('.passster-submit-turnstile').attr('data-psid');
+                    form = $("#" + ps_id);
+                    protection = $(this).find('.passster-submit-turnstile').attr('data-protection');
+                    acf = $(this).find('.passster-submit-turnstile').attr('data-acf');
+                    area = $(this).find('.passster-submit-turnstile').attr('data-area');
+                    redirect = $(this).find('.passster-submit-turnstile').attr('data-redirect');
+
+                    $.ajax({
+                        type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
+                            'action': 'validate_input',
+                            'nonce': ps_ajax.nonce,
+                            'token': token,
+                            'post_id': ps_ajax.post_id,
+                            'type': 'turnstile',
+                            'protection': protection,
+                            'captcha_id': ps_id,
+                            'acf': acf,
+                            'area': area,
+                            'redirect': redirect
+                        }, success: function (response) {
+                            if (true === response.success) {
+
+                                // if no ajax.
+                                if (!ps_ajax.unlock_mode) {
+                                    Cookies.set('passster', 'turnstile', {
+                                        expires: getDurationBySettings(), sameSite: 'strict'
+                                    });
+
+                                    if (response.redirect) {
+                                        window.location.replace(redirect);
+                                    } else {
+                                        window.location.href = getCacheFriendlyURL();
+                                    }
+                                } else {
+                                    // set cookie if activated.
+                                    if (!ps_ajax.disable_cookie) {
+                                        Cookies.set('passster', 'turnstile', {
+                                            expires: getDurationBySettings(), sameSite: 'strict'
+                                        });
+                                    }
+                                    form.find('.passster-error').hide();
+
+                                    // replace shortcodes.
+                                    let content = response.content;
+
+                                    if (content) {
+
+                                        $.each(ps_ajax.shortcodes, function (key, value) {
+                                            content = content.replace(key, value);
+                                        });
+
+                                        $("#" + ps_id).replaceWith(content);
+                                    }
+
+                                    // Redirect?
+                                    if (response.redirect) {
+                                        window.location.replace(redirect);
+                                    }
+                                }
+                            } else {
+                                form.find('.passster-error').text(response.error);
+                                form.find('.passster-error').show().fadeOut(3500);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    };
+
     // Concurrent logout.
     $(document).on('click', '#ps-logout', function () {
         $.ajax({

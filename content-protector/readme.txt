@@ -6,7 +6,7 @@ Tested up to: 6.7
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.14
+Stable tag: 4.2.15
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -101,6 +101,9 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+
+= 4.2.15 - 17.03.2025 =
+* Added: Support for Turnstile captcha.
 
 = 4.2.14 - 25.02.2025 =
 * Fixed: Unlock link was not working properly.
