@@ -179,6 +179,10 @@ class PS_Admin_Settings {
         if ( $request->get_params() ) {
             $options = sanitize_option( 'passster', $request->get_params() );
             foreach ( $options as $key => $value ) {
+                if ( 'instruction' === $key ) {
+                    $options[$key] = wp_kses_post( $value );
+                    continue;
+                }
                 if ( $key !== 'exclude_pages' && !is_array( $value ) ) {
                     $options[$key] = sanitize_text_field( $value );
                 }

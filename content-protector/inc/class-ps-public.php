@@ -100,7 +100,7 @@ class PS_Public {
         }
         // instruction.
         if ( !empty( $atts['instruction'] ) ) {
-            $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', esc_html( $atts['instruction'] ), $form );
+            $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', html_entity_decode( base64_decode( $atts['instruction'] ) ), $form );
         } else {
             $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', $options['instruction'], $form );
         }
@@ -175,7 +175,7 @@ class PS_Public {
             $shortcode .= 'headline="' . $headline . '" ';
         }
         if ( !empty( $instruction ) ) {
-            $shortcode .= 'instruction="' . $instruction . '" ';
+            $shortcode .= 'instruction="' . base64_encode( $instruction ) . '" ';
         }
         if ( !empty( $placeholder ) ) {
             $shortcode .= 'placeholder="' . $placeholder . '" ';

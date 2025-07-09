@@ -2,17 +2,19 @@
 Contributors: wpchill, silkalns
 Tags: password protect, password, restrict content, sitewide, password protection
 Requires at least: 6.5
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.15
+Stable tag: 4.2.16
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
 
 Passster is an all-in-one plugin to password protect pages, content, or your entire site in seconds—quick, secure, and easy to use.
 Passster offers three protection modes to cover every use case you may think of when it comes to password protecting your WordPress website.
+
+https://www.youtube.com/watch?v=kjYklVLVFD8&list=PLM2tOjfhVrZdo_H26CV2I-UfdqpDWxo3D&index=4
 
 ### Passster Pro – Even more protection features when making a purchase
 
@@ -101,6 +103,9 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+
+= 4.2.16 - 09.07.2025 =
+* Changed: Allow HTML & shortcodes in instructions.
 
 = 4.2.15 - 17.03.2025 =
 * Added: Support for Turnstile captcha.
