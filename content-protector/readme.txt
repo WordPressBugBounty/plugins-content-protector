@@ -6,7 +6,7 @@ Tested up to: 6.8
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.16
+Stable tag: 4.2.17
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -103,6 +103,9 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+
+= 4.2.17 - 22.07.2025 =
+* Fixed: Users with allowed roles can now access other pages when global restriction is active and the password page is excluded for them.
 
 = 4.2.16 - 09.07.2025 =
 * Changed: Allow HTML & shortcodes in instructions.

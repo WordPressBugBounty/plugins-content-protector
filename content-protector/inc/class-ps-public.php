@@ -242,7 +242,7 @@ class PS_Public {
                 }
                 // Check if cookie is set.
                 $cookie = esc_html( $_COOKIE['passster'] );
-                if ( empty( $cookie ) || !PS_Conditional::is_valid( $atts ) ) {
+                if ( !PS_Conditional::is_valid( $atts ) ) {
                     $global_protection_url = get_permalink( $post_id );
                     wp_redirect( esc_url_raw( $global_protection_url ) );
                     exit;
