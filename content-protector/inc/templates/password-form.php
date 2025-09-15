@@ -3,10 +3,10 @@
         <span class="ps-form-headline">[PASSSTER_FORM_HEADLINE]</span>
         <p>[PASSSTER_FORM_INSTRUCTIONS]</p>
         <fieldset>
-            <span class="ps-loader"><img src="[PS_AJAX_LOADER]"/></span>
-            <label for="[PASSSTER_AUTH]" style="display:none;">Enter your password</label>
+            <span class="ps-loader"><img src="[PS_AJAX_LOADER]" alt="" /></span>
+            <label for="input-[PASSSTER_ID]" style="display:none;">Enter your password</label>
             <input placeholder="[PASSSTER_PLACEHOLDER]" type="password" tabindex="1" name="[PASSSTER_AUTH]"
-                   id="[PASSSTER_AUTH]" class="passster-password" autocomplete="off"
+                   id="input-[PASSSTER_ID]" class="passster-password" autocomplete="off"
                    data-protection-type="[PASSSTER_TYPE]" data-list="[PASSSTER_LIST]" data-lists="[PASSSTER_LISTS]" data-area="[PASSSTER_AREA]"
                    data-protection="[PASSSTER_PROTECTION]">
             [PASSSTER_SHOW_PASSWORD]
