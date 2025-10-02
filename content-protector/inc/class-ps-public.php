@@ -100,7 +100,10 @@ class PS_Public {
         }
         // instruction.
         if ( !empty( $atts['instruction'] ) ) {
-            $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', html_entity_decode( base64_decode( $atts['instruction'] ) ), $form );
+            $decoded_instruction = base64_decode( $atts['instruction'] );
+            $decoded_instruction = html_entity_decode( $decoded_instruction );
+            $sanitized_instruction = wp_kses_post( $decoded_instruction );
+            $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', $sanitized_instruction, $form );
         } else {
             $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', $options['instruction'], $form );
         }

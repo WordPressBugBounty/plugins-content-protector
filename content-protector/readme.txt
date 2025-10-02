@@ -1,12 +1,12 @@
 === Passster - Password Protect Pages and Content ===
-Contributors: wpchill, silkalns, freemius
+Contributors: wpchill, silkalns
 Tags: password protect, password, restrict content, sitewide, password protection
 Requires at least: 6.5
 Tested up to: 6.8
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.18
+Stable tag: 4.2.19
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -103,6 +103,8 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.2.19 - 02.10.2025 =
+* Fixed: Vulnerability in passster shortcode.
 
 = 4.2.18 - 15.09.2025 =
 * Added: null alt attribute to ps-loader image for better accessibility compliance.
