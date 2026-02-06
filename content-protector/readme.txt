@@ -2,11 +2,11 @@
 Contributors: wpchill, silkalns
 Tags: password protect, password, restrict content, sitewide, password protection
 Requires at least: 6.5
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.2.19
+Stable tag: 4.2.28
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -85,6 +85,10 @@ All primary texts and information can be modified from the admin area of Passste
 The plugin is fully translatable in your language. There are only en_EN and de_DE at the moment, but you can easily add your preferred language as a .po/.mo.
 It’s also fully compatible with WPML and Polylang.
 
+= Where do I report security bugs found in this plugin? =
+
+Please report security bugs found in the source code of the Passster plugin through the [Patchstack Vulnerability Disclosure  Program](https://patchstack.com/database/vdp/9e5fb73f-e810-474a-a64f-c86081aa9b46). The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin."
+
 == Screenshots ==
 1. Passster Password Form
 2. Passster Areas
@@ -103,6 +107,37 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.2.28 - 02.02.2026 =
+* Fixed: Nonce validation failing for logged-in users when fetched via REST endpoint.
+
+= 4.2.27 - 27.01.2026 =
+* Fixed: Prevent nonce from being cached.
+* Fixed: Page protect children option.
+
+= 4.2.26 - 16.01.2026 =
+* Fixed: Security update
+
+= 4.2.25 - 14.01.2026 =
+* Fixed: Passster protected events do not show up in The Events Callendar REST requests.
+* Changed: Prevent nonce from being cached.
+* Fixed: Security update
+
+= 4.2.24 - 12.01.2026 =
+* Fixed: Vulnerability in passster shortcode.
+* Fixed: Fix allowing hashed in unlocking page url.
+
+= 4.2.23 - 08.01.2026 =
+* Fixed: Bug preventing password validation.
+
+= 4.2.22 - 05.01.2026 =
+* Fixed: Vulnerability in passster shortcode.
+
+= 4.2.21 - 18.12.2025 =
+* Fixed: Vulnerability in passster shortcode.
+
+= 4.2.20 - 22.10.2025 =
+* Fixed: Security update
+
 = 4.2.19 - 02.10.2025 =
 * Fixed: Vulnerability in passster shortcode.
 

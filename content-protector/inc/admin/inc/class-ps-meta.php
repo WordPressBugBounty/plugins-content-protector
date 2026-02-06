@@ -43,63 +43,63 @@ class PS_Meta {
         register_meta( 'post', 'passster_activate_protection', array(
             'single'       => true,
             'type'         => 'boolean',
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'default'      => false,
         ) );
         register_meta( 'post', 'passster_protect_child_pages', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_protection_type', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'default'      => 'password',
         ) );
         register_meta( 'post', 'passster_password', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_activate_overwrite_defaults', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_headline', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_instruction', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_placeholder', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_button', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_id', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_activate_misc_settings', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
         register_meta( 'post', 'passster_redirect_url', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'default'      => '',
         ) );
         register_meta( 'post', 'passster_hide', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
             'default'      => 'no',
         ) );
         register_meta( 'post', 'passster_area_shortcode', array(
             'single'       => true,
-            'show_in_rest' => true,
+            'show_in_rest' => false,
         ) );
     }
 
@@ -207,7 +207,7 @@ class PS_Meta {
      */
     public function render_settings() {
         ?>
-        <div id="passster-metabox"></div>
+		<div id="passster-metabox"></div>
 		<?php 
     }
 
@@ -219,21 +219,21 @@ class PS_Meta {
     public function rest_api_init() {
         register_rest_route( 'passster/v1', '/meta', array(
             'methods'             => 'POST',
-            'callback'            => [$this, 'save_meta'],
+            'callback'            => array($this, 'save_meta'),
             'permission_callback' => function () {
                 return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
             },
         ) );
         register_rest_route( 'passster/v1', '/meta', array(
             'methods'             => 'GET',
-            'callback'            => [$this, 'get_meta'],
+            'callback'            => array($this, 'get_meta'),
             'permission_callback' => function () {
                 return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
             },
         ) );
         register_rest_route( 'passster/v1', '/areas', array(
             'methods'             => 'GET',
-            'callback'            => [$this, 'get_areas'],
+            'callback'            => array($this, 'get_areas'),
             'permission_callback' => function () {
                 return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
             },
@@ -256,15 +256,13 @@ class PS_Meta {
             if ( isset( $params['meta_value'] ) ) {
                 $meta_value = sanitize_meta( $meta_key, $params['meta_value'], 'post' );
                 update_post_meta( $post_id, $meta_key, $meta_value );
-            } else {
-                if ( isset( $params['delete'] ) ) {
-                    delete_post_meta( $post_id, $meta_key );
-                }
+            } elseif ( isset( $params['delete'] ) ) {
+                delete_post_meta( $post_id, $meta_key );
             }
-            return wp_json_encode( [
-                "status"  => 200,
-                "message" => "Ok",
-            ] );
+            return wp_json_encode( array(
+                'status'  => 200,
+                'message' => 'Ok',
+            ) );
         }
     }
 
@@ -282,17 +280,17 @@ class PS_Meta {
             $meta_key = esc_html( $params['meta_key'] );
             $meta = get_post_meta( $post_id, $meta_key, true );
             if ( !empty( $meta ) ) {
-                return wp_json_encode( [
-                    "status"  => 200,
-                    "message" => "Ok",
-                    "data"    => $meta,
-                ] );
+                return wp_json_encode( array(
+                    'status'  => 200,
+                    'message' => 'Ok',
+                    'data'    => $meta,
+                ) );
             } else {
-                return wp_json_encode( [
-                    "status"  => 400,
-                    "message" => "Empty value",
-                    "data"    => '',
-                ] );
+                return wp_json_encode( array(
+                    'status'  => 400,
+                    'message' => 'Empty value',
+                    'data'    => '',
+                ) );
             }
         }
     }

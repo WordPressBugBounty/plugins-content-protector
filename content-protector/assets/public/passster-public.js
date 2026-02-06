@@ -1,464 +1,470 @@
-jQuery(document).ready(function ($) {
+jQuery( document ).ready( function( $ ) {
+	let psNonces = window.ps_ajax || {};
 
-    // Get cookie duration.
-    function getDurationBySettings() {
-        switch (ps_ajax.cookie_duration_unit) {
-            case 'days':
-                return parseInt(ps_ajax.cookie_duration);
-                break;
-            case 'hours':
-                return new Date(new Date().getTime() + (ps_ajax.cookie_duration * 10) * 60 * 1000);
-                break;
-            case 'minutes':
-                return new Date(new Date().getTime() + ps_ajax.cookie_duration * 60 * 1000);
-                break;
-            default:
-                return parseInt(ps_ajax.cookie_duration);
-        }
-    }
+	fetch( ps_ajax.rest_url + 'passster/v1/nonces', {
+		method: 'POST',
+		credentials: 'same-origin',
+		headers: { 'Content-Type': 'application/json' },
+	} )
+		.then( ( response ) => response.json() )
+		.then( ( nonces ) => {
+			psNonces = nonces;
+		} )
+		.catch( () => {
+			// Fallback, we still have window.ps_ajax
+		} );
 
-    // Get cache busting URL.
-    function getCacheFriendlyURL() {
-        if (location.search) {
-            return (location.origin).concat(location.pathname).concat(location.hash) + location.search + '&pts=' + Math.floor(Date.now() / 1000);
-        } else {
-            return (location.origin).concat(location.pathname).concat(location.hash) + '?pts=' + Math.floor(Date.now() / 1000);
-        }
-    }
+	// Get cookie duration.
+	function getDurationBySettings() {
+		switch ( ps_ajax.cookie_duration_unit ) {
+			case 'days':
+				return parseInt( ps_ajax.cookie_duration );
+				break;
+			case 'hours':
+				return new Date( new Date().getTime() + ( ps_ajax.cookie_duration * 10 ) * 60 * 1000 );
+				break;
+			case 'minutes':
+				return new Date( new Date().getTime() + ps_ajax.cookie_duration * 60 * 1000 );
+				break;
+			default:
+				return parseInt( ps_ajax.cookie_duration );
+		}
+	}
 
-    // Get hashed cookie via Ajax.
-    function setHashedCookie(password) {
-        $.ajax({
-            type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
-                'action': 'hash_password', 'hash_nonce': ps_ajax.hash_nonce, 'password': password,
-            }, success: function (response) {
-                Cookies.set('passster', response.password, {
-                    expires: getDurationBySettings(), sameSite: 'strict'
-                });
-            }, async: false,
-        });
-    }
+	// Get cache busting URL.
+	function getCacheFriendlyURL() {
+		const pts = 'pts=' + Math.floor( Date.now() / 1000 );
 
-    // Check if we have an unlock link.
-    if (ps_ajax.link_pass) {
-        if (!ps_ajax.disable_cookie) {
-            if (ps_ajax.link_pass.length < 25) {
-                // It's an old base64 encryption.
-                setHashedCookie(atob(ps_ajax.link_pass));
-            } else {
-                Cookies.set('passster', ps_ajax.link_pass, {
-                    expires: getDurationBySettings(), sameSite: 'strict'
-                });
-            }
+		const base = location.origin + location.pathname;
+		const search = location.search ? location.search + '&' + pts : '?' + pts;
+		const hash = location.hash || '';
 
-            // Handle the redirect with cache busting.
-            window.location.replace(ps_ajax.permalink + '?pts=' + Math.floor(Date.now() / 1000));
-        }
-    }
+		return base + search + hash;
+	}
 
-    // Passwords
-    $('.passster-submit').on('click', function (e) {
-        e.preventDefault();
+	// Get hashed cookie via Ajax.
+	function setHashedCookie( password ) {
+		$.ajax( {
+			type: 'post', dataType: 'json', url: ps_ajax.ajax_url, data: {
+				action: 'hash_password', hash_nonce: psNonces.hash_nonce, password,
+			}, success( response ) {
+				Cookies.set( 'passster', response.password, {
+					expires: getDurationBySettings(), sameSite: 'strict',
+				} );
+			}, async: false,
+		} );
+	}
 
-        // Validate form before submitting ajax.
-        var form = $(this).parent().parent();
+	// Check if we have an unlock link.
+	if ( ps_ajax.link_pass ) {
+		if ( ! ps_ajax.disable_cookie ) {
+			if ( ps_ajax.link_pass.length < 25 ) {
+				// It's an old base64 encryption.
+				setHashedCookie( atob( ps_ajax.link_pass ) );
+			} else {
+				Cookies.set( 'passster', ps_ajax.link_pass, {
+					expires: getDurationBySettings(), sameSite: 'strict',
+				} );
+			}
 
-        if (!$(form)[0].checkValidity()) {
-            $(form)[0].reportValidity();
-        }
+			// Handle the redirect with cache busting.
+			window.location.replace( ps_ajax.permalink + '?pts=' + Math.floor( Date.now() / 1000 ) );
+		}
+	}
 
-        ps_id = $(this).attr('data-psid');
-        form = $("#" + ps_id);
-        password = $("#" + ps_id + ' .passster-password').attr('data-password');
-        type = $("#" + ps_id + ' .passster-password').attr('data-protection-type');
-        list = $("#" + ps_id + ' .passster-password').attr('data-list');
-        lists = $("#" + ps_id + ' .passster-password').attr('data-lists');
-        area = $("#" + ps_id + ' .passster-password').attr('data-area');
-        protection = $("#" + ps_id + ' .passster-password').attr('data-protection');
-        redirect = $(this).attr('data-redirect');
-        input = $("#" + ps_id + ' .passster-password').val();
-        acf = $(this).attr('data-acf');
+	// Passwords
+	$( '.passster-submit' ).on( 'click', function( e ) {
+		e.preventDefault();
 
-        $.ajax({
-            type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
-                'action': 'validate_input',
-                'nonce': ps_ajax.nonce,
-                'input': input,
-                'password': password,
-                'post_id': ps_ajax.post_id,
-                'type': type,
-                'list': list,
-                'lists': lists,
-                'area': area,
-                'protection': protection,
-                'acf': acf,
-                'redirect': redirect
-            }, beforeSend: function () {
-                form.find(".ps-loader").css('display', 'block');
-            }, success: function (response) {
-                form.find(".ps-loader").css('display', 'none');
-                if (true === response.success) {
-                    // if no ajax.
-                    if (!ps_ajax.unlock_mode) {
-                        setHashedCookie(input);
+		// Validate form before submitting ajax.
+		let form = $( this ).parent().parent();
 
-                        if (response.redirect) {
-                            window.location.replace(redirect);
-                        } else {
-                            window.location.href = getCacheFriendlyURL();
-                        }
-                    } else {
+		if ( ! $( form )[ 0 ].checkValidity() ) {
+			$( form )[ 0 ].reportValidity();
+		}
 
-                        // set cookie if activated.
-                        if (!ps_ajax.disable_cookie) {
-                            setHashedCookie(input);
-                        }
-                        form.find('.passster-error').hide();
+		ps_id = $( this ).attr( 'data-psid' );
+		form = $( '#' + ps_id );
+		password = $( '#' + ps_id + ' .passster-password' ).attr( 'data-password' );
+		type = $( '#' + ps_id + ' .passster-password' ).attr( 'data-protection-type' );
+		list = $( '#' + ps_id + ' .passster-password' ).attr( 'data-list' );
+		lists = $( '#' + ps_id + ' .passster-password' ).attr( 'data-lists' );
+		area = $( '#' + ps_id + ' .passster-password' ).attr( 'data-area' );
+		protection = $( '#' + ps_id + ' .passster-password' ).attr( 'data-protection' );
+		redirect = $( this ).attr( 'data-redirect' );
+		input = $( '#' + ps_id + ' .passster-password' ).val();
+		acf = $( this ).attr( 'data-acf' );
 
-                        // replace shortcodes.
-                        let content = response.content;
+		$.ajax( {
+			type: 'post', dataType: 'json', url: ps_ajax.ajax_url, data: {
+				action: 'validate_input',
+				nonce: psNonces.nonce,
+				input,
+				password,
+				post_id: ps_ajax.post_id,
+				type,
+				list,
+				lists,
+				area,
+				protection,
+				acf,
+				redirect,
+			}, beforeSend() {
+				form.find( '.ps-loader' ).css( 'display', 'block' );
+			}, success( response ) {
+				form.find( '.ps-loader' ).css( 'display', 'none' );
+				if ( true === response.success ) {
+					// if no ajax.
+					if ( ! ps_ajax.unlock_mode ) {
+						setHashedCookie( input );
 
-                        if (content) {
-                            $.each(ps_ajax.shortcodes, function (key, value) {
-                                content = content.replace(key, value);
-                            });
+						if ( response.redirect ) {
+							window.location.replace( redirect );
+						} else {
+							window.location.href = getCacheFriendlyURL();
+						}
+					} else {
+						// set cookie if activated.
+						if ( ! ps_ajax.disable_cookie ) {
+							setHashedCookie( input );
+						}
+						form.find( '.passster-error' ).hide();
 
-                            $("#" + ps_id).replaceWith(content);
-                        }
+						// replace shortcodes.
+						let content = response.content;
 
-                        // Redirect?
-                        if (response.redirect) {
-                            window.location.replace(redirect);
-                        }
+						if ( content ) {
+							$.each( ps_ajax.shortcodes, function( key, value ) {
+								content = content.replace( key, value );
+							} );
 
-                    }
-                } else {
-                    form.find('.passster-error').text(response.error);
-                    form.find('.passster-error').show().fadeOut(3500);
-                    $("#" + ps_id + ' .passster-password').val('');
-                }
-            }
-        });
-    });
+							$( '#' + ps_id ).replaceWith( content );
+						}
 
-    // Recaptcha v2
-    if ($('.recaptcha-form-v2').length > 0) {
-        grecaptcha.ready(function () {
-            grecaptcha.render('ps-recaptcha-v2', {
-                'sitekey': ps_ajax.recaptcha_key, 'callback': function (token) {
-                    ps_id = $('.recaptcha-v2-submit').attr('data-psid');
-                    form = $("#" + ps_id);
-                    protection = $('.recaptcha-v2-submit').attr('data-protection');
-                    acf = $('.recaptcha-v2-submit').attr('data-acf');
-                    area = $("#" + ps_id).find('.recaptcha-v2-submit').attr('data-area');
-                    redirect = $("#" + ps_id).find('.recaptcha-v2-submit').attr('data-redirect');
+						// Redirect?
+						if ( response.redirect ) {
+							window.location.replace( redirect );
+						}
+					}
+				} else {
+					form.find( '.passster-error' ).text( response.error );
+					form.find( '.passster-error' ).show().fadeOut( 3500 );
+					$( '#' + ps_id + ' .passster-password' ).val( '' );
+				}
+			},
+		} );
+	} );
 
-                    $.ajax({
-                        type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
-                            'action': 'validate_input',
-                            'nonce': ps_ajax.nonce,
-                            'token': token,
-                            'post_id': ps_ajax.post_id,
-                            'type': 'recaptcha',
-                            'protection': protection,
-                            'captcha_id': ps_id,
-                            'acf': acf,
-                            'area': area,
-                            'redirect': redirect
-                        }, success: function (response) {
-                            if (true === response.success) {
+	// Recaptcha v2
+	if ( $( '.recaptcha-form-v2' ).length > 0 ) {
+		grecaptcha.ready( function() {
+			grecaptcha.render( 'ps-recaptcha-v2', {
+				sitekey: ps_ajax.recaptcha_key, callback( token ) {
+					ps_id = $( '.recaptcha-v2-submit' ).attr( 'data-psid' );
+					form = $( '#' + ps_id );
+					protection = $( '.recaptcha-v2-submit' ).attr( 'data-protection' );
+					acf = $( '.recaptcha-v2-submit' ).attr( 'data-acf' );
+					area = $( '#' + ps_id ).find( '.recaptcha-v2-submit' ).attr( 'data-area' );
+					redirect = $( '#' + ps_id ).find( '.recaptcha-v2-submit' ).attr( 'data-redirect' );
 
-                                // if no ajax.
-                                if (!ps_ajax.unlock_mode) {
-                                    Cookies.set('passster', 'recaptcha', {
-                                        expires: getDurationBySettings(), sameSite: 'strict'
-                                    });
+					$.ajax( {
+						type: 'post', dataType: 'json', url: ps_ajax.ajax_url, data: {
+							action: 'validate_input',
+							nonce: psNonces.nonce,
+							token,
+							post_id: ps_ajax.post_id,
+							type: 'recaptcha',
+							protection,
+							captcha_id: ps_id,
+							acf,
+							area,
+							redirect,
+						}, success( response ) {
+							if ( true === response.success ) {
+								// if no ajax.
+								if ( ! ps_ajax.unlock_mode ) {
+									Cookies.set( 'passster', 'recaptcha', {
+										expires: getDurationBySettings(), sameSite: 'strict',
+									} );
 
-                                    if (response.redirect) {
-                                        window.location.replace(redirect);
-                                    } else {
-                                        window.location.href = getCacheFriendlyURL();
-                                    }
-                                } else {
-                                    // set cookie if activated.
-                                    if (!ps_ajax.disable_cookie) {
-                                        Cookies.set('passster', 'recaptcha', {
-                                            expires: getDurationBySettings(), sameSite: 'strict'
-                                        });
-                                    }
-                                    form.find('.passster-error').hide();
+									if ( response.redirect ) {
+										window.location.replace( redirect );
+									} else {
+										window.location.href = getCacheFriendlyURL();
+									}
+								} else {
+									// set cookie if activated.
+									if ( ! ps_ajax.disable_cookie ) {
+										Cookies.set( 'passster', 'recaptcha', {
+											expires: getDurationBySettings(), sameSite: 'strict',
+										} );
+									}
+									form.find( '.passster-error' ).hide();
 
-                                    // replace shortcodes.
-                                    let content = response.content;
+									// replace shortcodes.
+									let content = response.content;
 
-                                    if (content) {
+									if ( content ) {
+										$.each( ps_ajax.shortcodes, function( key, value ) {
+											content = content.replace( key, value );
+										} );
 
-                                        $.each(ps_ajax.shortcodes, function (key, value) {
-                                            content = content.replace(key, value);
-                                        });
+										$( '#' + ps_id ).replaceWith( content );
+									}
 
-                                        $("#" + ps_id).replaceWith(content);
-                                    }
+									// Redirect?
+									if ( response.redirect ) {
+										window.location.replace( redirect );
+									}
+								}
+							} else {
+								form.find( '.passster-error' ).text( response.error );
+								form.find( '.passster-error' ).show().fadeOut( 3500 );
+							}
+						},
+					} );
+				},
+			} );
+		} );
+	}
 
-                                    // Redirect?
-                                    if (response.redirect) {
-                                        window.location.replace(redirect);
-                                    }
-                                }
-                            } else {
-                                form.find('.passster-error').text(response.error);
-                                form.find('.passster-error').show().fadeOut(3500);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-    }
+	// ReCaptcha v3
+	$( '.recaptcha-form' ).on( 'submit', function( event ) {
+		event.preventDefault();
 
-    // ReCaptcha v3
-    $('.recaptcha-form').on('submit', function (event) {
-        event.preventDefault();
+		ps_id = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-psid' );
+		form = $( '#' + ps_id );
+		protection = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-protection' );
+		acf = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-acf' );
+		area = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-area' );
+		redirect = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-redirect' );
 
-        ps_id = $(this).find('.passster-submit-recaptcha').attr('data-psid');
-        form = $("#" + ps_id);
-        protection = $(this).find('.passster-submit-recaptcha').attr('data-protection');
-        acf = $(this).find('.passster-submit-recaptcha').attr('data-acf');
-        area = $(this).find('.passster-submit-recaptcha').attr('data-area');
-        redirect = $(this).find('.passster-submit-recaptcha').attr('data-redirect');
+		grecaptcha.ready( function() {
+			grecaptcha.execute( ps_ajax.recaptcha_key, { action: 'validate_input' } ).then( function( token ) {
+				form.prepend( '<input type="hidden" name="token" value="' + token + '">' );
+				form.prepend( '<input type="hidden" name="action" value="validate_input">' );
 
-        grecaptcha.ready(function () {
-            grecaptcha.execute(ps_ajax.recaptcha_key, {action: 'validate_input'}).then(function (token) {
+				$.ajax( {
+					type: 'post', dataType: 'json', url: ps_ajax.ajax_url, data: {
+						action: 'validate_input',
+						nonce: psNonces.nonce,
+						token,
+						post_id: ps_ajax.post_id,
+						type: 'recaptcha',
+						protection,
+						captcha_id: ps_id,
+						acf,
+						area,
+						redirect,
+					}, success( response ) {
+						if ( true === response.success ) {
+							// if no ajax.
+							if ( ! ps_ajax.unlock_mode ) {
+								Cookies.set( 'passster', 'recaptcha', {
+									expires: getDurationBySettings(), sameSite: 'strict',
+								} );
 
-                form.prepend('<input type="hidden" name="token" value="' + token + '">');
-                form.prepend('<input type="hidden" name="action" value="validate_input">');
+								if ( response.redirect ) {
+									window.location.replace( redirect );
+								} else {
+									window.location.href = getCacheFriendlyURL();
+								}
+							} else {
+								// set cookie if activated.
+								if ( ! ps_ajax.disable_cookie ) {
+									Cookies.set( 'passster', 'recaptcha', {
+										expires: getDurationBySettings(), sameSite: 'strict',
+									} );
+								}
+								form.find( '.passster-error' ).hide();
+								// replace shortcodes.
+								let content = response.content;
 
-                $.ajax({
-                    type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
-                        'action': 'validate_input',
-                        'nonce': ps_ajax.nonce,
-                        'token': token,
-                        'post_id': ps_ajax.post_id,
-                        'type': 'recaptcha',
-                        'protection': protection,
-                        'captcha_id': ps_id,
-                        'acf': acf,
-                        'area': area,
-                        'redirect': redirect
-                    }, success: function (response) {
-                        if (true === response.success) {
+								if ( content ) {
+									$.each( ps_ajax.shortcodes, function( key, value ) {
+										content = content.replace( key, value );
+									} );
 
-                            // if no ajax.
-                            if (!ps_ajax.unlock_mode) {
-                                Cookies.set('passster', 'recaptcha', {
-                                    expires: getDurationBySettings(), sameSite: 'strict'
-                                });
+									form.replaceWith( content );
+								}
 
-                                if (response.redirect) {
-                                    window.location.replace(redirect);
-                                } else {
-                                    window.location.href = getCacheFriendlyURL();
-                                }
-                            } else {
-                                // set cookie if activated.
-                                if (!ps_ajax.disable_cookie) {
-                                    Cookies.set('passster', 'recaptcha', {
-                                        expires: getDurationBySettings(), sameSite: 'strict'
-                                    });
-                                }
-                                form.find('.passster-error').hide();
-                                // replace shortcodes.
-                                let content = response.content;
+								// Redirect?
+								if ( response.redirect ) {
+									window.location.replace( redirect );
+								}
+							}
+						} else {
+							form.find( '.passster-error' ).text( response.error );
+							form.find( '.passster-error' ).show().fadeOut( 3500 );
+						}
+					},
+				} );
+			} );
+		} );
+	} );
 
-                                if (content) {
-                                    $.each(ps_ajax.shortcodes, function (key, value) {
-                                        content = content.replace(key, value);
-                                    });
+	// hcaptcha
+	$( '.hcaptcha-form' ).on( 'submit', function( event ) {
+		event.preventDefault();
 
-                                    form.replaceWith(content);
-                                }
+		ps_id = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-psid' );
+		form = $( '#' + ps_id );
+		protection = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-protection' );
+		acf = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-acf' );
+		area = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-area' );
+		redirect = $( this ).find( '.passster-submit-recaptcha' ).attr( 'data-redirect' );
 
-                                // Redirect?
-                                if (response.redirect) {
-                                    window.location.replace(redirect);
-                                }
-                            }
-                        } else {
-                            form.find('.passster-error').text(response.error);
-                            form.find('.passster-error').show().fadeOut(3500);
-                        }
-                    }
-                });
-            });
-        });
-    });
+		hcaptcha.execute( { async: true } )
+			.then( ( { response, key } ) => {
+				$.ajax( {
+					type: 'post', dataType: 'json', url: ps_ajax.ajax_url, data: {
+						action: 'validate_input',
+						nonce: psNonces.nonce,
+						token: response,
+						post_id: ps_ajax.post_id,
+						type: 'recaptcha',
+						protection,
+						captcha_id: ps_id,
+						acf,
+						area,
+						redirect,
+					}, success( response ) {
+						if ( true === response.success ) {
+							// if no ajax.
+							if ( ! ps_ajax.unlock_mode ) {
+								Cookies.set( 'passster', 'recaptcha', {
+									expires: getDurationBySettings(), sameSite: 'strict',
+								} );
 
-    // hcaptcha
-    $('.hcaptcha-form').on('submit', function (event) {
-        event.preventDefault();
+								if ( response.redirect ) {
+									window.location.replace( redirect );
+								} else {
+									window.location.href = getCacheFriendlyURL();
+								}
+							} else {
+								// set cookie if activated.
+								if ( ! ps_ajax.disable_cookie ) {
+									Cookies.set( 'passster', 'recaptcha', {
+										expires: getDurationBySettings(), sameSite: 'strict',
+									} );
+								}
+								form.find( '.passster-error' ).hide();
+								// replace shortcodes.
+								let content = response.content;
 
-        ps_id = $(this).find('.passster-submit-recaptcha').attr('data-psid');
-        form = $("#" + ps_id);
-        protection = $(this).find('.passster-submit-recaptcha').attr('data-protection');
-        acf = $(this).find('.passster-submit-recaptcha').attr('data-acf');
-        area = $(this).find('.passster-submit-recaptcha').attr('data-area');
-        redirect = $(this).find('.passster-submit-recaptcha').attr('data-redirect');
+								if ( content ) {
+									$.each( ps_ajax.shortcodes, function( key, value ) {
+										content = content.replace( key, value );
+									} );
 
-        hcaptcha.execute({async: true})
-            .then(({response, key}) => {
-                $.ajax({
-                    type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
-                        'action': 'validate_input',
-                        'nonce': ps_ajax.nonce,
-                        'token': response,
-                        'post_id': ps_ajax.post_id,
-                        'type': 'recaptcha',
-                        'protection': protection,
-                        'captcha_id': ps_id,
-                        'acf': acf,
-                        'area': area,
-                        'redirect': redirect
-                    }, success: function (response) {
-                        if (true === response.success) {
+									form.replaceWith( content );
+								}
 
-                            // if no ajax.
-                            if (!ps_ajax.unlock_mode) {
-                                Cookies.set('passster', 'recaptcha', {
-                                    expires: getDurationBySettings(), sameSite: 'strict'
-                                });
+								// Redirect?
+								if ( response.redirect ) {
+									window.location.replace( redirect );
+								}
+							}
+						} else {
+							form.find( '.passster-error' ).text( response.error );
+							form.find( '.passster-error' ).show().fadeOut( 3500 );
+						}
+					},
+				} );
+			} )
+			.catch( ( err ) => {
+				form.find( '.passster-error' ).text( err );
+				form.find( '.passster-error' ).show().fadeOut( 3500 );
+			} );
+	} );
 
-                                if (response.redirect) {
-                                    window.location.replace(redirect);
-                                } else {
-                                    window.location.href = getCacheFriendlyURL();
-                                }
-                            } else {
-                                // set cookie if activated.
-                                if (!ps_ajax.disable_cookie) {
-                                    Cookies.set('passster', 'recaptcha', {
-                                        expires: getDurationBySettings(), sameSite: 'strict'
-                                    });
-                                }
-                                form.find('.passster-error').hide();
-                                // replace shortcodes.
-                                let content = response.content;
+	// turnstile
+	if ( $( '.turnstile-form' ).length > 0 ) {
+		window.turnstile.ready( function() {
+			window.turnstile.render( '.passster-turnstile', {
+				sitekey: ps_ajax.turnstile_key,
+				callback( token ) {
+					ps_id = $( this ).find( '.passster-submit-turnstile' ).attr( 'data-psid' );
+					form = $( '#' + ps_id );
+					protection = $( this ).find( '.passster-submit-turnstile' ).attr( 'data-protection' );
+					acf = $( this ).find( '.passster-submit-turnstile' ).attr( 'data-acf' );
+					area = $( this ).find( '.passster-submit-turnstile' ).attr( 'data-area' );
+					redirect = $( this ).find( '.passster-submit-turnstile' ).attr( 'data-redirect' );
 
-                                if (content) {
-                                    $.each(ps_ajax.shortcodes, function (key, value) {
-                                        content = content.replace(key, value);
-                                    });
+					$.ajax( {
+						type: 'post', dataType: 'json', url: ps_ajax.ajax_url, data: {
+							action: 'validate_input',
+							nonce: psNonces.nonce,
+							token,
+							post_id: ps_ajax.post_id,
+							type: 'turnstile',
+							protection,
+							captcha_id: ps_id,
+							acf,
+							area,
+							redirect,
+						}, success( response ) {
+							if ( true === response.success ) {
+								// if no ajax.
+								if ( ! ps_ajax.unlock_mode ) {
+									Cookies.set( 'passster', 'turnstile', {
+										expires: getDurationBySettings(), sameSite: 'strict',
+									} );
 
-                                    form.replaceWith(content);
-                                }
+									if ( response.redirect ) {
+										window.location.replace( redirect );
+									} else {
+										window.location.href = getCacheFriendlyURL();
+									}
+								} else {
+									// set cookie if activated.
+									if ( ! ps_ajax.disable_cookie ) {
+										Cookies.set( 'passster', 'turnstile', {
+											expires: getDurationBySettings(), sameSite: 'strict',
+										} );
+									}
+									form.find( '.passster-error' ).hide();
 
-                                // Redirect?
-                                if (response.redirect) {
-                                    window.location.replace(redirect);
-                                }
-                            }
-                        } else {
-                            form.find('.passster-error').text(response.error);
-                            form.find('.passster-error').show().fadeOut(3500);
-                        }
-                    }
-                });
-            })
-            .catch(err => {
-                form.find('.passster-error').text(err);
-                form.find('.passster-error').show().fadeOut(3500);
-            });
+									// replace shortcodes.
+									let content = response.content;
 
-    });
+									if ( content ) {
+										$.each( ps_ajax.shortcodes, function( key, value ) {
+											content = content.replace( key, value );
+										} );
 
-    // turnstile
-    if ($('.turnstile-form').length > 0) {
-        window.turnstile.ready(function () {
-            window.turnstile.render('.passster-turnstile', {
-                'sitekey': ps_ajax.turnstile_key,
-                'callback': function (token) {
-                    ps_id = $(this).find('.passster-submit-turnstile').attr('data-psid');
-                    form = $("#" + ps_id);
-                    protection = $(this).find('.passster-submit-turnstile').attr('data-protection');
-                    acf = $(this).find('.passster-submit-turnstile').attr('data-acf');
-                    area = $(this).find('.passster-submit-turnstile').attr('data-area');
-                    redirect = $(this).find('.passster-submit-turnstile').attr('data-redirect');
+										$( '#' + ps_id ).replaceWith( content );
+									}
 
-                    $.ajax({
-                        type: "post", dataType: "json", url: ps_ajax.ajax_url, data: {
-                            'action': 'validate_input',
-                            'nonce': ps_ajax.nonce,
-                            'token': token,
-                            'post_id': ps_ajax.post_id,
-                            'type': 'turnstile',
-                            'protection': protection,
-                            'captcha_id': ps_id,
-                            'acf': acf,
-                            'area': area,
-                            'redirect': redirect
-                        }, success: function (response) {
-                            if (true === response.success) {
+									// Redirect?
+									if ( response.redirect ) {
+										window.location.replace( redirect );
+									}
+								}
+							} else {
+								form.find( '.passster-error' ).text( response.error );
+								form.find( '.passster-error' ).show().fadeOut( 3500 );
+							}
+						},
+					} );
+				},
+			} );
+		} );
+	}
 
-                                // if no ajax.
-                                if (!ps_ajax.unlock_mode) {
-                                    Cookies.set('passster', 'turnstile', {
-                                        expires: getDurationBySettings(), sameSite: 'strict'
-                                    });
-
-                                    if (response.redirect) {
-                                        window.location.replace(redirect);
-                                    } else {
-                                        window.location.href = getCacheFriendlyURL();
-                                    }
-                                } else {
-                                    // set cookie if activated.
-                                    if (!ps_ajax.disable_cookie) {
-                                        Cookies.set('passster', 'turnstile', {
-                                            expires: getDurationBySettings(), sameSite: 'strict'
-                                        });
-                                    }
-                                    form.find('.passster-error').hide();
-
-                                    // replace shortcodes.
-                                    let content = response.content;
-
-                                    if (content) {
-
-                                        $.each(ps_ajax.shortcodes, function (key, value) {
-                                            content = content.replace(key, value);
-                                        });
-
-                                        $("#" + ps_id).replaceWith(content);
-                                    }
-
-                                    // Redirect?
-                                    if (response.redirect) {
-                                        window.location.replace(redirect);
-                                    }
-                                }
-                            } else {
-                                form.find('.passster-error').text(response.error);
-                                form.find('.passster-error').show().fadeOut(3500);
-                            }
-                        }
-                    });
-                }
-            });
-        });
-    };
-
-    // Concurrent logout.
-    $(document).on('click', '#ps-logout', function () {
-        $.ajax({
-            type: 'post',
-            dataType: 'json',
-            url: ps_ajax.ajax_url,
-            data: {'action': 'handle_logout', 'logout_nonce': ps_ajax.logout_nonce},
-            success: function (response) {
-                if (true === response.success) {
-                    Cookies.set('passster', '', {expires: 0, sameSite: 'strict'});
-                    window.location.href = getCacheFriendlyURL();
-                }
-            }
-        });
-    });
-});
+	// Concurrent logout.
+	$( document ).on( 'click', '#ps-logout', function() {
+		$.ajax( {
+			type: 'post',
+			dataType: 'json',
+			url: ps_ajax.ajax_url,
+			data: { action: 'handle_logout', logout_nonce: psNonces.logout_nonce },
+			success( response ) {
+				if ( true === response.success ) {
+					Cookies.set( 'passster', '', { expires: 0, sameSite: 'strict' } );
+					window.location.href = getCacheFriendlyURL();
+				}
+			},
+		} );
+	} );
+} );

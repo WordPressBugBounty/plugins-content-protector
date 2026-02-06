@@ -31,13 +31,14 @@ class PS_Helper {
      *
      * @return string
      */
-    public static function get_shortcode_content( string $content, $password ) : string {
-        preg_match( '/\\[passster.*password="' . $password . '".*?\\]/', $content, $matches );
+    public static function get_shortcode_content( string $content, $password ) {
+        $password = preg_quote( (string) $password, '/' );
+        $pass_re = '/\\[passster[^\\]]*password="' . $password . '"[^\\]]*\\]/';
+        $recaptcha_re = '/\\[passster[^\\]]*recaptcha="true"[^\\]]*\\]/';
+        $turnstile_re = '/\\[passster[^\\]]*turnstile="true"[^\\]]*\\]/';
         $string = '';
-        if ( isset( $matches ) && !empty( $matches ) ) {
-            foreach ( $matches as $match ) {
-                $string = self::get_string_between( $content, $match, '[/passster]' );
-            }
+        if ( preg_match( $pass_re, $content, $m ) ) {
+            $string = self::get_string_between( $content, $m[0], '[/passster]' );
         }
         return $string;
     }

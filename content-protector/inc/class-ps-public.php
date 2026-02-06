@@ -51,9 +51,11 @@ class PS_Public {
             if ( !empty( $atts['area'] ) ) {
                 $area_id = esc_html( $atts['area'] );
                 $area = get_post( $area_id );
-                $content = $area->post_content;
-                do_action( 'passster_content_unlocked' );
-                return apply_filters( 'the_content', str_replace( '{post-id}', get_the_id(), $content ) );
+                if ( 'publish' === $area->post_status || current_user_can( 'edit_post', $area_id ) ) {
+                    $content = $area->post_content;
+                    do_action( 'passster_content_unlocked' );
+                    return apply_filters( 'the_content', str_replace( '{post-id}', get_the_id(), $content ) );
+                }
             } else {
                 $content = apply_filters( 'the_content', $content );
                 do_action( 'passster_content_unlocked' );
@@ -73,16 +75,14 @@ class PS_Public {
         }
         // Area.
         if ( !empty( $atts['area'] ) ) {
-            $area_id = esc_html( $atts['area'] );
+            $area_id = absint( $atts['area'] );
             $form = str_replace( '[PASSSTER_AREA]', $area_id, $form );
         }
         // Page.
         if ( !empty( $atts['protection'] ) ) {
             $form = str_replace( '[PASSSTER_PROTECTION]', 'full', $form );
-        } else {
-            if ( !empty( $atts['area'] ) ) {
-                $form = str_replace( '[PASSSTER_PROTECTION]', 'area', $form );
-            }
+        } elseif ( !empty( $atts['area'] ) ) {
+            $form = str_replace( '[PASSSTER_PROTECTION]', 'area', $form );
         }
         // Redirect.
         if ( !empty( $atts['redirect'] ) ) {
@@ -109,7 +109,7 @@ class PS_Public {
         }
         // placeholder.
         if ( !empty( $atts['placeholder'] ) ) {
-            $form = str_replace( '[PASSSTER_PLACEHOLDER]', esc_html( $atts['placeholder'] ), $form );
+            $form = str_replace( '[PASSSTER_PLACEHOLDER]', esc_attr( $atts['placeholder'] ), $form );
         } else {
             $form = str_replace( '[PASSSTER_PLACEHOLDER]', $options['placeholder'], $form );
         }
@@ -121,7 +121,7 @@ class PS_Public {
         }
         // modify id.
         if ( !empty( $atts['id'] ) ) {
-            $form = str_replace( '[PASSSTER_ID]', 'ps-' . esc_html( $atts['id'] ), $form );
+            $form = str_replace( '[PASSSTER_ID]', 'ps-' . esc_attr( $atts['id'] ), $form );
         } else {
             $form = str_replace( '[PASSSTER_ID]', 'ps-' . wp_rand( 10, 1000 ), $form );
         }
@@ -133,7 +133,7 @@ class PS_Public {
         }
         // ACF field.
         if ( !empty( $atts['acf'] ) ) {
-            $form = str_replace( '[PASSSTER_ACF]', ' data-acf="' . esc_html( $atts['acf'] ) . '"', $form );
+            $form = str_replace( '[PASSSTER_ACF]', ' data-acf="' . esc_url( $atts['acf'] ) . '"', $form );
         } else {
             $form = str_replace( '[PASSSTER_ACF]', '', $form );
         }
@@ -150,6 +150,14 @@ class PS_Public {
      */
     public function filter_the_content( string $content ) : string {
         $post_id = get_the_id();
+        $parent_id = wp_get_post_parent_id( $post_id );
+        if ( $parent_id ) {
+            $activate_protection = get_post_meta( $parent_id, 'passster_activate_protection', true );
+            $children_protection = get_post_meta( $parent_id, 'passster_protect_child_pages', true );
+            if ( $activate_protection && $children_protection ) {
+                $post_id = $parent_id;
+            }
+        }
         $activate_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
         // user restriction.
         $user_restriction_type = get_post_meta( $post_id, 'passster_user_restriction_type', true );
@@ -208,15 +216,18 @@ class PS_Public {
      */
     public function check_global_proctection() {
         $options = get_option( 'passster' );
-        // Allow Elementor editing the page.
-        $elementor_preview = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-        if ( $elementor_preview ) {
+        $post_id = get_queried_object_id();
+        if ( !$post_id ) {
             return;
         }
+        // Allow Elementor editing the page.
+        $elementor_preview = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
         // Allow Live Canvas Editor.
         $live_canvas_preview = filter_input( INPUT_GET, 'lc_action_launch_editing', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-        if ( $live_canvas_preview ) {
-            return;
+        if ( is_preview() || $elementor_preview || $live_canvas_preview ) {
+            if ( is_user_logged_in() && current_user_can( 'edit_post', $post_id ) ) {
+                return;
+            }
         }
         if ( !isset( $options['global_protection_id'] ) ) {
             return;

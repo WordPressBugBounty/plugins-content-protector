@@ -90,7 +90,7 @@ class PS_Protected_Posts {
 		}
 
 		// Check for REST API search
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST && isset( $query->query_vars['s'] ) ) {
+		if ( defined( 'REST_REQUEST' ) && REST_REQUEST && ! empty( $query->query_vars['s'] ) ) {
 			return true;
 		}
 

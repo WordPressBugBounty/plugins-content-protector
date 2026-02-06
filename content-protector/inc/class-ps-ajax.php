@@ -64,11 +64,19 @@ class PS_Ajax {
         // prepare validation.
         $remove_spaces = apply_filters( 'passster_remove_spaces_from_list', true );
         $type = sanitize_text_field( $_POST['type'] );
-        $post_id = sanitize_text_field( $_POST['post_id'] );
         $protection = sanitize_text_field( $_POST['protection'] );
+        $post_id = absint( $_POST['post_id'] );
         // check protection.
         if ( empty( $protection ) ) {
             $protection = false;
+        }
+        $parent_id = wp_get_post_parent_id( $post_id );
+        if ( $parent_id ) {
+            $activate_protection = get_post_meta( $parent_id, 'passster_activate_protection', true );
+            $children_protection = get_post_meta( $parent_id, 'passster_protect_child_pages', true );
+            if ( $activate_protection && $children_protection ) {
+                $post_id = $parent_id;
+            }
         }
         // prepare content.
         $post = get_post( $post_id );
@@ -267,7 +275,7 @@ class PS_Ajax {
      * @return void
      */
     public function add_public_scripts() {
-        $suffix = ( defined( SCRIPT_DEBUG ) && SCRIPT_DEBUG ? '' : '.min' );
+        $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' );
         $options = get_option( 'passster' );
         wp_enqueue_style(
             'passster-public',
@@ -279,8 +287,8 @@ class PS_Ajax {
         wp_enqueue_script(
             'passster-cookie',
             PASSSTER_URL . '/assets/public/cookie.js',
-            array('jquery'),
-            false,
+            array('jquery', 'wp-api-fetch'),
+            PASSSTER_VERSION,
             false
         );
         wp_enqueue_script(
@@ -301,6 +309,7 @@ class PS_Ajax {
         }
         $args = array(
             'ajax_url'     => admin_url() . 'admin-ajax.php',
+            'rest_url'     => get_rest_url(),
             'nonce'        => wp_create_nonce( 'ps-password-nonce' ),
             'hash_nonce'   => wp_create_nonce( 'ps-hash-nonce' ),
             'logout_nonce' => wp_create_nonce( 'ps-logout-nonce' ),
