@@ -57,7 +57,7 @@ class PS_Ajax {
         );
         // Check if input exists.
         if ( !empty( $_POST['input'] ) ) {
-            $input = sanitize_text_field( $_POST['input'] );
+            $input = wp_unslash( $_POST['input'] );
         } else {
             $input = '';
         }
