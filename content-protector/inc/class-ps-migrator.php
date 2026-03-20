@@ -172,9 +172,10 @@ class PS_Migrator {
 		$options['global_protection_id'] = get_option( 'passster_global_id' );
 
 		// Also add new options to avoid missing keys on migration.
-		$options['password_length']      = "6";
-		$options['include_uppercase']    = false;
-		$options['include_numbers']      = false;
+		$options['password_length']      = "12";
+		$options['include_uppercase']    = true;
+		$options['include_numbers']      = true;
+		$options['include_symbols']      = true;
 		$options['cookie_duration_unit'] = 'days';
 
 		return $options;

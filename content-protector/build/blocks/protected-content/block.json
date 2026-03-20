@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "passster/content-lock",
+  "version": "1.0.0",
+  "title": "Passster Protected Area",
+  "category": "passster",
+  "icon": "lock",
+  "description": "Wrap content blocks with password protection",
+  "keywords": [
+    "passster",
+    "password",
+    "protect",
+    "lock",
+    "private",
+    "members",
+    "content lock",
+    "area"
+  ],
+  "supports": {
+    "html": false,
+    "anchor": true,
+    "className": true,
+    "align": [
+      "wide",
+      "full"
+    ]
+  },
+  "attributes": {
+    "areaId": {
+      "type": "number",
+      "default": 0
+    },
+    "blockId": {
+      "type": "string",
+      "default": ""
+    },
+    "protectionType": {
+      "type": "string",
+      "default": "password"
+    },
+    "password": {
+      "type": "string",
+      "default": ""
+    },
+    "passwords": {
+      "type": "string",
+      "default": ""
+    },
+    "passwordList": {
+      "type": "number",
+      "default": 0
+    },
+    "areaTitle": {
+      "type": "string",
+      "default": ""
+    },
+    "userRestriction": {
+      "type": "boolean",
+      "default": false
+    },
+    "userRestrictionType": {
+      "type": "string",
+      "default": "username"
+    },
+    "userRestrictionValue": {
+      "type": "string",
+      "default": ""
+    },
+    "overwriteDefaults": {
+      "type": "boolean",
+      "default": false
+    },
+    "headline": {
+      "type": "string",
+      "default": ""
+    },
+    "instruction": {
+      "type": "string",
+      "default": ""
+    },
+    "placeholder": {
+      "type": "string",
+      "default": ""
+    },
+    "buttonLabel": {
+      "type": "string",
+      "default": ""
+    },
+    "formId": {
+      "type": "string",
+      "default": ""
+    },
+    "advancedOptions": {
+      "type": "boolean",
+      "default": false
+    },
+    "redirectUrl": {
+      "type": "string",
+      "default": ""
+    },
+    "hideForm": {
+      "type": "boolean",
+      "default": false
+    },
+    "scheduleEnabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "scheduleStart": {
+      "type": "string",
+      "default": ""
+    },
+    "scheduleEnd": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "textdomain": "content-protector",
+  "editorScript": "file:./index.js",
+  "editorStyle": "file:./editor.scss",
+  "render": "file:./render.php"
+}

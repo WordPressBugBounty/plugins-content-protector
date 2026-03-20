@@ -12,6 +12,14 @@ class PS_Public {
     private static $instance = null;
 
     /**
+     * Track which posts have already had their protection form rendered
+     * to prevent duplicate forms on page builders like Avada.
+     *
+     * @var array
+     */
+    private static $rendered_protection = array();
+
+    /**
      * Constructor for PS_Public
      */
     public function __construct() {
@@ -21,6 +29,7 @@ class PS_Public {
         add_filter( 'acf_the_content', array($this, 'filter_the_content') );
         add_filter( 'get_the_excerpt', array($this, 'filter_the_content') );
         add_action( 'template_redirect', array($this, 'check_global_proctection') );
+        add_action( 'wp_enqueue_scripts', array($this, 'add_public_scripts') );
     }
 
     /**
@@ -44,6 +53,30 @@ class PS_Public {
      * @return string
      */
     public function render_shortcode( array $atts, string $content = null ) : string {
+        // Schedule check for protected areas (PRO only).
+        if ( !empty( $atts['area'] ) && \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
+            $area_id = absint( $atts['area'] );
+            $schedule_enabled = get_post_meta( $area_id, 'passster_schedule_enabled', true );
+            if ( $schedule_enabled ) {
+                $schedule_start = get_post_meta( $area_id, 'passster_schedule_start', true );
+                $schedule_end = get_post_meta( $area_id, 'passster_schedule_end', true );
+                $now = current_time( 'timestamp' );
+                $in_schedule = true;
+                if ( !empty( $schedule_start ) && $now < strtotime( $schedule_start ) ) {
+                    $in_schedule = false;
+                }
+                if ( !empty( $schedule_end ) && $now > strtotime( $schedule_end ) ) {
+                    $in_schedule = false;
+                }
+                if ( !$in_schedule ) {
+                    $area = get_post( $area_id );
+                    if ( $area && ('publish' === $area->post_status || current_user_can( 'edit_post', $area_id )) ) {
+                        return apply_filters( 'the_content', str_replace( '{post-id}', get_the_id(), $area->post_content ) );
+                    }
+                    return $content ?? '';
+                }
+            }
+        }
         // check if valid before restrict anything.
         $valid = PS_Conditional::is_valid( $atts );
         $options = get_option( 'passster' );
@@ -96,7 +129,7 @@ class PS_Public {
         } elseif ( !empty( $atts['headline'] ) ) {
             $form = str_replace( '[PASSSTER_FORM_HEADLINE]', esc_html( $atts['headline'] ), $form );
         } else {
-            $form = str_replace( '[PASSSTER_FORM_HEADLINE]', $options['headline'], $form );
+            $form = str_replace( '[PASSSTER_FORM_HEADLINE]', esc_html( $options['headline'] ), $form );
         }
         // instruction.
         if ( !empty( $atts['instruction'] ) ) {
@@ -105,19 +138,19 @@ class PS_Public {
             $sanitized_instruction = wp_kses_post( $decoded_instruction );
             $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', $sanitized_instruction, $form );
         } else {
-            $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', $options['instruction'], $form );
+            $form = str_replace( '[PASSSTER_FORM_INSTRUCTIONS]', wp_kses_post( $options['instruction'] ), $form );
         }
         // placeholder.
         if ( !empty( $atts['placeholder'] ) ) {
             $form = str_replace( '[PASSSTER_PLACEHOLDER]', esc_attr( $atts['placeholder'] ), $form );
         } else {
-            $form = str_replace( '[PASSSTER_PLACEHOLDER]', $options['placeholder'], $form );
+            $form = str_replace( '[PASSSTER_PLACEHOLDER]', esc_attr( $options['placeholder'] ), $form );
         }
         // button.
         if ( !empty( $atts['button'] ) ) {
             $form = str_replace( '[PASSSTER_BUTTON_LABEL]', esc_html( $atts['button'] ), $form );
         } else {
-            $form = str_replace( '[PASSSTER_BUTTON_LABEL]', $options['button_label'], $form );
+            $form = str_replace( '[PASSSTER_BUTTON_LABEL]', esc_html( $options['button_label'] ), $form );
         }
         // modify id.
         if ( !empty( $atts['id'] ) ) {
@@ -125,6 +158,8 @@ class PS_Public {
         } else {
             $form = str_replace( '[PASSSTER_ID]', 'ps-' . wp_rand( 10, 1000 ), $form );
         }
+        // post id (per-form, for correct REST unlock on archive pages with multiple protected posts).
+        $form = str_replace( '[PASSSTER_POST_ID]', absint( get_the_ID() ), $form );
         // hide or not.
         if ( !empty( $atts['hide'] ) ) {
             $form = str_replace( '[PASSSTER_HIDE]', ' passster-hide', $form );
@@ -150,12 +185,22 @@ class PS_Public {
      */
     public function filter_the_content( string $content ) : string {
         $post_id = get_the_id();
+        // Prevent duplicate form rendering (fixes issue with Avada and other page builders)
+        if ( isset( self::$rendered_protection[$post_id] ) ) {
+            // Already rendered the protection form for this post, return protected content placeholder
+            // or the form that was already generated
+            return self::$rendered_protection[$post_id]['form'] ?? $content;
+        }
         $parent_id = wp_get_post_parent_id( $post_id );
         if ( $parent_id ) {
             $activate_protection = get_post_meta( $parent_id, 'passster_activate_protection', true );
             $children_protection = get_post_meta( $parent_id, 'passster_protect_child_pages', true );
             if ( $activate_protection && $children_protection ) {
                 $post_id = $parent_id;
+                // Check parent too
+                if ( isset( self::$rendered_protection[$post_id] ) ) {
+                    return self::$rendered_protection[$post_id]['form'] ?? $content;
+                }
             }
         }
         $activate_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
@@ -205,7 +250,13 @@ class PS_Public {
         }
         // replace placeholder with content.
         $shortcode = str_replace( '{content}', $content, $shortcode );
-        return do_shortcode( $shortcode );
+        // Generate the form
+        $rendered_form = do_shortcode( $shortcode );
+        // Store reference to prevent duplicate rendering (Avada, Elementor, etc.)
+        self::$rendered_protection[$post_id] = array(
+            'form' => $rendered_form,
+        );
+        return $rendered_form;
     }
 
     /**
@@ -262,6 +313,88 @@ class PS_Public {
                     exit;
                 }
             }
+        }
+    }
+
+    /**
+     * Enqueue scripts for shortcode
+     *
+     * @return void
+     */
+    public function add_public_scripts() {
+        $suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' );
+        $options = get_option( 'passster' );
+        // Only load CSS if not disabled (allows themes to style the form)
+        if ( empty( $options['disable_css'] ) ) {
+            wp_enqueue_style(
+                'passster-public',
+                PASSSTER_URL . '/assets/public/passster-public' . $suffix . '.css',
+                array(),
+                PASSSTER_VERSION,
+                'all'
+            );
+        }
+        wp_enqueue_script(
+            'passster-cookie',
+            PASSSTER_URL . '/assets/public/cookie.js',
+            array('jquery', 'wp-api-fetch'),
+            PASSSTER_VERSION,
+            false
+        );
+        wp_enqueue_script(
+            'passster-public',
+            PASSSTER_URL . '/assets/public/passster-public' . $suffix . '.js',
+            array('jquery', 'passster-cookie'),
+            PASSSTER_VERSION,
+            false
+        );
+        $shortcodes = array();
+        if ( isset( $options['third_party_shortcodes'] ) && !empty( $options['third_party_shortcodes'] ) ) {
+            $shortcodes_in_options = explode( ',', $options['third_party_shortcodes'] );
+            if ( is_array( $shortcodes_in_options ) ) {
+                foreach ( $shortcodes_in_options as $shortcode ) {
+                    $shortcodes[$shortcode] = do_shortcode( str_replace( '{post-id}', get_the_id(), $shortcode ) );
+                }
+            }
+        }
+        $args = array(
+            'ajax_url'     => admin_url() . 'admin-ajax.php',
+            'rest_url'     => get_rest_url(),
+            'nonce'        => wp_create_nonce( 'ps-password-nonce' ),
+            'hash_nonce'   => wp_create_nonce( 'ps-hash-nonce' ),
+            'logout_nonce' => wp_create_nonce( 'ps-logout-nonce' ),
+            'post_id'      => get_the_id(),
+            'shortcodes'   => $shortcodes,
+            'permalink'    => get_permalink( get_the_id() ),
+        );
+        if ( isset( $options['cookie_duration_unit'] ) ) {
+            $args['cookie_duration_unit'] = esc_html( $options['cookie_duration_unit'] );
+        } else {
+            $args['cookie_duration_unit'] = 'days';
+        }
+        if ( isset( $options['cookie_duration'] ) ) {
+            $args['cookie_duration'] = esc_html( $options['cookie_duration'] );
+        } else {
+            $args['cookie_duration'] = 1;
+        }
+        if ( isset( $options['disable_cookie'] ) ) {
+            $args['disable_cookie'] = esc_html( $options['disable_cookie'] );
+        } else {
+            $args['disable_cookie'] = false;
+        }
+        // Always use inline unlock (no page refresh) - uses REST API
+        $args['unlock_mode'] = true;
+        wp_localize_script( 'passster-public', 'ps_ajax', $args );
+        // if password type hint used.
+        $password_typing = $options['show_password'];
+        if ( $password_typing ) {
+            wp_enqueue_script(
+                'password-typing',
+                PASSSTER_URL . '/assets/public/password-typing.js',
+                array('jquery'),
+                PASSSTER_VERSION,
+                false
+            );
         }
     }
 
