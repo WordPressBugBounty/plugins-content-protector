@@ -34,7 +34,8 @@ class PS_Form {
         $password_form = ob_get_contents();
         ob_end_clean();
         $password_form_placeholders = array(
-            '[PASSSTER_AUTH]' => 'passster_password',
+            '[PASSSTER_AUTH]'  => 'passster_password',
+            '[PS_AJAX_LOADER]' => PASSSTER_URL . '/assets/public/ps-loader.svg',
         );
         $show_password = $options['show_password'];
         if ( $show_password ) {

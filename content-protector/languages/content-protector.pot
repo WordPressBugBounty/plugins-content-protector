@@ -1,271 +1,1109 @@
-# Copyright (C) 2026 WPChill
-# This file is distributed under the GPL-2.0+.
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Passster 4.2.29\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/content-protector\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Project-Id-Version: Passster\n"
+"POT-Creation-Date: 2023-05-29 10:22+0200\n"
+"PO-Revision-Date: 2018-09-07 11:53+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-02-12T14:39:00+00:00\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: content-protector\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"X-Generator: Poedit 3.3.1\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-Flags-xgettext: --add-comments=translators:\n"
+"X-Poedit-WPHeader: content-protector.php\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;"
+"esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;"
+"_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: node_modules\n"
+"X-Poedit-SearchPathExcluded-1: inc/admin/node_modules\n"
 
-#. Plugin Name of the plugin
-#: content-protector.php
-#: inc/admin/inc/class-ps-admin-settings.php:39
-#: inc/admin/inc/class-ps-meta.php:454
-msgid "Passster"
-msgstr ""
-
-#. Plugin URI of the plugin
-#: content-protector.php
-msgid "https://passster.com/"
-msgstr ""
-
-#. Description of the plugin
-#: content-protector.php
-msgid "A simple plugin to password-protect your complete website, some pages/posts or just parts of your content."
-msgstr ""
-
-#. Author of the plugin
-#: content-protector.php
-msgid "WPChill"
-msgstr ""
-
-#. Author URI of the plugin
-#: content-protector.php
-msgid "https://wpchill.com"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin-settings.php:50
-#: inc/admin/inc/class-ps-admin-settings.php:51
-#: inc/admin/inc/class-ps-upsells.php:46
-#: inc/admin/inc/class-ps-upsells.php:47
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:190
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:34
-msgid "Statistics"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin-settings.php:66
-msgid "Options"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin-settings.php:67
-#: inc/admin/inc/class-ps-meta.php:467
-msgid "Settings"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:72
-msgctxt "post type general name"
-msgid "Password Lists"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:73
-msgctxt "post type singular name"
-msgid "Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:74
-msgctxt "admin menu"
-msgid "Password Lists"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:75
-msgctxt "add new on admin bar"
-msgid "Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:77
-msgid "Add New Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:78
-msgid "New Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:79
-msgid "Edit Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:80
-msgid "View Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:81
-#: inc/admin/inc/class-ps-admin.php:384
-#: inc/admin/inc/class-ps-upsells.php:37
-#: inc/admin/inc/class-ps-upsells.php:38
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/meta/general/Metabox.jsx:594
-#: inc/admin/src/meta/general/Metabox.jsx:681
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:34
-msgid "Password Lists"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:82
-msgid "Search Password Lists"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:83
-msgid "Parent Password List"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:84
-msgid "No Password Lists found."
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:85
-msgid "No Password Lists found in Trash."
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:90
-msgid "Manageable password lists"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:115
-msgctxt "post type general name"
-msgid "Protected Areas"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:116
-msgctxt "post type singular name"
+#: build/area/index.js:1 inc/admin/build/index.js:1364
+#: inc/admin/build/index.js:2370 inc/class-ps-migrator.php:82
 msgid "Protected Area"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:117
-msgctxt "admin menu"
-msgid "Protected Areas"
+#: build/area/index.js:1
+msgid "Select protected area"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:118
-msgctxt "add new on admin bar"
-msgid "Protected Area"
+#: build/area/index.js:1
+msgid "No Area"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:120
-msgid "Add New Protected Area"
+#: build/area/index.js:1
+msgid "Get updated areas"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:121
-msgid "New Protected Area"
+#: build/area/index.js:1
+msgid "Create a new area"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:122
-msgid "Edit Protected Area"
+#: build/area/index.js:1 inc/admin/build/index.js:2877
+#: inc/class-ps-form.php:49
+msgid "Show Password"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:123
-msgid "View Protected Area"
+#: build/area/index.js:1
+msgid ""
+"This is just a preview. To actually unlock the content visit the post/page "
+"on your website."
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:124
-msgid "Protected Areas"
+#: inc/admin/build/index.js:872
+msgid "No Password List"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:125
-msgid "Search Protected Areas"
+#: inc/admin/build/index.js:894
+msgid "No Role"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:126
-msgid "Parent Protected Area"
+#: inc/admin/build/index.js:1197
+msgid "Activate Protection"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:127
-msgid "No Protected Areas found."
+#: inc/admin/build/index.js:1204
+msgid "Protect Child Pages"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:128
-msgid "No Protected Areas found in Trash."
+#: inc/admin/build/index.js:1212
+msgid "Protection Mode"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:133
-msgid "Manageable protected areas"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:172
-#: inc/admin/inc/class-ps-admin.php:298
-#: inc/admin/inc/class-ps-admin.php:382
-#: inc/class-ps-quick-edit.php:64
-#: inc/class-ps-quick-edit.php:71
+#: inc/admin/build/index.js:1215 inc/admin/build/index.js:1235
+#: inc/admin/build/index.js:1297 inc/admin/build/index.js:1541
+#: inc/admin/build/index.js:3728 inc/admin/inc/class-ps-admin.php:173
+#: inc/admin/inc/class-ps-admin.php:296 inc/admin/inc/class-ps-admin.php:380
+#: inc/class-ps-quick-edit.php:64 inc/class-ps-quick-edit.php:70
 #: inc/woocommerce/templates/emails/plain/pwc-email.php:33
 #: inc/woocommerce/templates/emails/pwc-email.php:35
-#: inc/admin/src/meta/general/Metabox.jsx:588
-#: inc/admin/src/meta/general/Metabox.jsx:607
-#: inc/admin/src/meta/general/Metabox.jsx:695
-#: inc/admin/src/meta/password-lists/Metabox.jsx:67
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:24
 msgid "Password"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:185
-#: inc/admin/inc/class-ps-admin.php:385
-#: inc/class-ps-quick-edit.php:65
-#: inc/class-ps-quick-edit.php:75
-#: inc/admin/src/meta/general/Metabox.jsx:590
-#: inc/admin/src/meta/general/Metabox.jsx:630
-#: inc/admin/src/meta/password-lists/Metabox.jsx:120
+#: inc/admin/build/index.js:1218 inc/admin/build/index.js:1255
+#: inc/admin/build/index.js:1581 inc/admin/inc/class-ps-admin.php:186
+#: inc/admin/inc/class-ps-admin.php:383 inc/class-ps-quick-edit.php:65
+#: inc/class-ps-quick-edit.php:74
 msgid "Passwords"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:186
-#: inc/admin/src/meta/password-lists/Metabox.jsx:157
-msgid "Expiration"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:280
-msgid "On"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:296
-msgid "Shortcode"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:297
-#: inc/class-ps-quick-edit.php:62
-msgid "Protection Type"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:299
-msgid "Redirect"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:302
-msgid "User/User-Role"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:329
-#: inc/admin/inc/class-ps-admin.php:338
-msgid "Copy Shortcode"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:335
-#: inc/admin/src/settings/pages/Utilities.jsx:108
-msgid "Copied!"
-msgstr ""
-
-#: inc/admin/inc/class-ps-admin.php:383
-#: inc/class-ps-quick-edit.php:66
-#: inc/class-ps-quick-edit.php:79
-#: inc/woocommerce/class-ps-wc-meta.php:122
+#: inc/admin/build/index.js:1221 inc/admin/build/index.js:1281
+#: inc/admin/inc/class-ps-admin.php:381 inc/class-ps-quick-edit.php:66
+#: inc/class-ps-quick-edit.php:78 inc/woocommerce/class-ps-wc-meta.php:122
 #: inc/woocommerce/class-ps-wc-meta.php:254
-#: inc/admin/src/meta/general/Metabox.jsx:592
-#: inc/admin/src/meta/general/Metabox.jsx:668
 msgid "Password List"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:386
-msgid "reCaptcha"
+#: inc/admin/build/index.js:1224 inc/admin/build/index.js:1289
+#: inc/admin/inc/class-ps-admin.php:82 inc/admin/inc/class-ps-admin.php:382
+msgid "Password Lists"
 msgstr ""
 
-#: inc/admin/inc/class-ps-admin.php:387
-#: inc/admin/src/meta/general/Metabox.jsx:598
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:39
-msgid "Turnstile"
+#: inc/admin/build/index.js:1227 inc/admin/build/index.js:3127
+msgid "reCAPTCHA"
+msgstr ""
+
+#: inc/admin/build/index.js:1254 inc/admin/build/index.js:1280
+#: inc/admin/build/index.js:1316 inc/woocommerce/class-ps-wc-meta.php:112
+#: inc/woocommerce/class-ps-wc-meta.php:234
+msgid "Generate password"
+msgstr ""
+
+#: inc/admin/build/index.js:1263 inc/admin/build/index.js:1592
+msgid "Number of passwords to generate"
+msgstr ""
+
+#: inc/admin/build/index.js:1264
+msgid "How many passwords do you want to generate?"
+msgstr ""
+
+#: inc/admin/build/index.js:1319
+msgid "User Restriction"
+msgstr ""
+
+#: inc/admin/build/index.js:1326
+msgid "Choose User Restriction Type"
+msgstr ""
+
+#: inc/admin/build/index.js:1328 inc/admin/build/index.js:1347
+msgid "Username"
+msgstr ""
+
+#: inc/admin/build/index.js:1331 inc/admin/build/index.js:1339
+msgid "User Role"
+msgstr ""
+
+#: inc/admin/build/index.js:1356
+msgid "Overwrite Defaults"
+msgstr ""
+
+#: inc/admin/build/index.js:1363 inc/admin/build/index.js:2885
+#: inc/admin/build/index.js:3261
+msgid "Headline"
+msgstr ""
+
+#: inc/admin/build/index.js:1365 inc/admin/build/index.js:3262
+msgid "This is the headline of your password-protection form."
+msgstr ""
+
+#: inc/admin/build/index.js:1371 inc/admin/build/index.js:2923
+#: inc/admin/build/index.js:3268
+msgid "Instruction"
+msgstr ""
+
+#: inc/admin/build/index.js:1372 inc/admin/build/index.js:2371
+#: inc/class-ps-migrator.php:83
+msgid ""
+"This content is password-protected. Please verify with a password to unlock "
+"the content."
+msgstr ""
+
+#: inc/admin/build/index.js:1373 inc/admin/build/index.js:3269
+msgid ""
+"The instruction text appears before the password input field. Use it for "
+"hints or additional explanation."
+msgstr ""
+
+#: inc/admin/build/index.js:1379 inc/admin/build/index.js:3275
+msgid "Placeholder"
+msgstr ""
+
+#: inc/admin/build/index.js:1380 inc/admin/build/index.js:2372
+#: inc/class-ps-migrator.php:84
+msgid "Enter your password.."
+msgstr ""
+
+#: inc/admin/build/index.js:1381 inc/admin/build/index.js:3276
+msgid "Edit the placeholder text of the password field."
+msgstr ""
+
+#: inc/admin/build/index.js:1387 inc/admin/build/index.js:3289
+msgid "Button Label"
+msgstr ""
+
+#: inc/admin/build/index.js:1388 inc/admin/build/index.js:2374
+#: inc/class-ps-migrator.php:86
+#: inc/woocommerce/templates/emails/plain/pwc-email.php:34
+#: inc/woocommerce/templates/emails/pwc-email.php:36
+msgid "Unlock"
+msgstr ""
+
+#: inc/admin/build/index.js:1389 inc/admin/build/index.js:3290
+msgid "Edit the text that appears on the button."
+msgstr ""
+
+#: inc/admin/build/index.js:1395
+msgid "Unique ID"
+msgstr ""
+
+#: inc/admin/build/index.js:1396
+msgid "my-custom-id"
+msgstr ""
+
+#: inc/admin/build/index.js:1397
+msgid "Give your password form a unique ID."
+msgstr ""
+
+#: inc/admin/build/index.js:1405
+msgid "Misc Settings"
+msgstr ""
+
+#: inc/admin/build/index.js:1412
+msgid "Hide/Show"
+msgstr ""
+
+#: inc/admin/build/index.js:1414 inc/class-ps-conditional.php:315
+msgid "No"
+msgstr ""
+
+#: inc/admin/build/index.js:1417 inc/class-ps-conditional.php:313
+msgid "Yes"
+msgstr ""
+
+#: inc/admin/build/index.js:1421
+msgid ""
+"Hide this password form. It will not show the password form, but it will "
+"show the unlocked content."
+msgstr ""
+
+#: inc/admin/build/index.js:1426 inc/admin/inc/class-ps-admin.php:297
+msgid "Redirect"
+msgstr ""
+
+#: inc/admin/build/index.js:1429
+msgid "Redirect the user to this URL once they submit the correct password."
+msgstr ""
+
+#: inc/admin/build/index.js:1441 inc/admin/build/index.js:3625
+#: inc/admin/inc/class-ps-admin.php:333
+msgid "Copied!"
+msgstr ""
+
+#: inc/admin/build/index.js:1441 inc/admin/inc/class-ps-admin.php:327
+#: inc/admin/inc/class-ps-admin.php:336
+msgid "Copy Shortcode"
+msgstr ""
+
+#: inc/admin/build/index.js:1446 inc/admin/build/index.js:1451
+#: inc/admin/build/index.js:1456
+msgid "Copied Link!"
+msgstr ""
+
+#: inc/admin/build/index.js:1446 inc/admin/build/index.js:1451
+#: inc/admin/build/index.js:1456
+msgid "Copy Unlock Link"
+msgstr ""
+
+#: inc/admin/build/index.js:1545 inc/admin/build/index.js:1617
+msgid "Number of usages"
+msgstr ""
+
+#: inc/admin/build/index.js:1549
+msgid "Expires in"
+msgstr ""
+
+#: inc/admin/build/index.js:1553
+msgid "Expired"
+msgstr ""
+
+#: inc/admin/build/index.js:1580
+msgid "Add Passwords"
+msgstr ""
+
+#: inc/admin/build/index.js:1582
+msgid "password1,password2,password3"
+msgstr ""
+
+#: inc/admin/build/index.js:1584
+msgid "Add a comma-separated list of passwords."
+msgstr ""
+
+#: inc/admin/build/index.js:1593
+msgid ""
+"How many passwords do you want to generate? We automatically add the "
+"generated passwords to your password list."
+msgstr ""
+
+#: inc/admin/build/index.js:1606
+msgid "Generate passwords"
+msgstr ""
+
+#: inc/admin/build/index.js:1610 inc/admin/inc/class-ps-admin.php:187
+msgid "Expiration"
+msgstr ""
+
+#: inc/admin/build/index.js:1611
+msgid "Choose an expiration mode"
+msgstr ""
+
+#: inc/admin/build/index.js:1614 inc/admin/build/index.js:3736
+msgid "First Usage"
+msgstr ""
+
+#: inc/admin/build/index.js:1620
+msgid "By Interval"
+msgstr ""
+
+#: inc/admin/build/index.js:1643
+msgid "Expire Password after usage"
+msgstr ""
+
+#: inc/admin/build/index.js:1644
+msgid ""
+"The password will be immediately removed from the password list after it's "
+"first usage."
+msgstr ""
+
+#: inc/admin/build/index.js:1653
+msgid "Expire after number of usage"
+msgstr ""
+
+#: inc/admin/build/index.js:1654
+msgid ""
+"The password will be removed from the password list after the number of "
+"usage is reached."
+msgstr ""
+
+#: inc/admin/build/index.js:1665
+msgid "Expire after a time interval"
+msgstr ""
+
+#: inc/admin/build/index.js:1666
+msgid ""
+"Expire the password after a specific time interval. It starts tracking once "
+"the password is used for the first time."
+msgstr ""
+
+#: inc/admin/build/index.js:1674
+msgid "Time Unit"
+msgstr ""
+
+#: inc/admin/build/index.js:1677 inc/admin/build/index.js:2613
+msgid "Days"
+msgstr ""
+
+#: inc/admin/build/index.js:1680 inc/admin/build/index.js:2616
+msgid "Hours"
+msgstr ""
+
+#: inc/admin/build/index.js:1683
+msgid "Weeks"
+msgstr ""
+
+#: inc/admin/build/index.js:1686
+msgid "Months"
+msgstr ""
+
+#: inc/admin/build/index.js:1694
+msgid "Usage"
+msgstr ""
+
+#: inc/admin/build/index.js:1701
+msgid "Reset Expiration Statistics"
+msgstr ""
+
+#: inc/admin/build/index.js:1710
+msgid "Expiration Statistics resetted successfully."
+msgstr ""
+
+#: inc/admin/build/index.js:1829 inc/admin/build/index.js:2815
+msgid "Form width"
+msgstr ""
+
+#: inc/admin/build/index.js:1919 inc/admin/build/index.js:1981
+#: inc/admin/build/index.js:2043 inc/admin/build/index.js:2105
+#: inc/admin/build/index.js:2167 inc/admin/build/index.js:2229
+#: inc/admin/build/index.js:2291 inc/admin/build/index.js:2684
+#: inc/admin/build/index.js:3075 inc/admin/build/index.js:3204
+#: inc/admin/build/index.js:3336 inc/admin/build/index.js:3473
+msgid "Save Settings"
+msgstr ""
+
+#: inc/admin/build/index.js:1923 inc/admin/build/index.js:1985
+#: inc/admin/build/index.js:2047 inc/admin/build/index.js:2109
+#: inc/admin/build/index.js:2171 inc/admin/build/index.js:2233
+#: inc/admin/build/index.js:2295
+msgid "General"
+msgstr ""
+
+#: inc/admin/build/index.js:1927 inc/admin/build/index.js:1989
+#: inc/admin/build/index.js:2051 inc/admin/build/index.js:2113
+#: inc/admin/build/index.js:2175 inc/admin/build/index.js:2237
+#: inc/admin/build/index.js:2299 inc/admin/build/index.js:2809
+msgid "Design"
+msgstr ""
+
+#: inc/admin/build/index.js:1931 inc/admin/build/index.js:1993
+#: inc/admin/build/index.js:2055 inc/admin/build/index.js:2117
+#: inc/admin/build/index.js:2179 inc/admin/build/index.js:2241
+#: inc/admin/build/index.js:2303
+msgid "Advanced"
+msgstr ""
+
+#: inc/admin/build/index.js:1935 inc/admin/build/index.js:1997
+#: inc/admin/build/index.js:2059 inc/admin/build/index.js:2121
+#: inc/admin/build/index.js:2183 inc/admin/build/index.js:2245
+#: inc/admin/build/index.js:2307 inc/admin/build/index.js:3423
+msgid "Global Protection"
+msgstr ""
+
+#: inc/admin/build/index.js:1939 inc/admin/build/index.js:2001
+#: inc/admin/build/index.js:2063 inc/admin/build/index.js:2125
+#: inc/admin/build/index.js:2187 inc/admin/build/index.js:2249
+#: inc/admin/build/index.js:2311
+msgid "External Services"
+msgstr ""
+
+#: inc/admin/build/index.js:1943 inc/admin/build/index.js:2005
+#: inc/admin/build/index.js:2067 inc/admin/build/index.js:2129
+#: inc/admin/build/index.js:2191 inc/admin/build/index.js:2253
+#: inc/admin/build/index.js:2315
+msgid "System Status"
+msgstr ""
+
+#: inc/admin/build/index.js:1947 inc/admin/build/index.js:2009
+#: inc/admin/build/index.js:2071 inc/admin/build/index.js:2133
+#: inc/admin/build/index.js:2195 inc/admin/build/index.js:2257
+#: inc/admin/build/index.js:2319
+msgid "Utilities"
+msgstr ""
+
+#: inc/admin/build/index.js:1950 inc/admin/build/index.js:2012
+#: inc/admin/build/index.js:2074 inc/admin/build/index.js:2136
+#: inc/admin/build/index.js:2198 inc/admin/build/index.js:2260
+#: inc/admin/build/index.js:2322
+msgid "Documentation"
+msgstr ""
+
+#: inc/admin/build/index.js:1955 inc/admin/build/index.js:2017
+#: inc/admin/build/index.js:2079 inc/admin/build/index.js:2141
+#: inc/admin/build/index.js:2203 inc/admin/build/index.js:2265
+#: inc/admin/build/index.js:2327
+msgid "Changelog"
+msgstr ""
+
+#: inc/admin/build/index.js:1963 inc/admin/build/index.js:2025
+#: inc/admin/build/index.js:2087 inc/admin/build/index.js:2149
+#: inc/admin/build/index.js:2211 inc/admin/build/index.js:2273
+#: inc/admin/build/index.js:2335
+msgid "Passster Pro"
+msgstr ""
+
+#: inc/admin/build/index.js:2373 inc/class-ps-migrator.php:85
+msgid "Sorry, there was an error."
+msgstr ""
+
+#: inc/admin/build/index.js:2585
+msgid "Usage Mode"
+msgstr ""
+
+#: inc/admin/build/index.js:2586
+msgid "Use Ajax"
+msgstr ""
+
+#: inc/admin/build/index.js:2587
+msgid ""
+"You are using Ajax for unlocking content. Make sure to add any shortcodes "
+"of a page into the Third-Party-Shortcodes setting."
+msgstr ""
+
+#: inc/admin/build/index.js:2587
+msgid ""
+"Unlock content with Ajax (no reload). It is not recommended for entire "
+"pages or when using a Third-Party Page Builder."
+msgstr ""
+
+#: inc/admin/build/index.js:2594
+msgid "Disable Cookie"
+msgstr ""
+
+#: inc/admin/build/index.js:2595
+msgid ""
+"Each time a user visits the protected content it needs to be unlocked again."
+msgstr ""
+
+#: inc/admin/build/index.js:2595
+msgid ""
+"The password is stored in a cookie. Next time the content is unlocked "
+"automatically."
+msgstr ""
+
+#: inc/admin/build/index.js:2602
+msgid "Cookie Lifetime"
+msgstr ""
+
+#: inc/admin/build/index.js:2603
+msgid ""
+"The lifetime of your cookie is based on this number and the lifetime unit "
+"below. Once a cookie expires, the user will need to enter the password "
+"again."
+msgstr ""
+
+#: inc/admin/build/index.js:2610
+msgid "Cookie Lifetime Unit"
+msgstr ""
+
+#: inc/admin/build/index.js:2619
+msgid "Minutes"
+msgstr ""
+
+#: inc/admin/build/index.js:2626
+msgid "Third-Party-Shortcodes"
+msgstr ""
+
+#: inc/admin/build/index.js:2627
+msgid ""
+"Add a comma separated list of shortcodes you want to use inside of "
+"Passster. You can also use {post-id} to add the ID of the current page/post "
+"dynamically. "
+msgstr ""
+
+#: inc/admin/build/index.js:2634
+msgid "Concurrent Usage"
+msgstr ""
+
+#: inc/admin/build/index.js:2635
+msgid "Track Concurrent Usage"
+msgstr ""
+
+#: inc/admin/build/index.js:2636
+msgid "Track and prevent concurrent usage of the same password."
+msgstr ""
+
+#: inc/admin/build/index.js:2636
+msgid ""
+"Do not track concurrent usages. A password can be used without any "
+"limitations to unlock your content."
+msgstr ""
+
+#: inc/admin/build/index.js:2643
+msgid "Number of Allowed Concurrent Usages"
+msgstr ""
+
+#: inc/admin/build/index.js:2644
+msgid ""
+"Limit the number of logins with one password at the same time. It will "
+"create a custom database table to track the usage of the passwords. It uses "
+"the current IP of the user to recognize them. You can use the shortcode "
+"[passster-logout] to handle the logout."
+msgstr ""
+
+#: inc/admin/build/index.js:2653
+msgid "Reset Concurrent Data"
+msgstr ""
+
+#: inc/admin/build/index.js:2661
+msgid "Concurrent data resetted successfully."
+msgstr ""
+
+#: inc/admin/build/index.js:2663 inc/admin/inc/class-ps-admin-settings.php:48
+#: inc/admin/inc/class-ps-admin-settings.php:49
+msgid "Statistics"
+msgstr ""
+
+#: inc/admin/build/index.js:2664
+msgid "Track IP"
+msgstr ""
+
+#: inc/admin/build/index.js:2665
+msgid "Track the IP of the user in statistics."
+msgstr ""
+
+#: inc/admin/build/index.js:2665
+msgid "Do not track the IP of the user in statistics"
+msgstr ""
+
+#: inc/admin/build/index.js:2679 inc/admin/build/index.js:3070
+#: inc/admin/build/index.js:3199 inc/admin/build/index.js:3331
+#: inc/admin/build/index.js:3468
+msgid "Settings saved successfully."
+msgstr ""
+
+#: inc/admin/build/index.js:2780
+msgid "Small"
+msgstr ""
+
+#: inc/admin/build/index.js:2784
+msgid "Medium"
+msgstr ""
+
+#: inc/admin/build/index.js:2788
+msgid "Big"
+msgstr ""
+
+#: inc/admin/build/index.js:2809
+msgid "Edit the overall design of your password form on this page."
+msgstr ""
+
+#: inc/admin/build/index.js:2810
+msgid "Password Form"
+msgstr ""
+
+#: inc/admin/build/index.js:2824
+msgid "Form position"
+msgstr ""
+
+#: inc/admin/build/index.js:2825
+msgid "Center Form"
+msgstr ""
+
+#: inc/admin/build/index.js:2826
+msgid "Center the password form in the middle of the page."
+msgstr ""
+
+#: inc/admin/build/index.js:2826
+msgid "Do not center the password form."
+msgstr ""
+
+#: inc/admin/build/index.js:2836 inc/admin/build/index.js:2967
+msgid "Background Color"
+msgstr ""
+
+#: inc/admin/build/index.js:2844 inc/admin/build/index.js:3005
+msgid "Spacing Controls"
+msgstr ""
+
+#: inc/admin/build/index.js:2845 inc/admin/build/index.js:3006
+msgid "Margin"
+msgstr ""
+
+#: inc/admin/build/index.js:2847 inc/admin/build/index.js:3008
+msgid ""
+"Margin is the space around an element. The higher the value the more space "
+"is around the password form."
+msgstr ""
+
+#: inc/admin/build/index.js:2855 inc/admin/build/index.js:3016
+msgid "Padding"
+msgstr ""
+
+#: inc/admin/build/index.js:2857 inc/admin/build/index.js:3018
+msgid ""
+"Padding is the space between an element and its content. The higher the "
+"value the more space is inside the password form."
+msgstr ""
+
+#: inc/admin/build/index.js:2865 inc/admin/build/index.js:3026
+msgid "Border Radius"
+msgstr ""
+
+#: inc/admin/build/index.js:2871
+msgid ""
+"The higher the border radius the more rounded are the corners of the form."
+msgstr ""
+
+#: inc/admin/build/index.js:2878
+msgid "Add a checkbox to show the password before submitting."
+msgstr ""
+
+#: inc/admin/build/index.js:2878
+msgid "Do not add a checkbox to view the password"
+msgstr ""
+
+#: inc/admin/build/index.js:2889 inc/admin/build/index.js:2927
+#: inc/admin/build/index.js:3039
+msgid "Font Controls"
+msgstr ""
+
+#: inc/admin/build/index.js:2893 inc/admin/build/index.js:2931
+msgid "Color"
+msgstr ""
+
+#: inc/admin/build/index.js:2911 inc/admin/build/index.js:2949
+#: inc/admin/build/index.js:3051
+msgid "Font weight"
+msgstr ""
+
+#: inc/admin/build/index.js:2959
+msgid "Button"
+msgstr ""
+
+#: inc/admin/build/index.js:2963
+msgid "Color Controls"
+msgstr ""
+
+#: inc/admin/build/index.js:2977
+msgid "Font Color"
+msgstr ""
+
+#: inc/admin/build/index.js:2987
+msgid "Background Color (Hover)"
+msgstr ""
+
+#: inc/admin/build/index.js:2997
+msgid "Font Color (Hover)"
+msgstr ""
+
+#: inc/admin/build/index.js:3028
+msgid ""
+"The higher the border radius the more rounded are the corners of the button."
+msgstr ""
+
+#: inc/admin/build/index.js:3128
+msgid "reCAPTCHA Type"
+msgstr ""
+
+#: inc/admin/build/index.js:3131
+msgid "Google reCAPTCHA V2 (Checkbox)"
+msgstr ""
+
+#: inc/admin/build/index.js:3134
+msgid "Google reCAPTCHA V3 (invisible CAPTCHA)"
+msgstr ""
+
+#: inc/admin/build/index.js:3137
+msgid "hCAPTCHA"
+msgstr ""
+
+#: inc/admin/build/index.js:3145
+msgid "Site Key"
+msgstr ""
+
+#: inc/admin/build/index.js:3146
+msgid "Add your reCAPTCHA Site Key here."
+msgstr ""
+
+#: inc/admin/build/index.js:3152
+msgid "Secret"
+msgstr ""
+
+#: inc/admin/build/index.js:3153
+msgid "Add your reCAPTCHA Secret here."
+msgstr ""
+
+#: inc/admin/build/index.js:3159
+msgid "Language"
+msgstr ""
+
+#: inc/admin/build/index.js:3160
+msgid ""
+"Add your language here. For example, ‘en’ for English or ‘de’ for German."
+msgstr ""
+
+#: inc/admin/build/index.js:3166
+msgid "reCAPTCHA is only available within the pro version of Passster."
+msgstr ""
+
+#: inc/admin/build/index.js:3174 inc/admin/build/index.js:3191
+msgid "Get Passster Pro"
+msgstr ""
+
+#: inc/admin/build/index.js:3176
+msgid "Bit.ly"
+msgstr ""
+
+#: inc/admin/build/index.js:3177
+msgid "Bit.ly Access Token"
+msgstr ""
+
+#: inc/admin/build/index.js:3178
+msgid "Add your Bit.ly access token here."
+msgstr ""
+
+#: inc/admin/build/index.js:3183
+msgid "Bit.ly is only available within the pro version of Passster."
+msgstr ""
+
+#: inc/admin/build/index.js:3260
+msgid "Form Labels & Description"
+msgstr ""
+
+#: inc/admin/build/index.js:3260
+msgid ""
+"Edit the text that’s used within the password form on this page. You can "
+"overwrite these settings individually per area/page."
+msgstr ""
+
+#: inc/admin/build/index.js:3282
+msgid "Error"
+msgstr ""
+
+#: inc/admin/build/index.js:3283
+msgid ""
+"Edit the error message that appears if a user enters the wrong password."
+msgstr ""
+
+#: inc/admin/build/index.js:3297
+msgid "Generating Passwords"
+msgstr ""
+
+#: inc/admin/build/index.js:3298
+msgid "Password length"
+msgstr ""
+
+#: inc/admin/build/index.js:3299
+msgid "Set a default length for generated passwords."
+msgstr ""
+
+#: inc/admin/build/index.js:3306
+msgid "Include uppercase characters"
+msgstr ""
+
+#: inc/admin/build/index.js:3307
+msgid "Include uppercase characters in passwords."
+msgstr ""
+
+#: inc/admin/build/index.js:3307
+msgid "Generate passwords only with lowercase."
+msgstr ""
+
+#: inc/admin/build/index.js:3314
+msgid "Include numbers"
+msgstr ""
+
+#: inc/admin/build/index.js:3315
+msgid "Include numbers in passwords."
+msgstr ""
+
+#: inc/admin/build/index.js:3315
+msgid "Generate passwords without numbers."
+msgstr ""
+
+#: inc/admin/build/index.js:3405
+msgid "No page selected"
+msgstr ""
+
+#: inc/admin/build/index.js:3424
+msgid "Activate Global Protection"
+msgstr ""
+
+#: inc/admin/build/index.js:3425
+msgid "Global Password Protection is activated."
+msgstr ""
+
+#: inc/admin/build/index.js:3425
+msgid "Global Password Protection is deactivated."
+msgstr ""
+
+#: inc/admin/build/index.js:3432
+msgid "Select a Page"
+msgstr ""
+
+#: inc/admin/build/index.js:3434
+msgid ""
+"Visitors who still need to submit the correct password will be redirected "
+"to this page. Please follow the link below to set it up."
+msgstr ""
+
+#: inc/admin/build/index.js:3443
+msgid "Customize the Global Protection Page"
+msgstr ""
+
+#: inc/admin/build/index.js:3447
+msgid "Exclude pages"
+msgstr ""
+
+#: inc/admin/build/index.js:3458
+msgid ""
+"Select pages that should not be affected by global protection. This can be "
+"useful for information about data privacy or terms of use pages."
+msgstr ""
+
+#: inc/admin/build/index.js:3604
+msgid "Migrate Settings"
+msgstr ""
+
+#: inc/admin/build/index.js:3604
+msgid ""
+"Migrate all of your customizer settings and options within version 4 of "
+"Passster."
+msgstr ""
+
+#: inc/admin/build/index.js:3607
+msgid "Migrate settings"
+msgstr ""
+
+#: inc/admin/build/index.js:3615
+msgid "Settings migration successfully."
+msgstr ""
+
+#: inc/admin/build/index.js:3617
+msgid "Export"
+msgstr ""
+
+#: inc/admin/build/index.js:3620
+msgid "Export Settings"
+msgstr ""
+
+#: inc/admin/build/index.js:3625
+msgid "Copy export data"
+msgstr ""
+
+#: inc/admin/build/index.js:3627
+msgid "Import"
+msgstr ""
+
+#: inc/admin/build/index.js:3627
+msgid ""
+"Paste in the JSON string you got from your export to import all settings "
+"for the plugin."
+msgstr ""
+
+#: inc/admin/build/index.js:3635
+msgid "Import Settings"
+msgstr ""
+
+#: inc/admin/build/index.js:3643
+msgid "Settings imported successfully."
+msgstr ""
+
+#: inc/admin/build/index.js:3645
+msgid "Reset Plugin Data"
+msgstr ""
+
+#: inc/admin/build/index.js:3645
+msgid ""
+"By clicking the following button, you will reset all plugin settings. This "
+"can be useful if you want to import a new set of settings or you want a "
+"fresh start."
+msgstr ""
+
+#: inc/admin/build/index.js:3648
+msgid "Reset Plugin Settings"
+msgstr ""
+
+#: inc/admin/build/index.js:3656
+msgid "Settings resetted successfully."
+msgstr ""
+
+#: inc/admin/build/index.js:3732
+msgid "Number of Usages"
+msgstr ""
+
+#: inc/admin/build/index.js:3740
+msgid "IP Address"
+msgstr ""
+
+#: inc/admin/build/index.js:3743
+msgid "Browser"
+msgstr ""
+
+#: inc/admin/build/index.js:3758
+msgid "Reset Statistics"
+msgstr ""
+
+#: inc/admin/build/index.js:3766
+msgid "Statistics resetted successfully."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+#: inc/admin/inc/class-ps-admin-settings.php:38
+#: inc/admin/inc/class-ps-meta.php:322
+msgid "Passster"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin-settings.php:56
+msgid "Options"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin-settings.php:57
+#: inc/admin/inc/class-ps-meta.php:328
+msgid "Settings"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:73
+msgctxt "post type general name"
+msgid "Password Lists"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:74
+msgctxt "post type singular name"
+msgid "Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:75
+msgctxt "admin menu"
+msgid "Password Lists"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:76
+msgctxt "add new on admin bar"
+msgid "Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:77 inc/admin/inc/class-ps-admin.php:120
+msgctxt "content-protector"
+msgid "Add New"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:78
+msgid "Add New Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:79
+msgid "New Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:80
+msgid "Edit Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:81
+msgid "View Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:83
+msgid "Search Password Lists"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:84
+msgid "Parent Password List"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:85
+msgid "No Password Lists found."
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:86
+msgid "No Password Lists found in Trash."
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:91
+msgid "Manageable password lists"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:116
+msgctxt "post type general name"
+msgid "Protected Areas"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:117
+msgctxt "post type singular name"
+msgid "Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:118
+msgctxt "admin menu"
+msgid "Protected Areas"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:119
+msgctxt "add new on admin bar"
+msgid "Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:121
+msgid "Add New Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:122
+msgid "New Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:123
+msgid "Edit Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:124
+msgid "View Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:125
+msgid "Protected Areas"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:126
+msgid "Search Protected Areas"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:127
+msgid "Parent Protected Area"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:128
+msgid "No Protected Areas found."
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:129
+msgid "No Protected Areas found in Trash."
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:134
+msgid "Manageable protected areas"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:278
+msgid "On"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:294
+msgid "Shortcode"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:295 inc/class-ps-quick-edit.php:62
+msgid "Protection Type"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:300
+msgid "User/User-Role"
+msgstr ""
+
+#: inc/admin/inc/class-ps-admin.php:384
+msgid "ReCaptcha"
 msgstr ""
 
 #: inc/admin/inc/class-ps-statistics.php:201
@@ -273,72 +1111,17 @@ msgid "Unknown"
 msgstr ""
 
 #: inc/class-ps-concurrent.php:54
-msgid "You reached the limit of concurrent logins. Please logout on one of the devices."
+msgid ""
+"You reached the limit of concurrent logins. Please logout on one of the "
+"devices."
 msgstr ""
 
-#: inc/class-ps-concurrent.php:206
+#: inc/class-ps-concurrent.php:205
 msgid "Logout"
-msgstr ""
-
-#: inc/class-ps-conditional.php:397
-msgid "Yes"
-msgstr ""
-
-#: inc/class-ps-conditional.php:399
-msgid "No"
-msgstr ""
-
-#: inc/class-ps-form.php:49
-#: build/area/index.js:1
-#: inc/admin/src/settings/pages/DesignSettings.jsx:237
-#: src/area/Edit.jsx:216
-msgid "Show Password"
-msgstr ""
-
-#: inc/class-ps-migrator.php:83
-#: build/area/index.js:1
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:795
-#: inc/admin/src/settings/context/SettingsContext.jsx:11
-#: src/area/Edit.jsx:152
-msgid "Protected Area"
-msgstr ""
-
-#: inc/class-ps-migrator.php:84
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:804
-#: inc/admin/src/settings/context/SettingsContext.jsx:12
-msgid "This content is password-protected. Please verify with a password to unlock the content."
-msgstr ""
-
-#: inc/class-ps-migrator.php:85
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:813
-#: inc/admin/src/settings/context/SettingsContext.jsx:13
-msgid "Enter your password.."
-msgstr ""
-
-#: inc/class-ps-migrator.php:86
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/context/SettingsContext.jsx:14
-msgid "Sorry, there was an error."
-msgstr ""
-
-#: inc/class-ps-migrator.php:87
-#: inc/woocommerce/templates/emails/plain/pwc-email.php:35
-#: inc/woocommerce/templates/emails/pwc-email.php:37
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:822
-#: inc/admin/src/settings/context/SettingsContext.jsx:15
-msgid "Unlock"
 msgstr ""
 
 #: inc/class-ps-quick-edit.php:59
 msgid "Overwrite Protection"
-msgstr ""
-
-#: inc/class-ps-rest-handler.php:73
-msgid "You are not allowed to access this content. Please authenticate with a password first."
 msgstr ""
 
 #: inc/woocommerce/class-ps-wc-email-template.php:27
@@ -355,7 +1138,8 @@ msgstr ""
 
 #: inc/woocommerce/class-ps-wc-email-template.php:32
 #, php-format
-msgctxt "default email subject for sending customers their personal passsword."
+msgctxt ""
+"default email subject for sending customers their personal passsword."
 msgid "[%s] Your personal password"
 msgstr ""
 
@@ -369,14 +1153,6 @@ msgstr ""
 msgid "Choose a page"
 msgstr ""
 
-#: inc/woocommerce/class-ps-wc-meta.php:112
-#: inc/woocommerce/class-ps-wc-meta.php:234
-#: inc/admin/src/meta/general/Metabox.jsx:623
-#: inc/admin/src/meta/general/Metabox.jsx:659
-#: inc/admin/src/meta/general/Metabox.jsx:711
-msgid "Generate password"
-msgstr ""
-
 #: inc/woocommerce/class-ps-wc-meta.php:114
 #: inc/woocommerce/class-ps-wc-meta.php:237
 msgid "Passster will generate a password after this product was purchased."
@@ -384,7 +1160,8 @@ msgstr ""
 
 #: inc/woocommerce/class-ps-wc-meta.php:125
 #: inc/woocommerce/class-ps-wc-meta.php:258
-msgid "Passster will add the generated passsword to the selected password list."
+msgid ""
+"Passster will add the generated passsword to the selected password list."
 msgstr ""
 
 #: inc/woocommerce/class-ps-wc-meta.php:135
@@ -394,7 +1171,9 @@ msgstr ""
 
 #: inc/woocommerce/class-ps-wc-meta.php:138
 #: inc/woocommerce/class-ps-wc-meta.php:272
-msgid "Passster creates an unlock link from the selected page and adds it to the e-mail."
+msgid ""
+"Passster creates an unlock link from the selected page and adds it to the e-"
+"mail."
 msgstr ""
 
 #: inc/woocommerce/templates/emails/plain/pwc-email.php:26
@@ -412,1770 +1191,17 @@ msgstr ""
 msgid "Product"
 msgstr ""
 
-#: build/area/index.js:1
-#: src/area/Edit.jsx:156
-msgid "Select protected area"
+#. Plugin URI of the plugin/theme
+#. Author URI of the plugin/theme
+msgid "https://patrickposner.dev"
 msgstr ""
 
-#: build/area/index.js:1
-#: src/area/Edit.jsx:71
-msgid "No Area"
+#. Description of the plugin/theme
+msgid ""
+"A simple plugin to password-protect your complete website, some pages/posts "
+"or just parts of your content."
 msgstr ""
 
-#: build/area/index.js:1
-#: src/area/Edit.jsx:178
-msgid "Get updated areas"
-msgstr ""
-
-#: build/area/index.js:1
-#: src/area/Edit.jsx:170
-msgid "Create a new area"
-msgstr ""
-
-#: build/area/index.js:1
-#: src/area/Edit.jsx:229
-msgid "This is just a preview. To actually unlock the content visit the post/page on your website."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsCard.jsx:34
-msgid "Saving…"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsCard.jsx:35
-msgid "Save"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/components/PasswordInputStrength.jsx:37
-#: inc/admin/src/settings/components/PasswordStrengthMeter.jsx:32
-msgid "Strong"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/components/PasswordInputStrength.jsx:40
-#: inc/admin/src/settings/components/PasswordStrengthMeter.jsx:35
-msgid "Good"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/components/PasswordInputStrength.jsx:43
-#: inc/admin/src/settings/components/PasswordStrengthMeter.jsx:38
-msgid "Fair"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/components/PasswordInputStrength.jsx:46
-#: inc/admin/src/settings/components/PasswordStrengthMeter.jsx:41
-msgid "Weak"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/components/PasswordInputStrength.jsx:57
-#: inc/admin/src/settings/components/PasswordStrengthMeter.jsx:52
-msgid "Strength"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:20
-#: inc/admin/src/settings/tabs/DesignTab.js:28
-#: inc/admin/src/settings/tabs/GeneralTab.js:20
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:40
-msgid "Settings saved!"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:22
-#: inc/admin/src/settings/tabs/DesignTab.js:30
-#: inc/admin/src/settings/tabs/GeneralTab.js:22
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:42
-msgid "Error saving settings."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:45
-#: inc/admin/src/settings/tabs/GeneralTab.js:31
-msgid "Form Labels & Description"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:32
-msgid "Edit the text that's used within the password form. You can overwrite these settings individually per area/page."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:794
-#: inc/admin/src/settings/pages/DesignSettings.jsx:259
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:50
-#: inc/admin/src/settings/tabs/GeneralTab.js:37
-msgid "Headline"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:796
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:51
-#: inc/admin/src/settings/tabs/GeneralTab.js:38
-msgid "This is the headline of your password-protection form."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:803
-#: inc/admin/src/settings/pages/DesignSettings.jsx:326
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:58
-#: inc/admin/src/settings/tabs/GeneralTab.js:44
-msgid "Instruction"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:47
-msgid "The instruction text appears before the password input field."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:50
-#: inc/admin/src/settings/tabs/GeneralTab.js:82
-msgid "Supports HTML:"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:812
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:66
-#: inc/admin/src/settings/tabs/GeneralTab.js:69
-msgid "Placeholder"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:814
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:67
-#: inc/admin/src/settings/tabs/GeneralTab.js:70
-msgid "Edit the placeholder text of the password field."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:76
-msgid "Error Message"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:75
-#: inc/admin/src/settings/tabs/GeneralTab.js:79
-msgid "Edit the error message that appears if a user enters the wrong password."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:821
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:82
-#: inc/admin/src/settings/tabs/GeneralTab.js:97
-msgid "Button Label"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:823
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:83
-#: inc/admin/src/settings/tabs/GeneralTab.js:98
-msgid "Edit the text that appears on the button."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:106
-msgid "Password Generation"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:107
-msgid "Configure how passwords are generated automatically."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:118
-msgid "Password Length"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:127
-msgid "Include Uppercase Characters"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:133
-msgid "Include Numbers"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/GeneralTab.js:139
-msgid "Include Symbols"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/ColorControl.jsx:51
-msgid "Custom color"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:39
-msgid "Form Layout"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:40
-msgid "Configure the general form appearance and dimensions."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:45
-msgid "Form Width"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/DesignSettings.jsx:187
-#: inc/admin/src/settings/pages/DesignSettings.jsx:419
-#: inc/admin/src/settings/tabs/DesignTab.js:50
-#: inc/admin/src/settings/tabs/DesignTab.js:141
-msgid "Background Color"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/DesignSettings.jsx:225
-#: inc/admin/src/settings/pages/DesignSettings.jsx:481
-#: inc/admin/src/settings/tabs/DesignTab.js:55
-#: inc/admin/src/settings/tabs/DesignTab.js:151
-msgid "Border Radius"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/DesignSettings.jsx:174
-#: inc/admin/src/settings/tabs/DesignTab.js:63
-msgid "Center Form"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:69
-msgid "Show Password Toggle"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:77
-msgid "Form Spacing"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:78
-msgid "Control the margin and padding of the form."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/DesignSettings.jsx:201
-#: inc/admin/src/settings/pages/DesignSettings.jsx:458
-#: inc/admin/src/settings/tabs/DesignTab.js:83
-msgid "Margin"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/DesignSettings.jsx:212
-#: inc/admin/src/settings/pages/DesignSettings.jsx:469
-#: inc/admin/src/settings/tabs/DesignTab.js:88
-msgid "Padding"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:95
-msgid "Typography"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:96
-msgid "Configure headline and instruction text styles."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:101
-msgid "Headline Color"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:106
-msgid "Headline Font Size"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/DesignSettings.jsx:305
-#: inc/admin/src/settings/tabs/DesignTab.js:114
-msgid "Hide Headline"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:120
-msgid "Instruction Color"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:125
-msgid "Instruction Font Size"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:135
-msgid "Button Styling"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:136
-msgid "Customize the submit button appearance."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:146
-msgid "Text Color"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/DesignTab.js:159
-msgid "Font Size"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:45
-msgid "Usage Mode (Legacy)"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:46
-msgid "This setting is deprecated. Consider disabling it."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:76
-#: inc/admin/src/settings/tabs/AdvancedTab.js:51
-msgid "Use Ajax"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:52
-msgid "Content unlocks without page reload. Add third-party shortcodes below."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:58
-msgid "Third-Party Shortcodes"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:59
-msgid "Comma-separated list of shortcodes to use inside Passster. Use {post-id} for dynamic post ID."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:68
-msgid "Cookie Settings"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:69
-msgid "Control how passwords are remembered."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:90
-#: inc/admin/src/settings/tabs/AdvancedTab.js:74
-msgid "Disable Cookie"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:76
-msgid "Users must enter password each visit."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:77
-msgid "Password is saved in a cookie for future visits."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:106
-#: inc/admin/src/settings/tabs/AdvancedTab.js:86
-msgid "Cookie Lifetime"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:87
-msgid "How long the cookie should last."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:94
-msgid "Lifetime Unit"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/password-lists/Metabox.jsx:232
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:118
-#: inc/admin/src/settings/tabs/AdvancedTab.js:97
-msgid "Days"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/password-lists/Metabox.jsx:231
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:119
-#: inc/admin/src/settings/tabs/AdvancedTab.js:98
-msgid "Hours"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:120
-#: inc/admin/src/settings/tabs/AdvancedTab.js:99
-msgid "Minutes"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:145
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:215
-#: inc/admin/src/settings/tabs/AdvancedTab.js:111
-#: inc/admin/src/settings/tabs/AdvancedTab.js:157
-msgid "Concurrent Usage"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:112
-msgid "Limit how many times a password can be used simultaneously."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:149
-#: inc/admin/src/settings/tabs/AdvancedTab.js:117
-msgid "Track Concurrent Usage"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:119
-msgid "Passwords will be limited to a certain number of concurrent users."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:120
-msgid "No concurrent usage tracking."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:129
-msgid "Max Concurrent Logins"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:130
-msgid "Maximum number of simultaneous logins per password."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:32
-msgid "Concurrent data reset!"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:34
-msgid "Error resetting data."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:171
-#: inc/admin/src/settings/tabs/AdvancedTab.js:143
-msgid "Reset Concurrent Data"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/meta/general/Metabox.jsx:767
-#: inc/admin/src/settings/tabs/AdvancedTab.js:158
-#: inc/admin/src/settings/tabs/AdvancedTab.js:188
-#: inc/admin/src/upsells/components/UpsellPage.jsx:43
-msgid "PRO"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:161
-msgid "Prevent password sharing and abuse."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:164
-msgid "Without usage limits, a single password can be shared with unlimited people."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:167
-msgid "Limit how many people can use a password at once"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:168
-msgid "Automatically block excess logins"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:169
-msgid "Reset concurrent data anytime"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:177
-msgid "Unlock Concurrent Limits"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:179
-#: inc/admin/src/settings/tabs/AdvancedTab.js:210
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:139
-#: inc/admin/src/settings/tabs/LicenseTab.js:97
-msgid "14-day money-back guarantee"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:187
-msgid "Brute Force Protection"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:191
-msgid "Stop bots and dictionary attacks on your password forms."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:194
-msgid "Without attempt limiting, bots can try unlimited passwords until they guess correctly."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:197
-msgid "Limit failed password attempts per IP"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:198
-msgid "Automatic lockout after too many failures"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:199
-msgid "Customizable lockout duration and messages"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:200
-msgid "Integrates with Wordfence, Sucuri & other firewalls"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/AdvancedTab.js:208
-msgid "Unlock Brute Force Protection"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:46
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:24
-msgid "No page selected"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:63
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:62
-msgid "Global Protection"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:63
-msgid "Protect your entire site with a single password."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:67
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:68
-msgid "Activate Global Protection"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:70
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:70
-msgid "Global Password Protection is activated."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:71
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:71
-msgid "Global Password Protection is deactivated."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:82
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:80
-msgid "Select a Page"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:84
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:81
-msgid "Visitors who still need to submit the correct password will be redirected to this page. Please follow the link below to set it up."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:96
-msgid "Edit Global Protection Page"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:99
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:103
-msgid "Exclude pages"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:111
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:111
-msgid "Select pages that should not be affected by global protection. This can be useful for information about data privacy or terms of use pages."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:121
-msgid "Sell Access with WooCommerce"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:122
-msgid "Turn protected content into a revenue stream."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:125
-msgid "Auto-generate unique passwords after each purchase"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:126
-msgid "Send passwords automatically via customizable emails"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:127
-msgid "Create password lists with expiration dates or usage limits"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:128
-msgid "No user accounts needed — simpler than memberships"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:137
-msgid "Unlock WooCommerce Features"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:146
-msgid "CAPTCHA Protection"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:147
-msgid "Let verified humans in without passwords."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:154
-msgid "CAPTCHA Type"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:83
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:157
-msgid "Google reCAPTCHA V2 (Checkbox)"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:158
-msgid "Google reCAPTCHA V3 (invisible)"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:85
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:159
-msgid "hCAPTCHA"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:160
-msgid "Cloudflare Turnstile"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:45
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:93
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:166
-msgid "Site Key"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:172
-msgid "Secret Key"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:182
-msgid "Google reCAPTCHA v2 and v3"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:183
-msgid "hCAPTCHA (privacy-focused alternative)"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:184
-msgid "Cloudflare Turnstile (invisible)"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:192
-msgid "Unlock CAPTCHA Options"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:201
-msgid "Encrypted Links"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:202
-msgid "Share URLs that unlock content instantly — no password needed."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:138
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:208
-msgid "Bit.ly Access Token"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:209
-msgid "Generate short, encrypted links for instant access."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:217
-msgid "Create encrypted URLs with Bitly integration"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:218
-msgid "Share via email, SMS, or social — one click to unlock"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:219
-msgid "Track link usage and expiration"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/IntegrationsTab.js:227
-msgid "Unlock Encrypted Links"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:51
-msgid "Utilities"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:52
-msgid "Maintenance tools and actions."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:57
-msgid "Clear Cache"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:58
-msgid "Clear all Passster transients and cached data."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:21
-msgid "Cache cleared!"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:23
-msgid "Error clearing cache."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:66
-msgid "Clear"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/Utilities.jsx:94
-#: inc/admin/src/settings/tabs/ToolsTab.js:71
-msgid "Export Settings"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:72
-msgid "Download your Passster settings as a JSON file."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:40
-msgid "Settings exported!"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/ToolsTab.js:42
-msgid "Error exporting settings."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/Utilities.jsx:88
-#: inc/admin/src/settings/tabs/ToolsTab.js:80
-msgid "Export"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:22
-msgid "License & Support"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:23
-msgid "Your Passster PRO license is active."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:28
-msgid "PRO License Active"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:36
-msgid "Renews:"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:40
-msgid "As a PRO user, you have access to priority email support."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:48
-msgid "Manage License"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:55
-msgid "Contact Support"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:64
-msgid "Upgrade to Passster PRO"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:65
-msgid "Unlock all features and get priority support."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:70
-msgid "Free Version"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:71
-msgid "Limited features"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:76
-msgid "PRO Features Include:"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:78
-msgid "Password Lists with expiration"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:79
-msgid "Usage Statistics dashboard"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:80
-msgid "Concurrent usage limits"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:81
-msgid "reCAPTCHA, hCaptcha & Turnstile"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:82
-msgid "WooCommerce integration"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:83
-msgid "Encrypted unlock links"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:84
-msgid "User & role restrictions"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:85
-msgid "Priority email support"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:65
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:122
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:149
-#: inc/admin/src/settings/tabs/LicenseTab.js:95
-msgid "Get Passster PRO"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:103
-msgid "Already Have a License?"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:104
-msgid "Activate your PRO license to unlock all features."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:106
-msgid "If you purchased Passster PRO, click below to activate your license."
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/tabs/LicenseTab.js:111
-msgid "Activate License"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:76
-msgid "General"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:81
-msgid "Design"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:86
-msgid "Advanced"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:91
-msgid "Integrations"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:96
-msgid "Tools"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:101
-msgid "License"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/settings/components/SettingsPage.jsx:120
-msgid "Documentation"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/meta/general/Metabox.jsx:778
-#: inc/admin/src/settings/components/SettingsPage.jsx:129
-msgid "Upgrade to PRO"
-msgstr ""
-
-#: inc/admin/build/index.js:383
-#: inc/admin/src/components/PasswordInputStrength.jsx:12
-msgid "Enter a password"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/components/UpsellPage.jsx:31
-msgid "Unlock with Passster PRO"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/components/UpsellPage.jsx:33
-msgid "See all PRO features"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/components/UpsellPage.jsx:106
-msgid "14-day money-back guarantee • Instant access"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:12
-msgid "Track Every Unlock"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:13
-msgid "See exactly when each password is used with precise timestamps."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:17
-msgid "Know Your Users"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:18
-msgid "Track IP addresses and browsers to identify patterns and abuse."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:22
-msgid "Password Popularity"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:23
-msgid "See which passwords are used most and optimize distribution."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:27
-msgid "Export & Analyze"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:28
-msgid "Reset statistics anytime or export data for reporting."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:35
-msgid "See who unlocks your content"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:36
-msgid "Right now, you have zero visibility into how your passwords are being used. Statistics shows you every unlock in real-time."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/StatisticsUpsell.jsx:38
-msgid "Unlock Statistics"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:12
-msgid "Multiple Passwords"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:13
-msgid "Protect content with a list of passwords instead of just one."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:17
-msgid "Auto-Generate"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:18
-msgid "Generate secure passwords with one click—no more weak passwords."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:22
-msgid "Expiration Control"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:23
-msgid "Set passwords to expire after a date, number of uses, or time interval."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:27
-msgid "Usage Tracking"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:28
-msgid "See how often each password is used and when it expires."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:35
-msgid "Manage multiple passwords per protection"
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:36
-msgid "With the free version, you can only use one password. Password Lists lets you create, generate, and expire multiple passwords for each protected area."
-msgstr ""
-
-#: inc/admin/build/upsells.js:1
-#: inc/admin/src/upsells/pages/PasswordListsUpsell.jsx:38
-msgid "Unlock Password Lists"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:149
-msgid "No Password List"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:175
-msgid "No Role"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:561
-msgid "Activate Protection"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:573
-msgid "Protect Child Pages"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:585
-msgid "Protection Mode"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:596
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:74
-msgid "reCAPTCHA"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:641
-msgid "Number of passwords to generate"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:642
-msgid "How many passwords do you want to generate?"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:719
-#: inc/admin/src/meta/general/Metabox.jsx:766
-msgid "User Restriction"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:720
-msgid "Require users to be logged in with a specific username or role."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:730
-msgid "Restriction Type"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:732
-#: inc/admin/src/meta/general/Metabox.jsx:751
-msgid "Username"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:733
-#: inc/admin/src/meta/general/Metabox.jsx:741
-msgid "User Role"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:770
-msgid "Require users to be logged in with a specific username or role to access content."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:785
-msgid "Overwrite Defaults"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:805
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:59
-msgid "The instruction text appears before the password input field. Use it for hints or additional explanation."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:830
-msgid "Unique ID"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:831
-msgid "my-custom-id"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:832
-msgid "Give your password form a unique ID."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:841
-msgid "Advanced Options"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:842
-msgid "Redirect after unlock or hide the password form."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:851
-msgid "Redirect URL"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:854
-msgid "After entering the correct password, redirect to this URL instead of showing the content."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:861
-msgid "Hide Password Form"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:862
-msgid "Skip the form and show content directly. Useful when access is controlled by cookies or unlock links."
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:877
-msgid "Copied Link!"
-msgstr ""
-
-#: inc/admin/src/meta/general/Metabox.jsx:877
-msgid "Copy Unlock Link"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:72
-msgid "Usages"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:78
-msgid "Expires"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:84
-msgid "Status"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:125
-msgid "Comma-separated list of passwords."
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:135
-msgid "Generate"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:148
-msgid "Add"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:160
-msgid "Mode"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:163
-msgid "After First Usage"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:164
-msgid "After X Usages"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:165
-msgid "After Time Interval"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:190
-msgid "Remove After First Use"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:191
-msgid "Password is removed immediately after one use."
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:205
-msgid "Max Usages"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:206
-msgid "Password expires after this many uses."
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:220
-msgid "Expire After"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:228
-msgid "Unit"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:233
-msgid "Weeks"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:234
-msgid "Months"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:250
-msgid "Usage Statistics"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:268
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:65
-msgid "Reset Statistics"
-msgstr ""
-
-#: inc/admin/src/meta/password-lists/Metabox.jsx:273
-msgid "Statistics cleared!"
-msgstr ""
-
-#: inc/admin/src/settings/components/DimensionControl.jsx:60
-msgid "Form width"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:72
-msgid "Usage Mode"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:79
-msgid "You are using Ajax for unlocking content. Make sure to add any shortcodes of a page into the Third-Party-Shortcodes setting."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:80
-msgid "Unlock content with Ajax (no reload). It is not recommended for entire pages or when using a Third-Party Page Builder."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:93
-msgid "Each time a user visits the protected content it needs to be unlocked again."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:94
-msgid "The password is stored in a cookie. Next time the content is unlocked automatically."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:107
-msgid "The lifetime of your cookie is based on this number and the lifetime unit below. Once a cookie expires, the user will need to enter the password again."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:115
-msgid "Cookie Lifetime Unit"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:130
-msgid "Third-Party-Shortcodes"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:131
-msgid "Add a comma separated list of shortcodes you want to use inside of Passster. You can also use {post-id} to add the ID of the current page/post dynamically. "
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:152
-msgid "Track and prevent concurrent usage of the same password."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:153
-msgid "Do not track concurrent usages. A password can be used without any limitations to unlock your content."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:162
-msgid "Number of Allowed Concurrent Usages"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:163
-msgid "Limit the number of logins with one password at the same time. It will create a custom database table to track the usage of the passwords. It uses the current IP of the user to recognize them. You can use the shortcode [passster-logout] to handle the logout."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:177
-msgid "Concurrent data resetted successfully."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:194
-msgid "Track IP"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:197
-msgid "Track the IP of the user in statistics."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:198
-msgid "Do not track the IP of the user in statistics"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:218
-msgid "Keep track of how often a password is used at the same time to prevent abuse and unallowed sharing."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:226
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:55
-msgid "Lite vs Pro"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:231
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:62
-msgid "Get Passster PRO!"
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:243
-#: inc/admin/src/settings/pages/DesignSettings.jsx:525
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:160
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:143
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:125
-msgid "Settings saved successfully."
-msgstr ""
-
-#: inc/admin/src/settings/pages/AdvancedSettings.jsx:251
-#: inc/admin/src/settings/pages/DesignSettings.jsx:533
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:168
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:151
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:133
-msgid "Save Settings"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:153
-msgid "Form"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:172
-msgid "Form position"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:177
-msgid "Center the password form in the middle of the page."
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:178
-msgid "Do not center the password form."
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:197
-#: inc/admin/src/settings/pages/DesignSettings.jsx:454
-msgid "Spacing Controls"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:203
-#: inc/admin/src/settings/pages/DesignSettings.jsx:460
-msgid "Margin is the space around an element. The higher the value the more space is around the password form."
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:214
-#: inc/admin/src/settings/pages/DesignSettings.jsx:471
-msgid "Padding is the space between an element and its content. The higher the value the more space is inside the password form."
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:231
-msgid "The higher the border radius the more rounded are the corners of the form."
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:240
-msgid "Add a checkbox to show the password before submitting."
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:241
-msgid "Do not add a checkbox to view the password"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:270
-#: inc/admin/src/settings/pages/DesignSettings.jsx:337
-#: inc/admin/src/settings/pages/DesignSettings.jsx:492
-msgid "Font Controls"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:272
-#: inc/admin/src/settings/pages/DesignSettings.jsx:339
-msgid "Color"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:293
-#: inc/admin/src/settings/pages/DesignSettings.jsx:360
-#: inc/admin/src/settings/pages/DesignSettings.jsx:505
-msgid "Font weight"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:308
-msgid "The password form will be shown without the headline"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:309
-msgid "The password form will include the headline"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:380
-msgid "Button"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:391
-msgid "Color Controls"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:396
-msgid "Background Color (Hover)"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:407
-msgid "Font Color (Hover)"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:430
-msgid "Font Color"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:443
-msgid "Change button State"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:446
-msgid "Set colors (hover)"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:447
-msgid "Set colors"
-msgstr ""
-
-#: inc/admin/src/settings/pages/DesignSettings.jsx:483
-msgid "The higher the border radius the more rounded are the corners of the button."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:46
-msgid "Add your Turnstile Site Key here."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:53
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:101
-msgid "Secret"
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:54
-msgid "Add your Turnstile Secret key here."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:62
-msgid "Turnstile is only available within the pro version of Passster."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:80
-msgid "reCAPTCHA Type"
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:84
-msgid "Google reCAPTCHA V3 (invisible CAPTCHA)"
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:94
-msgid "Add your reCAPTCHA Site Key here."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:102
-msgid "Add your reCAPTCHA Secret here."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:109
-msgid "Language"
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:110
-msgid "Add your language here. For example, ‘en’ for English or ‘de’ for German."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:119
-msgid "reCAPTCHA is only available within the pro version of Passster."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:131
-msgid "Bit.ly"
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:139
-msgid "Add your Bit.ly access token here."
-msgstr ""
-
-#: inc/admin/src/settings/pages/ExternalSettings.jsx:146
-msgid "Bit.ly is only available within the pro version of Passster."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:48
-msgid "Edit the text that’s used within the password form on this page. You can overwrite these settings individually per area/page."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:74
-msgid "Error"
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:95
-msgid "Generating Passwords"
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:99
-msgid "Password length"
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:100
-msgid "Set a default length for generated passwords."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:109
-msgid "Include uppercase characters"
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:112
-msgid "Include uppercase characters in passwords."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:113
-msgid "Generate passwords only with lowercase."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:123
-msgid "Include numbers"
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:126
-msgid "Include numbers in passwords."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GeneralSettings.jsx:127
-msgid "Generate passwords without numbers."
-msgstr ""
-
-#: inc/admin/src/settings/pages/GlobalProtectionSettings.jsx:93
-msgid "Customize the Global Protection Page"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:62
-msgid "Migrate Settings"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:65
-msgid "Migrate all of your customizer settings and options within version 4 of Passster."
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:68
-msgid "Migrate settings"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:75
-msgid "Settings migration successfully."
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:108
-msgid "Copy export data"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:118
-msgid "Import"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:122
-msgid "Paste in the JSON string you got from your export to import all settings for the plugin."
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:129
-msgid "Import Settings"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:136
-msgid "Settings imported successfully."
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:149
-msgid "Reset Plugin Data"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:152
-msgid "By clicking the following button, you will reset all plugin settings. This can be useful if you want to import a new set of settings or you want a fresh start."
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:155
-msgid "Reset Plugin Settings"
-msgstr ""
-
-#: inc/admin/src/settings/pages/Utilities.jsx:162
-msgid "Settings resetted successfully."
-msgstr ""
-
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:22
-msgid "WooCommerce Integration"
-msgstr ""
-
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:33
-msgid "Enable protection features in your WooCommerce store through Passster."
-msgstr ""
-
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:37
-msgid "Implement full store protection."
-msgstr ""
-
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:38
-msgid "Protect individual products with passwords."
-msgstr ""
-
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:43
-msgid "Choose from multiple protection modes."
-msgstr ""
-
-#: inc/admin/src/settings/pages/WooIntegrationSettings.jsx:44
-msgid "Apply protection based on user roles."
-msgstr ""
-
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:29
-msgid "Number of Usages"
-msgstr ""
-
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:34
-msgid "First Usage"
-msgstr ""
-
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:39
-msgid "IP Address"
-msgstr ""
-
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:43
-msgid "Browser"
-msgstr ""
-
-#: inc/admin/src/statistics/components/StatisticsPage.jsx:72
-msgid "Statistics resetted successfully."
-msgstr ""
-
-#: build/area/block.json
-#: src/area/block.json
-msgctxt "block title"
-msgid "Passster: Area"
-msgstr ""
-
-#: build/area/block.json
-#: src/area/block.json
-msgctxt "block description"
-msgid "Select a protected area from Passster"
-msgstr ""
-
-#: build/area/block.json
-#: src/area/block.json
-msgctxt "block keyword"
-msgid "Passster"
-msgstr ""
-
-#: build/area/block.json
-#: src/area/block.json
-msgctxt "block keyword"
-msgid "Password protection"
-msgstr ""
-
-#: build/area/block.json
-#: src/area/block.json
-msgctxt "block keyword"
-msgid "Protected Area"
-msgstr ""
-
-#: build/area/block.json
-#: src/area/block.json
-msgctxt "block keyword"
-msgid "Area"
+#. Author of the plugin/theme
+msgid "Patrick Posner"
 msgstr ""

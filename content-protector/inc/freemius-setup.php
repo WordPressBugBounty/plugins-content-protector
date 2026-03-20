@@ -12,21 +12,20 @@ if ( !function_exists( 'passster_fs' ) ) {
             // Include Freemius SDK.
             require_once dirname( __FILE__ ) . '/freemius/start.php';
             $passster_fs = fs_dynamic_init( array(
-                'id'               => '1938',
-                'slug'             => 'content-protector',
-                'type'             => 'plugin',
-                'public_key'       => 'pk_9d9d6d17bd34372b199f36e37dd4b',
-                'is_premium'       => false,
-                'premium_suffix'   => '',
-                'has_addons'       => false,
-                'has_paid_plans'   => true,
-                'has_affiliation'  => 'selected',
-                'menu'             => array(
+                'id'              => '1938',
+                'slug'            => 'content-protector',
+                'type'            => 'plugin',
+                'public_key'      => 'pk_9d9d6d17bd34372b199f36e37dd4b',
+                'is_premium'      => false,
+                'premium_suffix'  => '',
+                'has_addons'      => false,
+                'has_paid_plans'  => true,
+                'has_affiliation' => 'selected',
+                'menu'            => array(
                     'contact' => false,
                     'support' => false,
                 ),
-                'is_live'          => true,
-                'is_org_compliant' => true,
+                'is_live'         => true,
             ) );
         }
         return $passster_fs;
@@ -48,18 +47,14 @@ passster_fs()->add_filter( 'after_pending_connect_url', 'passster_fs_settings_ur
 passster_fs()->add_filter( 'show_deactivation_subscription_cancellation', '__return_false' );
 passster_fs()->add_filter( 'show_deactivation_feedback_form', '__return_false' );
 /**
- * Hide freemius submenus except account (for license management).
+ * Remove freemius pages.
  *
  * @param bool $is_visible indicates if visible or not.
- * @param string $submenu_id current submenu id.
+ * @param int $submenu_id current submenu id.
  *
  * @return bool
  */
 function passster_is_submenu_visible(  $is_visible, $submenu_id  ) {
-    // Show account submenu for license activation/management
-    if ( 'account' === $submenu_id ) {
-        return true;
-    }
     return false;
 }
 

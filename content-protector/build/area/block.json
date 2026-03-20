@@ -4,8 +4,8 @@
   "name": "content-protector/area",
   "icon": "lock",
   "version": "4.0.0",
-  "title": "Protected Area",
-  "category": "passster",
+  "title": "Passster: Area",
+  "category": "widgets",
   "description": "Select a protected area from Passster",
   "keywords": [
     "Passster",

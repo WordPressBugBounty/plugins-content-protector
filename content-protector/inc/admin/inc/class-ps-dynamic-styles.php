@@ -40,11 +40,6 @@ class PS_Dynamic_Styles {
 	public function dynamic_styles() {
 		$options = get_option( 'passster' );
 
-		// Don't output styles if disabled (theme handles styling)
-		if ( ! empty( $options['disable_css'] ) ) {
-			return;
-		}
-
 		if ( isset( $options['button_font_size'] ) ) {
 			$button_font_size = $options['button_font_size'];
 		} else {
@@ -109,7 +104,7 @@ class PS_Dynamic_Styles {
                 color: <?php echo esc_html($options['headline_font_color']); ?>;
             }
 
-            .passster-form .ps-form-instructions-wrap {
+            .passster-form p {
                 font-size: <?php echo esc_html($options['instruction_font_size']); ?>px;
                 font-weight: <?php echo esc_html($options['instruction_font_weight']); ?>;
                 color: <?php echo esc_html($options['instruction_font_color']); ?>;

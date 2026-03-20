@@ -7,7 +7,7 @@
 	 */
 
 	if ( ! defined( 'ABSPATH' ) ) {
-		return;
+		exit;
 	}
 
 	/**
@@ -15,7 +15,7 @@
 	 *
 	 * @var string
 	 */
-	$this_sdk_version = '2.13.0';
+	$this_sdk_version = '2.10.1';
 
 	#region SDK Selection Logic --------------------------------------------------------------------
 
@@ -90,8 +90,8 @@
      * @author Leo Fajardo (@leorw)
      * @since 2.2.3
      */
-	$themes_directory      = fs_normalize_path( get_theme_root( get_stylesheet() ) );
-	$themes_directory_name = basename( $themes_directory );
+	$themes_directory         = get_theme_root( get_stylesheet() );
+	$themes_directory_name    = basename( $themes_directory );
 
     // This change ensures that the condition works even if the SDK is located in a subdirectory (e.g., vendor)
     $theme_candidate_sdk_basename = str_replace( $themes_directory . '/' . get_stylesheet() . '/', '', $fs_root_path );
@@ -128,16 +128,12 @@
          * The check of `fs_find_direct_caller_plugin_file` determines that this file was indeed included by a different plugin than the main plugin.
          */
         if ( DIRECTORY_SEPARATOR . $this_sdk_relative_path === $fs_root_path && function_exists( 'fs_find_direct_caller_plugin_file' ) ) {
-            $direct_caller_plugin_file = fs_find_direct_caller_plugin_file( $file_path );
+            $original_plugin_dir_name = dirname( fs_find_direct_caller_plugin_file( $file_path ) );
 
-            if ( ! empty( $direct_caller_plugin_file ) ) {
-                $original_plugin_dir_name = dirname( $direct_caller_plugin_file );
+            // Remove everything before the original plugin directory name.
+            $this_sdk_relative_path = substr( $this_sdk_relative_path, strpos( $this_sdk_relative_path, $original_plugin_dir_name ) );
 
-                // Remove everything before the original plugin directory name.
-                $this_sdk_relative_path = substr( $this_sdk_relative_path, strpos( $this_sdk_relative_path, $original_plugin_dir_name ) );
-
-                unset( $original_plugin_dir_name );
-            }
+            unset( $original_plugin_dir_name );
         }
     }
 
@@ -445,8 +441,6 @@
 	 *      fs_is_submenu_visible_{plugin_slug}
 	 *      fs_plugin_icon_{plugin_slug}
 	 *      fs_show_trial_{plugin_slug}
-	 *      fs_is_pricing_page_visible_{plugin_slug}
-	 *      fs_checkout/parameters_{plugin_slug}
 	 *
 	 * --------------------------------------------------------
 	 *
@@ -454,8 +448,6 @@
 	 *
 	 *      fs_after_license_loaded_{plugin_slug}
 	 *      fs_after_license_change_{plugin_slug}
-	 *      fs_after_license_activation_{plugin_slug}
-	 *      fs_after_license_deactivation_{plugin_slug}
 	 *      fs_after_plans_sync_{plugin_slug}
 	 *
 	 *      fs_after_account_details_{plugin_slug}

@@ -110,7 +110,7 @@ class PS_Meta {
      */
     public function add_meta_scripts() {
         $screen = get_current_screen();
-        if ( 'post' !== $screen->base ) {
+        if ( $screen->base !== 'post' ) {
             return;
         }
         wp_enqueue_script(
@@ -156,22 +156,17 @@ class PS_Meta {
         if ( isset( $options['password_length'] ) ) {
             $args['password_length'] = esc_html( $options['password_length'] );
         } else {
-            $args['password_length'] = 12;
+            $args['password_length'] = 6;
         }
         if ( isset( $options['include_uppercase'] ) ) {
             $args['include_uppercase'] = esc_html( $options['include_uppercase'] );
         } else {
-            $args['include_uppercase'] = true;
+            $args['include_uppercase'] = false;
         }
         if ( isset( $options['include_numbers'] ) ) {
             $args['include_numbers'] = esc_html( $options['include_numbers'] );
         } else {
-            $args['include_numbers'] = true;
-        }
-        if ( isset( $options['include_symbols'] ) ) {
-            $args['include_symbols'] = esc_html( $options['include_symbols'] );
-        } else {
-            $args['include_symbols'] = true;
+            $args['include_numbers'] = false;
         }
         if ( isset( $options['global_protection_id'] ) ) {
             $args['global_protection_id'] = esc_html( $options['global_protection_id'] );
@@ -255,16 +250,11 @@ class PS_Meta {
     public function save_meta( object $request ) {
         if ( $request->get_params() ) {
             $params = $request->get_params();
-            $post_id = absint( $params['post_id'] );
-            $meta_key = sanitize_key( $params['meta_key'] );
+            $post_id = esc_html( $params['post_id'] );
+            $meta_key = esc_html( $params['meta_key'] );
             // Check which action to perform.
             if ( isset( $params['meta_value'] ) ) {
-                // Allow HTML in instruction field (links, basic formatting)
-                if ( 'passster_instruction' === $meta_key ) {
-                    $meta_value = wp_kses_post( $params['meta_value'] );
-                } else {
-                    $meta_value = sanitize_meta( $meta_key, $params['meta_value'], 'post' );
-                }
+                $meta_value = sanitize_meta( $meta_key, $params['meta_value'], 'post' );
                 update_post_meta( $post_id, $meta_key, $meta_value );
             } elseif ( isset( $params['delete'] ) ) {
                 delete_post_meta( $post_id, $meta_key );
@@ -286,8 +276,8 @@ class PS_Meta {
     public function get_meta( object $request ) {
         if ( $request->get_params() ) {
             $params = $request->get_params();
-            $post_id = absint( $params['post_id'] );
-            $meta_key = sanitize_key( $params['meta_key'] );
+            $post_id = esc_html( $params['post_id'] );
+            $meta_key = esc_html( $params['meta_key'] );
             $meta = get_post_meta( $post_id, $meta_key, true );
             if ( !empty( $meta ) ) {
                 return wp_json_encode( array(
