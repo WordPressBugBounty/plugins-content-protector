@@ -29,6 +29,8 @@ class PS_Admin_Settings {
      */
     public function __construct() {
         add_action( 'admin_menu', array($this, 'add_menu') );
+        add_action( 'admin_menu', array($this, 'add_settings_submenu'), 99 );
+        // Add Settings last
         add_action( 'rest_api_init', array($this, 'rest_api_init') );
     }
 
@@ -42,6 +44,12 @@ class PS_Admin_Settings {
             'dashicons-lock',
             85
         );
+    }
+
+    /**
+     * Add Settings submenu at the end (priority 99)
+     */
+    public function add_settings_submenu() {
         $settings_suffix = add_submenu_page(
             'passster',
             __( 'Options', 'content-protector' ),
@@ -70,12 +78,22 @@ class PS_Admin_Settings {
             true
         );
         $options = get_option( 'passster' );
+        // Freemius
+        $fs_slug = 'content-protector';
+        $fs_id = '1938';
+        $fs_affix = \passster_fs()->get_unique_affix();
         $args = array(
-            'screen'  => 'passster-settings',
-            'version' => PASSSTER_VERSION,
-            'logo'    => PASSSTER_URL . '/assets/admin/passster-logo.svg',
-            'is_pro'  => \passster_fs()->is_plan_or_trial__premium_only( 'pro' ),
+            'screen'         => 'passster-settings',
+            'version'        => PASSSTER_VERSION,
+            'logo'           => PASSSTER_URL . '/assets/admin/passster-logo.svg',
+            'is_pro'         => \passster_fs()->is_plan_or_trial__premium_only( 'pro' ),
+            'account_url'    => admin_url( 'admin.php?page=' . $fs_slug . '-account' ),
+            'activation_url' => '#',
+            'upgrade_url'    => \passster_fs()->get_upgrade_url(),
+            'fs_affix'       => $fs_affix,
         );
+        // Add Freemius license activation dialog on settings page
+        add_action( 'admin_footer', array($this, 'add_license_activation_dialog') );
         if ( isset( $options['global_protection_id'] ) ) {
             $args['global_edit_url'] = admin_url( 'post.php?post=' . esc_html( $options['global_protection_id'] ) . '&action=edit', 'https' );
         }
@@ -91,6 +109,18 @@ class PS_Admin_Settings {
         ?>
         <div id="passster-settings"></div>
 		<?php 
+    }
+
+    /**
+     * Add Freemius license activation dialog to settings page.
+     */
+    public function add_license_activation_dialog() {
+        $fs = \passster_fs();
+        $vars = array(
+            'id' => $fs->get_id(),
+        );
+        fs_require_template( 'forms/license-activation.php', $vars );
+        fs_require_template( 'forms/resend-key.php', $vars );
     }
 
     public function rest_api_init() {
@@ -177,15 +207,25 @@ class PS_Admin_Settings {
 
     public function save_settings( $request ) {
         if ( $request->get_params() ) {
-            $options = sanitize_option( 'passster', $request->get_params() );
+            $options = $request->get_params();
             foreach ( $options as $key => $value ) {
+                // Allow HTML in instruction field (links, basic formatting)
                 if ( 'instruction' === $key ) {
                     $options[$key] = wp_kses_post( $value );
                     continue;
                 }
-                if ( $key !== 'exclude_pages' && !is_array( $value ) ) {
-                    $options[$key] = sanitize_text_field( $value );
+                // Allow HTML in error message field too
+                if ( 'error' === $key ) {
+                    $options[$key] = wp_kses_post( $value );
+                    continue;
                 }
+                // Arrays (like exclude_pages) - sanitize each item
+                if ( is_array( $value ) ) {
+                    $options[$key] = array_map( 'sanitize_text_field', $value );
+                    continue;
+                }
+                // Everything else - sanitize as text
+                $options[$key] = sanitize_text_field( $value );
             }
             update_option( 'passster', $options );
         }

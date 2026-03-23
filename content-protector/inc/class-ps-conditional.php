@@ -13,19 +13,27 @@ class PS_Conditional {
      * @throws Exception
      */
     public static function is_valid( array $atts ) : bool {
-        $input = '';
-        // is Cookie set?
+        $inputs = array();
+        // is Cookie set? Support multiple hashes (pipe-separated).
         if ( !empty( $_COOKIE['passster'] ) ) {
-            $input = esc_html( $_COOKIE['passster'] );
+            $cookie_value = esc_html( $_COOKIE['passster'] );
+            // Split by pipe to support multiple password hashes
+            $inputs = array_filter( explode( '|', $cookie_value ) );
         }
-        // Valid password.
-        if ( self::is_valid_password( $input, $atts ) ) {
-            return true;
-        }
-        // captcha.
-        if ( isset( $atts['captcha'] ) ) {
-            if ( 'captcha' == $input ) {
+        // For backwards compatibility, also check single input
+        $input = ( !empty( $inputs ) ? $inputs[0] : '' );
+        // Valid password - check all inputs from cookie (supports multiple unlocks).
+        foreach ( $inputs as $input ) {
+            if ( self::is_valid_password( $input, $atts ) ) {
                 return true;
+            }
+        }
+        // captcha - check all inputs.
+        if ( isset( $atts['captcha'] ) ) {
+            foreach ( $inputs as $input ) {
+                if ( 'captcha' === $input ) {
+                    return true;
+                }
             }
         }
         // if nothing was correct.
