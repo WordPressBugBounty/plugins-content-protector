@@ -176,6 +176,14 @@ if ( $advanced_options && ! empty( $redirect_url ) ) {
 	$form = str_replace( '[PASSSTER_REDIRECT]', '', $form );
 }
 
+// Label.
+$form = str_replace( '[PASSSTER_LABEL]', esc_html__( 'Enter your password', 'content-protector' ), $form );
+
+// Headline tag.
+$allowed_headline_tags = array( 'span', 'p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6' );
+$headline_tag          = isset( $options['headline_tag'] ) && in_array( $options['headline_tag'], $allowed_headline_tags, true ) ? $options['headline_tag'] : 'span';
+$form                  = str_replace( '[PASSSTER_HEADLINE_TAG]', $headline_tag, $form );
+
 // Headline - use override if enabled and set, otherwise global.
 if ( ! empty( $options['hide_headline'] ) ) {
 	$form = str_replace( '[PASSSTER_FORM_HEADLINE]', '', $form );

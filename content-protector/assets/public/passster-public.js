@@ -160,6 +160,8 @@ jQuery( document ).ready( function( $ ) {
 		const $wrapper = $form.closest( '.passster-protected-content' );
 		const blockId = $wrapper.length ? $wrapper.attr( 'data-block-id' ) : '';
 
+		$form.find( '.ps-loader' ).css( 'display', 'block' );
+
 		try {
 			const response = await fetch( restUrl + '/unlock', {
 				method: 'POST',
@@ -180,6 +182,7 @@ jQuery( document ).ready( function( $ ) {
 			} );
 
 			const data = await response.json();
+			$form.find( '.ps-loader' ).css( 'display', 'none' );
 			if ( data.success ) {
 				if ( ! ps_ajax.disable_cookie ) {
 					await setHashedCookie( password );
@@ -190,6 +193,7 @@ jQuery( document ).ready( function( $ ) {
 				$input.val( '' );
 			}
 		} catch ( err ) {
+			$form.find( '.ps-loader' ).css( 'display', 'none' );
 			showError( $form, 'An error occurred. Please try again.' );
 		}
 	} );

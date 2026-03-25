@@ -123,6 +123,20 @@ class PS_Public {
         } else {
             $form = str_replace( '[PASSSTER_REDIRECT]', '', $form );
         }
+        // headline tag.
+        $allowed_headline_tags = array(
+            'span',
+            'p',
+            'div',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6'
+        );
+        $headline_tag = ( isset( $options['headline_tag'] ) && in_array( $options['headline_tag'], $allowed_headline_tags, true ) ? $options['headline_tag'] : 'span' );
+        $form = str_replace( '[PASSSTER_HEADLINE_TAG]', $headline_tag, $form );
         // headline.
         if ( !empty( $options['hide_headline'] ) ) {
             $form = str_replace( '[PASSSTER_FORM_HEADLINE]', '', $form );
@@ -146,6 +160,8 @@ class PS_Public {
         } else {
             $form = str_replace( '[PASSSTER_PLACEHOLDER]', esc_attr( $options['placeholder'] ), $form );
         }
+        // label.
+        $form = str_replace( '[PASSSTER_LABEL]', esc_html__( 'Enter your password', 'content-protector' ), $form );
         // button.
         if ( !empty( $atts['button'] ) ) {
             $form = str_replace( '[PASSSTER_BUTTON_LABEL]', esc_html( $atts['button'] ), $form );

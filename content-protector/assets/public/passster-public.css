@@ -219,17 +219,17 @@
     text-align: center !important;
 }
 
-.passster-form .ps-loader.is-loading {
-    display: block;
-}
-
 .passster-form .ps-loader img {
     max-width: 100% !important;
     height: auto !important;
 }
 
+.passster-form .passster-hidden{
+    display: none;
+}
+
 /* Label */
-.passster-form label {
+.passster-form label:not(.passster-hidden) {
     display: block !important;
     margin-bottom: 5px !important;
 }

@@ -1,9 +1,10 @@
 <div class="passster-form[PASSSTER_HIDE]" id="[PASSSTER_ID]">
     <form class="password-form" method="post" autocomplete="off" target="_top">
-        <h4 class="ps-form-headline">[PASSSTER_FORM_HEADLINE]</h4>
+        <[PASSSTER_HEADLINE_TAG] class="ps-form-headline">[PASSSTER_FORM_HEADLINE]</[PASSSTER_HEADLINE_TAG]>
         <div class="ps-form-instructions-wrap">[PASSSTER_FORM_INSTRUCTIONS]</div>
         <fieldset>
-            <label for="input-[PASSSTER_ID]" style="display:none;">Enter your password</label>
+            <span class="ps-loader" style="display:none;"><img src="[PS_AJAX_LOADER]" alt="" /></span>
+            <label for="input-[PASSSTER_ID]" style="display:none;" class="passster-hidden">[PASSSTER_LABEL]</label>
             <input placeholder="[PASSSTER_PLACEHOLDER]" type="password" tabindex="1" name="[PASSSTER_AUTH]"
                    id="input-[PASSSTER_ID]" class="passster-password" autocomplete="off"
                    data-protection-type="[PASSSTER_TYPE]" data-list="[PASSSTER_LIST]" data-lists="[PASSSTER_LISTS]" data-area="[PASSSTER_AREA]"
