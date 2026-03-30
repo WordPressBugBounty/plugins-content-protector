@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.1
+Stable tag: 4.3.2
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -107,6 +107,10 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.2 - 30.03.2026 =
+* Fixed: Category lock for WooCommerce products and categories.
+* Changed: Page refresh on unlock is now on by default. Inline unlock can be enabled via Advanced → Unlock Behaviour.
+
 = 4.3.1 - 20.03.2026 =
 * Fixed: Password label should not be visible, it's there for accessibility reasons.
 * Fixed: Password label is now translatable.

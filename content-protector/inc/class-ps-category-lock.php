@@ -15,6 +15,22 @@ class PS_Category_Lock {
     private static $instance = null;
 
     /**
+     * Rendered form HTML to pass to the protected WooCommerce template.
+     *
+     * @var string
+     */
+    private static $woo_protected_form = '';
+
+    /**
+     * Get the stored protected form HTML (used by the WooCommerce override template).
+     *
+     * @return string
+     */
+    public static function get_woo_protected_form() : string {
+        return self::$woo_protected_form;
+    }
+
+    /**
      * Returns instance of PS_Category_Lock.
      *
      * @return object
@@ -42,6 +58,16 @@ class PS_Category_Lock {
         add_filter( 'the_content', array($this, 'filter_content_by_category'), 11 );
         add_filter( 'get_the_excerpt', array($this, 'filter_content_by_category'), 11 );
         add_action( 'template_redirect', array($this, 'protect_category_archive') );
+    }
+
+    /**
+     * Swap WooCommerce's archive template for a minimal protected-category template.
+     *
+     * @param string $template Current template path.
+     * @return string
+     */
+    public function use_protected_category_template( string $template ) : string {
+        return plugin_dir_path( __FILE__ ) . 'templates/woo-category-protected.php';
     }
 
     /**
@@ -904,6 +930,22 @@ class PS_Category_Lock {
         if ( is_admin() ) {
             return;
         }
+        // WooCommerce single product: if the product belongs to a locked product_cat,
+        // suppress all WooCommerce product hooks and show the password form inline.
+        if ( class_exists( 'WooCommerce' ) && is_singular( 'product' ) ) {
+            $post_id = get_the_ID();
+            $term_data = ( $post_id ? $this->get_protected_term_for_post( $post_id ) : null );
+            if ( $term_data && 'product_cat' === $term_data['taxonomy'] ) {
+                $atts = $this->build_atts_from_term( $term_data['term_id'] );
+                if ( !PS_Conditional::is_valid( $atts ) ) {
+                    $shortcode = $this->build_shortcode_from_term( $term_data['term_id'], '' );
+                    self::$woo_protected_form = do_shortcode( $shortcode );
+                    // Replace the entire single-product template with the protected form.
+                    add_filter( 'template_include', array($this, 'use_protected_category_template'), 99 );
+                }
+            }
+            return;
+        }
         if ( !is_category() && !is_tax() ) {
             return;
         }
@@ -916,8 +958,21 @@ class PS_Category_Lock {
         if ( !$taxonomy_obj || !$taxonomy_obj->hierarchical || !$taxonomy_obj->public ) {
             return;
         }
-        $activate = get_term_meta( $term->term_id, 'passster_activate_protection', true );
-        if ( !$activate ) {
+        // Check the term itself and then its ancestors for protection.
+        $protected_term_id = null;
+        $ids_to_check = array_merge( array($term->term_id), get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) );
+        foreach ( $ids_to_check as $check_id ) {
+            if ( get_term_meta( $check_id, 'passster_activate_protection', true ) ) {
+                $protected_term_id = $check_id;
+                break;
+            }
+        }
+        if ( !$protected_term_id ) {
+            return;
+        }
+        // Use the protected term (may be an ancestor) for all subsequent meta lookups.
+        $term = get_term( $protected_term_id );
+        if ( !$term || is_wp_error( $term ) ) {
             return;
         }
         $atts = $this->build_atts_from_term( $term->term_id );
@@ -932,6 +987,15 @@ class PS_Category_Lock {
         }
         // Directly replace the main query's posts with a virtual post whose content is the password form.
         $shortcode = $this->build_shortcode_from_term( $term->term_id, '' );
+        // WooCommerce product category archives use their own template system and never
+        // call the_content() on the main query posts, so the virtual-post trick doesn't work.
+        // Instead, inject the form via WooCommerce's own template hooks and suppress the product loop.
+        if ( class_exists( 'WooCommerce' ) && 'product_cat' === $term->taxonomy ) {
+            self::$woo_protected_form = do_shortcode( $shortcode );
+            // Replace WooCommerce's entire archive template with a minimal one that shows only the form.
+            add_filter( 'template_include', array($this, 'use_protected_category_template'), 99 );
+            return;
+        }
         global $wp_query;
         $virtual = new \WP_Post((object) array(
             'ID'                    => 0,
@@ -981,12 +1045,16 @@ class PS_Category_Lock {
                 continue;
             }
             foreach ( $terms as $term ) {
-                $activate = get_term_meta( $term->term_id, 'passster_activate_protection', true );
-                if ( $activate ) {
-                    return array(
-                        'term_id'  => $term->term_id,
-                        'taxonomy' => $taxonomy,
-                    );
+                // Check the term itself, then walk up its ancestor chain.
+                $ids_to_check = array_merge( array($term->term_id), get_ancestors( $term->term_id, $taxonomy, 'taxonomy' ) );
+                foreach ( $ids_to_check as $check_id ) {
+                    $activate = get_term_meta( $check_id, 'passster_activate_protection', true );
+                    if ( $activate ) {
+                        return array(
+                            'term_id'  => $check_id,
+                            'taxonomy' => $taxonomy,
+                        );
+                    }
                 }
             }
         }
@@ -1018,6 +1086,7 @@ class PS_Category_Lock {
         $password = get_term_meta( $term_id, 'passster_password', true );
         $shortcode .= 'password="' . esc_attr( $password ) . '" ';
         $shortcode .= 'protection="full" ';
+        $shortcode .= 'term_id="' . $term_id . '" ';
         // Redirect.
         $redirect = get_term_meta( $term_id, 'passster_redirect_url', true );
         if ( !empty( $redirect ) ) {

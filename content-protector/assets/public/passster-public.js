@@ -93,6 +93,10 @@ jQuery( document ).ready( function( $ ) {
 			window.location.href = getCacheFriendlyURL();
 		} else {
 			$form.find( '.passster-error' ).hide();
+			if ( data.requires_reload ) {
+				window.location.href = getCacheFriendlyURL();
+				return;
+			}
 			if ( data.content ) {
 				let content = data.content;
 				if ( ps_ajax.shortcodes ) {
@@ -155,6 +159,7 @@ jQuery( document ).ready( function( $ ) {
 		const protection = $input.attr( 'data-protection' ) || '';
 		const acf = $button.attr( 'data-acf' ) || '';
 		const redirect = $button.attr( 'data-redirect' ) || '';
+		const termId = parseInt( $button.attr( 'data-term-id' ) ) || 0;
 
 		// Get block ID from parent wrapper if exists.
 		const $wrapper = $form.closest( '.passster-protected-content' );
@@ -178,6 +183,7 @@ jQuery( document ).ready( function( $ ) {
 					protection,
 					acf,
 					redirect,
+					term_id: termId,
 				} ),
 			} );
 

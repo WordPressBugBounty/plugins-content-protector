@@ -106,6 +106,11 @@ class PS_Rest_API {
                     'type'              => 'string',
                     'sanitize_callback' => 'sanitize_text_field',
                 ),
+                'term_id'    => array(
+                    'required'          => false,
+                    'type'              => 'integer',
+                    'sanitize_callback' => 'absint',
+                ),
             ),
         ) );
         // Hash password endpoint.
@@ -198,11 +203,43 @@ class PS_Rest_API {
         $redirect = $request->get_param( 'redirect' );
         $protection = $request->get_param( 'protection' );
         $acf = $request->get_param( 'acf' );
+        $term_id = absint( $request->get_param( 'term_id' ) );
         // Default error response.
         $error_message = $options['error'] ?? __( 'Invalid password.', 'content-protector' );
         $remove_spaces = apply_filters( 'passster_remove_spaces_from_list', true );
         if ( empty( $protection ) ) {
             $protection = false;
+        }
+        // Category archive protection: term_id is passed directly from the form.
+        if ( $term_id > 0 ) {
+            $result = $this->validate_category_unlock(
+                $input,
+                $type,
+                $term_id,
+                null,
+                '',
+                $redirect,
+                $options,
+                $remove_spaces
+            );
+            if ( $result['valid'] ) {
+                do_action( 'passster_validation_success', $input );
+                $term_redirect = get_term_meta( $term_id, 'passster_redirect_url', true );
+                if ( !empty( $term_redirect ) ) {
+                    return new \WP_REST_Response(array(
+                        'success'  => true,
+                        'redirect' => esc_url_raw( $term_redirect ),
+                    ), 200);
+                }
+                return new \WP_REST_Response(array(
+                    'success'         => true,
+                    'requires_reload' => true,
+                ), 200);
+            }
+            return new \WP_REST_Response(array(
+                'success' => false,
+                'error'   => $error_message,
+            ), 200);
         }
         // Parent page protection inheritance.
         $parent_id = wp_get_post_parent_id( $post_id );
@@ -395,8 +432,16 @@ class PS_Rest_API {
         if ( !empty( $redirect ) ) {
             $response_data['redirect'] = $redirect;
         } else {
-            // Block content is already rendered via render_block(); apply the_content filter only for shortcode/area protection.
-            $response_data['content'] = ( empty( $block_id ) ? apply_filters( 'the_content', str_replace( '{post-id}', get_the_id(), $result_content ) ) : $result_content );
+            // Page builders (Divi, WPBakery, Elementor, etc.) require their full frontend
+            // context (scripts, styles, theme builder) to render correctly. In a REST API
+            // response this is not available, so signal the client to do a full page reload
+            // instead of attempting inline content injection.
+            if ( empty( $block_id ) && $this->content_uses_page_builder( $result_content, $post_id ) ) {
+                $response_data['requires_reload'] = true;
+            } else {
+                // Block content is already rendered via render_block(); apply the_content filter only for shortcode/area protection.
+                $response_data['content'] = ( empty( $block_id ) ? apply_filters( 'the_content', str_replace( '{post-id}', $post_id, $result_content ) ) : $result_content );
+            }
         }
         // Determine source for tracking.
         $source = 'shortcode';
@@ -967,6 +1012,33 @@ class PS_Rest_API {
             }
         }
         return null;
+    }
+
+    /**
+     * Check if content uses a page builder that requires a full page reload to render.
+     *
+     * @param string $content Post content.
+     * @param int    $post_id Post ID.
+     * @return bool
+     */
+    private function content_uses_page_builder( $content, $post_id = 0 ) {
+        // Divi Builder shortcodes.
+        if ( $content && strpos( $content, '[et_pb_' ) !== false ) {
+            return true;
+        }
+        // WPBakery Page Builder.
+        if ( $content && strpos( $content, '[vc_row' ) !== false ) {
+            return true;
+        }
+        // Fusion Builder (Avada).
+        if ( $content && strpos( $content, '[fusion_builder' ) !== false ) {
+            return true;
+        }
+        // Elementor stores its layout in post meta, not in post_content.
+        if ( $post_id && 'builder' === get_post_meta( $post_id, '_elementor_edit_mode', true ) ) {
+            return true;
+        }
+        return false;
     }
 
     /**

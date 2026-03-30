@@ -176,6 +176,9 @@ class PS_Public {
         }
         // post id (per-form, for correct REST unlock on archive pages with multiple protected posts).
         $form = str_replace( '[PASSSTER_POST_ID]', absint( get_the_ID() ), $form );
+        // term id (for category archive protection — passed to REST API so it can validate against term meta).
+        $term_id_val = ( !empty( $atts['term_id'] ) ? absint( $atts['term_id'] ) : 0 );
+        $form = str_replace( '[PASSSTER_TERM_ID]', $term_id_val, $form );
         // hide or not.
         if ( !empty( $atts['hide'] ) ) {
             $form = str_replace( '[PASSSTER_HIDE]', ' passster-hide', $form );
@@ -398,8 +401,7 @@ class PS_Public {
         } else {
             $args['disable_cookie'] = false;
         }
-        // Always use inline unlock (no page refresh) - uses REST API
-        $args['unlock_mode'] = true;
+        $args['unlock_mode'] = !empty( $options['unlock_mode'] );
         wp_localize_script( 'passster-public', 'ps_ajax', $args );
         // if password type hint used.
         $password_typing = $options['show_password'];
