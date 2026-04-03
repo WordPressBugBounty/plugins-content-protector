@@ -6,7 +6,7 @@ Tested up to: 6.9
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.2
+Stable tag: 4.3.3
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -91,9 +91,12 @@ Please report security bugs found in the source code of the Passster plugin thro
 
 == Screenshots ==
 1. Passster Password Form
-2. Passster Areas
-3. Passster Settings
-3. Passster Customizer Options
+2. Passster Settings Area General
+3. Passster Settings Area Design
+4. Passster Protected Areas
+5. Passster Protected Areas in page edit
+6. Passster Password Lists - Pro only
+7. Passster Statistics - Pro only
 
 == Installation ==
 
@@ -107,6 +110,9 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.3 - 03.04.2026 =
+* Changed: Enhance PS_Rest_Handler to allow public access to additional Passster endpoints for guest users.
+
 = 4.3.2 - 30.03.2026 =
 * Fixed: Category lock for WooCommerce products and categories.
 * Changed: Page refresh on unlock is now on by default. Inline unlock can be enabled via Advanced → Unlock Behaviour.

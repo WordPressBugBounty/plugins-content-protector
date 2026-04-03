@@ -43,10 +43,19 @@ class PS_Rest_Handler {
 			return $result;
 		}
 
-		// Allow Passster nonces endpoint for unauthenticated users.
-		$request_uri = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		if ( strpos( $request_uri, '/passster/v1/nonces' ) !== false ) {
-			return $result;
+		// Allow Passster public endpoints (unlock flow must work for guests).
+		$request_uri           = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$public_passster_paths = array(
+			'/passster/v1/nonces',
+			'/passster/v1/unlock',
+			'/passster/v1/hash',
+			'/passster/v1/captcha',
+			'/passster/v1/logout',
+		);
+		foreach ( $public_passster_paths as $path ) {
+			if ( strpos( $request_uri, $path ) !== false ) {
+				return $result;
+			}
 		}
 
 		// Check if request is coming from a frontend page builder.
