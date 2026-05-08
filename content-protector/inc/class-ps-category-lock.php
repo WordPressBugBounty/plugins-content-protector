@@ -22,12 +22,28 @@ class PS_Category_Lock {
     private static $woo_protected_form = '';
 
     /**
+     * Rendered form HTML to pass to the protected regular category template.
+     *
+     * @var string
+     */
+    private static $protected_form = '';
+
+    /**
      * Get the stored protected form HTML (used by the WooCommerce override template).
      *
      * @return string
      */
     public static function get_woo_protected_form() : string {
         return self::$woo_protected_form;
+    }
+
+    /**
+     * Get the stored protected form HTML (used by the regular category override template).
+     *
+     * @return string
+     */
+    public static function get_protected_form() : string {
+        return self::$protected_form;
     }
 
     /**
@@ -68,6 +84,30 @@ class PS_Category_Lock {
      */
     public function use_protected_category_template( string $template ) : string {
         return plugin_dir_path( __FILE__ ) . 'templates/woo-category-protected.php';
+    }
+
+    /**
+     * Swap the archive template for the protected regular-category template (classic themes only).
+     *
+     * @param string $template Current template path.
+     * @return string
+     */
+    public function use_protected_regular_category_template( string $template ) : string {
+        return plugin_dir_path( __FILE__ ) . 'templates/category-protected.php';
+    }
+
+    /**
+     * Replace the core/query block output with the password form (FSE/block themes only).
+     *
+     * @param string $block_content Rendered block HTML.
+     * @param array  $block         Block data.
+     * @return string
+     */
+    public function replace_query_block_with_form( string $block_content, array $block ) : string {
+        if ( 'core/query' !== $block['blockName'] ) {
+            return $block_content;
+        }
+        return self::$protected_form;
     }
 
     /**
@@ -985,47 +1025,33 @@ class PS_Category_Lock {
             wp_redirect( esc_url_raw( $redirect ) );
             exit;
         }
-        // Directly replace the main query's posts with a virtual post whose content is the password form.
         $shortcode = $this->build_shortcode_from_term( $term->term_id, '' );
+        $form_html = do_shortcode( $shortcode );
         // WooCommerce product category archives use their own template system and never
         // call the_content() on the main query posts, so the virtual-post trick doesn't work.
         // Instead, inject the form via WooCommerce's own template hooks and suppress the product loop.
         if ( class_exists( 'WooCommerce' ) && 'product_cat' === $term->taxonomy ) {
-            self::$woo_protected_form = do_shortcode( $shortcode );
+            self::$woo_protected_form = $form_html;
             // Replace WooCommerce's entire archive template with a minimal one that shows only the form.
             add_filter( 'template_include', array($this, 'use_protected_category_template'), 99 );
             return;
         }
-        global $wp_query;
-        $virtual = new \WP_Post((object) array(
-            'ID'                    => 0,
-            'post_author'           => 0,
-            'post_date'             => current_time( 'mysql' ),
-            'post_date_gmt'         => current_time( 'mysql', true ),
-            'post_content'          => $shortcode,
-            'post_title'            => '',
-            'post_excerpt'          => '',
-            'post_status'           => 'publish',
-            'comment_status'        => 'closed',
-            'ping_status'           => 'closed',
-            'post_password'         => '',
-            'post_name'             => 'passster-protected',
-            'to_ping'               => '',
-            'pinged'                => '',
-            'post_modified'         => current_time( 'mysql' ),
-            'post_modified_gmt'     => current_time( 'mysql', true ),
-            'post_content_filtered' => '',
-            'post_parent'           => 0,
-            'guid'                  => '',
-            'menu_order'            => 0,
-            'post_type'             => 'post',
-            'post_mime_type'        => '',
-            'comment_count'         => 0,
-            'filter'                => 'raw',
-        ));
-        $wp_query->posts = array($virtual);
-        $wp_query->post_count = 1;
-        $wp_query->found_posts = 1;
+        self::$protected_form = $form_html;
+        if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
+            // FSE/block themes: let the block template render normally; replace only the
+            // core/query block (the post loop) with the password form. This preserves the
+            // theme's own header/footer block templates.
+            add_filter(
+                'render_block',
+                array($this, 'replace_query_block_with_form'),
+                10,
+                2
+            );
+        } else {
+            // Classic themes: swap the archive template for a minimal protected-category
+            // template that calls get_header()/get_footer() from the active theme.
+            add_filter( 'template_include', array($this, 'use_protected_regular_category_template'), 99 );
+        }
     }
 
     // -------------------------------------------------------------------------

@@ -83,14 +83,15 @@ class PS_Admin_Settings {
         $fs_id = '1938';
         $fs_affix = \passster_fs()->get_unique_affix();
         $args = array(
-            'screen'         => 'passster-settings',
-            'version'        => PASSSTER_VERSION,
-            'logo'           => PASSSTER_URL . '/assets/admin/passster-logo.svg',
-            'is_pro'         => \passster_fs()->is_plan_or_trial__premium_only( 'pro' ),
-            'account_url'    => admin_url( 'admin.php?page=' . $fs_slug . '-account' ),
-            'activation_url' => '#',
-            'upgrade_url'    => \passster_fs()->get_upgrade_url(),
-            'fs_affix'       => $fs_affix,
+            'screen'           => 'passster-settings',
+            'version'          => PASSSTER_VERSION,
+            'logo'             => PASSSTER_URL . '/assets/admin/passster-logo.svg',
+            'is_pro'           => \passster_fs()->is_plan_or_trial__premium_only( 'pro' ),
+            'is_premium_build' => \passster_fs()->is_premium(),
+            'account_url'      => admin_url( 'admin.php?page=' . $fs_slug . '-account' ),
+            'activation_url'   => '#',
+            'upgrade_url'      => \passster_fs()->get_upgrade_url(),
+            'fs_affix'         => $fs_affix,
         );
         // Add Freemius license activation dialog on settings page
         add_action( 'admin_footer', array($this, 'add_license_activation_dialog') );
@@ -116,6 +117,10 @@ class PS_Admin_Settings {
      */
     public function add_license_activation_dialog() {
         $fs = \passster_fs();
+        // On the free build the AJAX handler is not registered by Freemius, so the dialog is useless.
+        if ( !$fs->is_premium() ) {
+            return;
+        }
         $vars = array(
             'id' => $fs->get_id(),
         );

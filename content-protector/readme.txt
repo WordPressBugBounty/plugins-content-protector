@@ -2,11 +2,11 @@
 Contributors: wpchill, silkalns
 Tags: password protect, password, restrict content, sitewide, password protection
 Requires at least: 6.5
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.3
+Stable tag: 4.3.4
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,10 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.4 - 08.05.2026 =
+* Fixed: Replaced non-functional license activation button on free version with installation guide for Passster PRO.
+* Fixed: Category lock not showing password form on regular post category archive pages.
+
 = 4.3.3 - 03.04.2026 =
 * Changed: Enhance PS_Rest_Handler to allow public access to additional Passster endpoints for guest users.
 
