@@ -328,6 +328,10 @@ class PS_Public {
                 $cookie = esc_html( $_COOKIE['passster'] );
                 if ( !PS_Conditional::is_valid( $atts ) ) {
                     $global_protection_url = get_permalink( $post_id );
+                    $pass_param = filter_input( INPUT_GET, 'pass', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+                    if ( !empty( $pass_param ) ) {
+                        $global_protection_url = add_query_arg( 'pass', $pass_param, $global_protection_url );
+                    }
                     wp_redirect( esc_url_raw( $global_protection_url ) );
                     exit;
                 }
