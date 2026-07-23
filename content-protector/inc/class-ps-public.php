@@ -229,10 +229,11 @@ class PS_Public {
         // Redirection.
         $redirection = get_post_meta( $post_id, 'passster_redirect_url', true );
         // texts.
-        $headline = get_post_meta( $post_id, 'passster_headline', true );
-        $instruction = get_post_meta( $post_id, 'passster_instruction', true );
-        $placeholder = get_post_meta( $post_id, 'passster_placeholder', true );
-        $button = get_post_meta( $post_id, 'passster_button', true );
+        $overwrite_defaults = get_post_meta( $post_id, 'passster_activate_overwrite_defaults', true );
+        $headline = ( $overwrite_defaults ? get_post_meta( $post_id, 'passster_headline', true ) : '' );
+        $instruction = ( $overwrite_defaults ? get_post_meta( $post_id, 'passster_instruction', true ) : '' );
+        $placeholder = ( $overwrite_defaults ? get_post_meta( $post_id, 'passster_placeholder', true ) : '' );
+        $button = ( $overwrite_defaults ? get_post_meta( $post_id, 'passster_button', true ) : '' );
         $id = get_post_meta( $post_id, 'passster_id', true );
         if ( !$activate_protection ) {
             return $content;

@@ -6,7 +6,7 @@ Tested up to: 7.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.5
+Stable tag: 4.3.6
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,12 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.6 - 23.07.2026 =
+* Added: "Show Password" label is now customizable from the General settings tab.
+* Fixed: Per-page form text being used even when "Overwrite Defaults" is disabled.
+* Fixed: Instruction text showing as garbled characters when using the Protected Area block.
+* Fixed: Security issues.
+
 = 4.3.5 - 02.06.2026 =
 * Fixed: hCaptcha cookie not being recognized on subsequent page loads.
 * Fixed: Unlock links with special characters in instructions could cause encoding errors.

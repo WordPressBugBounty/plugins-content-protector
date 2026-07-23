@@ -928,12 +928,9 @@ class PS_Category_Lock {
      * @return string
      */
     public function filter_content_by_category( $content ) {
-        // Skip admin, REST, and non-singular contexts.
-        if ( is_admin() || defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+        if ( is_admin() ) {
             return $content;
         }
-        // On category/taxonomy archives, template_include already handles protection.
-        // Skip here to avoid showing escaped shortcode HTML in post excerpts.
         if ( is_category() || is_tax() ) {
             return $content;
         }
@@ -941,24 +938,35 @@ class PS_Category_Lock {
         if ( !$post_id ) {
             return $content;
         }
-        // Skip if the post itself already has protection (PS_Public handles it).
-        $post_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
-        if ( $post_protection ) {
+        if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
             return $content;
         }
-        // Check each hierarchical taxonomy for protected terms.
-        $term_data = $this->get_protected_term_for_post( $post_id );
+        $term_data = $this->get_active_category_lock( $post_id );
         if ( !$term_data ) {
             return $content;
         }
-        // Build atts and validate.
-        $atts = $this->build_atts_from_term( $term_data['term_id'] );
-        if ( PS_Conditional::is_valid( $atts ) ) {
-            return $content;
-        }
-        // Build shortcode and render form.
         $shortcode = $this->build_shortcode_from_term( $term_data['term_id'], $content );
         return do_shortcode( $shortcode );
+    }
+
+    /**
+     * @param int $post_id Post ID.
+     * @return array|null
+     */
+    public function get_active_category_lock( int $post_id ) {
+        $post_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
+        if ( $post_protection ) {
+            return null;
+        }
+        $term_data = $this->get_protected_term_for_post( $post_id );
+        if ( !$term_data ) {
+            return null;
+        }
+        $atts = $this->build_atts_from_term( $term_data['term_id'] );
+        if ( PS_Conditional::is_valid( $atts ) ) {
+            return null;
+        }
+        return $term_data;
     }
 
     /**

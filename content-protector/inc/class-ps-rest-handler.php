@@ -76,7 +76,7 @@ class PS_Rest_Handler {
 			$valid   = PS_Conditional::is_valid( $atts );
 		}
 
-		if ( $protection_enabled && ! $valid && ! is_user_logged_in() ) {
+		if ( $protection_enabled && ! $valid && ! current_user_can( 'edit_posts' ) ) {
 			return new \WP_Error(
 				'rest_not_logged_in',
 				__( 'You are not allowed to access this content. Please authenticate with a password first.', 'content-protector' ),
@@ -118,6 +118,15 @@ class PS_Rest_Handler {
 				if ( isset( $data['meta'][ $field ] ) ) {
 					unset( $data['meta'][ $field ] );
 				}
+			}
+		}
+
+		if ( $post && class_exists( 'passster\PS_Category_Lock' ) && PS_Category_Lock::get_instance()->get_active_category_lock( $post->ID ) ) {
+			if ( isset( $data['content']['rendered'] ) ) {
+				$data['content']['rendered'] = '';
+			}
+			if ( isset( $data['excerpt']['rendered'] ) ) {
+				$data['excerpt']['rendered'] = '';
 			}
 		}
 

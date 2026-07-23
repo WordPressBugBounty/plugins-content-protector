@@ -297,21 +297,34 @@ jQuery( document ).ready( function( $ ) {
 	} );
 
 	// Turnstile
+	let turnstileToken = '';
 	if ( $( '.turnstile-form' ).length > 0 && window.turnstile ) {
 		window.turnstile.ready( function() {
 			window.turnstile.render( '.passster-turnstile', {
 				sitekey: ps_ajax.turnstile_key,
 				callback( token ) {
-					const $btn = $( '.passster-submit-turnstile' );
-					const psId = $btn.attr( 'data-psid' );
-					const $form = $( '#' + psId );
-					const areaId = parseInt( $btn.attr( 'data-area' ) ) || 0;
-					const redirect = $btn.attr( 'data-redirect' ) || '';
-					const protection = $btn.attr( 'data-protection' ) || '';
-
-					validateCaptcha( token, 'turnstile', $form, psId, areaId, redirect, protection );
+					turnstileToken = token;
 				},
 			} );
+		} );
+
+		$( '.turnstile-form' ).on( 'submit', function( event ) {
+			event.preventDefault();
+
+			const $thisForm = $( this );
+			const $btn = $thisForm.find( '.passster-submit-turnstile' );
+			const psId = $btn.attr( 'data-psid' );
+			const $form = $( '#' + psId );
+			const areaId = parseInt( $btn.attr( 'data-area' ) ) || 0;
+			const redirect = $btn.attr( 'data-redirect' ) || '';
+			const protection = $btn.attr( 'data-protection' ) || '';
+
+			if ( ! turnstileToken ) {
+				showError( $form, 'Please complete the verification.' );
+				return;
+			}
+
+			validateCaptcha( turnstileToken, 'turnstile', $form, psId, areaId, redirect, protection );
 		} );
 	}
 

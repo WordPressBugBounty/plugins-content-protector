@@ -203,7 +203,7 @@ class PS_Block_Editor {
             $shortcode .= 'headline="' . $headline . '" ';
         }
         if ( !empty( $instruction ) ) {
-            $shortcode .= 'instruction="' . $instruction . '" ';
+            $shortcode .= 'instruction="' . base64_encode( $instruction ) . '" ';
         }
         if ( !empty( $placeholder ) ) {
             $shortcode .= 'placeholder="' . $placeholder . '" ';

@@ -1118,6 +1118,7 @@ class PS_Rest_API {
         }
         // Get content based on protection type (mirrors AJAX logic).
         $content = '';
+        $requires_reload = false;
         if ( 'full' !== $protection ) {
             if ( 'area' === $protection ) {
                 if ( !empty( $area_id ) ) {
@@ -1135,10 +1136,12 @@ class PS_Rest_API {
                 }
             }
         } else {
-            // Full page protection - return full post content.
             $post = get_post( $post_id );
-            if ( $post ) {
+            $post_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
+            if ( $post && 'publish' === $post->post_status && $post_protection ) {
                 $content = apply_filters( 'passster_compatibility_actions', $post->post_content, $post_id );
+            } elseif ( $post && 'publish' === $post->post_status && !$post_protection && class_exists( 'passster\\PS_Category_Lock' ) && PS_Category_Lock::get_instance()->get_protected_term_for_post( $post_id ) ) {
+                $requires_reload = true;
             }
         }
         // Track record.
@@ -1160,6 +1163,8 @@ class PS_Rest_API {
         );
         if ( !empty( $redirect ) ) {
             $response_data['redirect'] = $redirect;
+        } elseif ( $requires_reload ) {
+            $response_data['requires_reload'] = true;
         } else {
             $response_data['content'] = $content;
         }

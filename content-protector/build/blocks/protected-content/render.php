@@ -150,9 +150,7 @@ if ( $is_unlocked ) {
 	return;
 }
 
-// If hide_form is enabled and not unlocked, show nothing (or just the content for cookie-based access).
 if ( $advanced_options && $hide_form ) {
-	echo $content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	return;
 }
 
@@ -230,9 +228,6 @@ $form = str_replace( '[PASSSTER_AREA]', '0', $form );
 // ACF placeholder (not used in blocks).
 $form = str_replace( '[PASSSTER_ACF]', '', $form );
 
-// Store content for JS to reveal after unlock.
-$content_encoded = base64_encode( $content );
-
 // Wrapper classes.
 $wrapper_classes = array( 'passster-protected-content', 'wp-block-passster-protected-content' );
 if ( ! empty( $attributes['align'] ) ) {
@@ -263,8 +258,6 @@ if ( $advanced_options && ! empty( $redirect_url ) ) {
 >
 	<div class="passster-protected-content__form">
 		<?php echo $form; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-	</div>
-	<div class="passster-protected-content__content" style="display: none;" data-content="<?php echo esc_attr( $content_encoded ); ?>">
 	</div>
 </div>
 <?php

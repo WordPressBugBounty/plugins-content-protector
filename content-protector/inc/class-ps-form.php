@@ -37,9 +37,10 @@ class PS_Form {
             '[PASSSTER_AUTH]'  => 'passster_password',
             '[PS_AJAX_LOADER]' => PASSSTER_URL . '/assets/public/ps-loader.svg',
         );
-        $show_password = $options['show_password'];
+        $show_password = $options['show_password'] ?? false;
+        $show_password_label = $options['show_password_label'] ?? __( 'Show Password', 'content-protector' );
         if ( $show_password ) {
-            $password_form_placeholders['[PASSSTER_SHOW_PASSWORD]'] = '<label for="passster-password-hint"><input name="passster-password-hint" id="passster-password-hint" type="checkbox" onclick="showPassword()"/> ' . esc_html__( 'Show Password', 'content-protector' ) . '</label>';
+            $password_form_placeholders['[PASSSTER_SHOW_PASSWORD]'] = '<label for="passster-password-hint"><input name="passster-password-hint" id="passster-password-hint" type="checkbox" onclick="showPassword()"/> ' . esc_html( $show_password_label ) . '</label>';
         } else {
             $password_form_placeholders['[PASSSTER_SHOW_PASSWORD]'] = '';
         }
