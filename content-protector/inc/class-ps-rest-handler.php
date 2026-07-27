@@ -76,7 +76,7 @@ class PS_Rest_Handler {
 			$valid   = PS_Conditional::is_valid( $atts );
 		}
 
-		if ( $protection_enabled && ! $valid && ! current_user_can( 'edit_posts' ) ) {
+		if ( $protection_enabled && ! $valid && ! current_user_can( 'manage_options' ) ) {
 			return new \WP_Error(
 				'rest_not_logged_in',
 				__( 'You are not allowed to access this content. Please authenticate with a password first.', 'content-protector' ),
