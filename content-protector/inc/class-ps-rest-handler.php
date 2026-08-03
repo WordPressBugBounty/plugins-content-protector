@@ -45,6 +45,8 @@ class PS_Rest_Handler {
 
 		// Allow Passster public endpoints (unlock flow must work for guests).
 		$request_uri           = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
+		$request_path          = (string) wp_parse_url( $request_uri, PHP_URL_PATH );
+		$rest_route_param      = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ) : '';
 		$public_passster_paths = array(
 			'/passster/v1/nonces',
 			'/passster/v1/unlock',
@@ -53,7 +55,7 @@ class PS_Rest_Handler {
 			'/passster/v1/logout',
 		);
 		foreach ( $public_passster_paths as $path ) {
-			if ( strpos( $request_uri, $path ) !== false ) {
+			if ( strpos( $request_path, $path ) !== false || strpos( $rest_route_param, $path ) !== false ) {
 				return $result;
 			}
 		}

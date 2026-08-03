@@ -113,6 +113,10 @@ class PS_Meta {
         if ( 'post' !== $screen->base ) {
             return;
         }
+        $action = ( isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '' );
+        if ( 'elementor' === $action ) {
+            return;
+        }
         wp_enqueue_script(
             'passster-settings',
             PASSSTER_URL . '/inc/admin/build/index.js',
