@@ -2,11 +2,11 @@
 Contributors: wpchill, silkalns
 Tags: password protect, password, restrict content, sitewide, password protection
 Requires at least: 6.5
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.8
+Stable tag: 4.3.9
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,17 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.9 - 13.08.2026 =
+* Fixed: Security issue (thanks to WPScan).
+* Fixed: Block editor freezing when selecting a block built with page builders like Spectra.
+* Changed: Hid noisy Freemius notices (opt-in reminder, premium activation, plan upgrade messages).
+* Changed: Updated Freemius SDK to 2.13.4.
+
+= 4.3.8 - 03.08.2026 =
+* Fixed: Security issue.
+* Fixed: Block editor freezing on pages built with Elementor.
+* Changed: Improved Protected Content block toolbar performance on pages with many blocks.
+
 = 4.3.7 - 27.07.2026 =
 * Fixed: Security issue (thanks to Pierre Rudloff).
 

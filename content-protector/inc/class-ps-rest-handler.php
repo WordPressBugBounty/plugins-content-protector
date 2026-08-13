@@ -29,24 +29,21 @@ class PS_Rest_Handler {
 	 * Constructor for PS_Rest_Handler
 	 */
 	public function __construct() {
-		add_filter( 'rest_authentication_errors', array( $this, 'restrict_rest_access' ) );
+		add_filter( 'rest_pre_dispatch', array( $this, 'restrict_rest_access' ), 10, 3 );
 		add_filter( 'rest_prepare_post', array( $this, 'filter_rest_response' ), 10, 3 );
 
 		add_action( 'rest_api_init', array( $this, 'register_nonce_routes' ) );
 	}
 
-	public function restrict_rest_access( $result ) {
+	public function restrict_rest_access( $result, $server, $request ) {
 
-		// If a previous authentication check was applied,
+		// If a previous plugin already short-circuited dispatch,
 		// pass that result along without modification.
-		if ( true === $result || is_wp_error( $result ) ) {
+		if ( null !== $result ) {
 			return $result;
 		}
 
 		// Allow Passster public endpoints (unlock flow must work for guests).
-		$request_uri           = isset( $_SERVER['REQUEST_URI'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ) : '';
-		$request_path          = (string) wp_parse_url( $request_uri, PHP_URL_PATH );
-		$rest_route_param      = isset( $_GET['rest_route'] ) ? sanitize_text_field( wp_unslash( $_GET['rest_route'] ) ) : '';
 		$public_passster_paths = array(
 			'/passster/v1/nonces',
 			'/passster/v1/unlock',
@@ -54,15 +51,13 @@ class PS_Rest_Handler {
 			'/passster/v1/captcha',
 			'/passster/v1/logout',
 		);
-		foreach ( $public_passster_paths as $path ) {
-			if ( strpos( $request_path, $path ) !== false || strpos( $rest_route_param, $path ) !== false ) {
-				return $result;
-			}
+		if ( in_array( $request->get_route(), $public_passster_paths, true ) ) {
+			return null;
 		}
 
 		// Check if request is coming from a frontend page builder.
 		if ( current_user_can( 'manage_options' ) && ( is_plugin_active( 'elementor/elementor.php' ) || is_plugin_active( 'livecanvas/livecanvas-plugin-index.php' ) || is_plugin_active( 'divi-builder/divi-builder.php' ) || is_plugin_active( 'oxygen/functions.php' ) || is_plugin_active( 'pagelayer/pagelayer.php' ) ) ) {
-			return $result;
+			return null;
 		}
 
 		// Global protection activated?
@@ -86,7 +81,7 @@ class PS_Rest_Handler {
 			);
 		}
 
-		return $result;
+		return null;
 	}
 
 	/**

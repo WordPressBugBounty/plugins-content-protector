@@ -41,12 +41,43 @@ function passster_fs_settings_url() {
     return admin_url( 'admin.php?page=passster-settings' );
 }
 
+if ( !passster_fs()->is_registered() && !passster_fs()->is_anonymous() && !passster_fs()->is_pending_activation() ) {
+    passster_fs()->skip_connection();
+}
 passster_fs()->add_filter( 'connect_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'after_skip_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'after_connect_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'after_pending_connect_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'show_deactivation_subscription_cancellation', '__return_false' );
 passster_fs()->add_filter( 'show_deactivation_feedback_form', '__return_false' );
+/**
+ * Hide specific Freemius sticky admin notices.
+ *
+ * @param bool  $show Whether the notice should be shown.
+ * @param array $notice Notice data, includes 'id'.
+ *
+ * @return bool
+ */
+function passster_hide_admin_notices(  $show, $notice  ) {
+    $hidden_notice_ids = array(
+        'connect_account',
+        // "We made a few tweaks to the plugin, Opt in to make it better!"
+        'premium_activated',
+        // "W00t! Premium plugin version was successfully activated."
+        'plan_upgraded',
+    );
+    if ( in_array( $notice['id'], $hidden_notice_ids, true ) ) {
+        return false;
+    }
+    return $show;
+}
+
+passster_fs()->add_filter(
+    'show_admin_notice',
+    'passster_hide_admin_notices',
+    10,
+    2
+);
 /**
  * Hide freemius submenus except account (for license management).
  *
