@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.9
+Stable tag: 4.3.10
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,9 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.10 - 21.08.2026 =
+* Fixed: Various password validation and unlock reliability improvements.
+
 = 4.3.9 - 13.08.2026 =
 * Fixed: Security issue (thanks to WPScan).
 * Fixed: Block editor freezing when selecting a block built with page builders like Spectra.

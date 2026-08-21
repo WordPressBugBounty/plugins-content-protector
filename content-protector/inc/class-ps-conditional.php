@@ -52,7 +52,7 @@ class PS_Conditional {
     public static function is_valid_password( string $input, array $atts ) : bool {
         // password.
         if ( !empty( $atts['password'] ) ) {
-            $hash = hash_hmac( 'sha256', esc_html( $atts['password'] ), get_option( 'passster_secure_key' ) );
+            $hash = hash_hmac( 'sha256', wp_unslash( $atts['password'] ), get_option( 'passster_secure_key' ) );
             if ( hash_equals( $hash, $input ) ) {
                 return true;
             }

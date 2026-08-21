@@ -311,7 +311,7 @@ class PS_Public {
         $is_active = esc_html( $options['activate_global_protection'] );
         $atts = array();
         $password = get_post_meta( $post_id, 'passster_password', true );
-        $atts['password'] = esc_html( $password );
+        $atts['password'] = $password;
         if ( !empty( $post_id ) ) {
             if ( $is_active ) {
                 if ( is_page( $post_id ) || is_single( $post_id ) ) {
