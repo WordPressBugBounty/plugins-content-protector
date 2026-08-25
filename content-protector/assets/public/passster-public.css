@@ -1,242 +1,228 @@
-/* Passster Public CSS - Protected from theme conflicts */
-
-/* Base container reset */
 .passster-form {
-    display: block !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    float: none !important;
-    flex: none !important;
+    display: block;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    float: none;
+    flex: none;
 }
 
 .passster-form * {
-    box-sizing: border-box !important;
+    box-sizing: border-box;
 }
 
 .passster-form h4 {
-    margin: 10px 0 !important;
+    margin: 10px 0;
 }
 
 .passster-form > form {
-    display: block !important;
-    position: relative !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    display: block;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
 }
 
 .passster-form fieldset {
-    display: block !important;
-    position: relative !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    min-width: 100% !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    float: none !important;
-    flex: none !important;
+    display: block;
+    position: relative;
+    border: none;
+    margin: 0;
+    padding: 0;
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
+    float: none;
+    flex: none;
 }
 
-/* Input fields */
 .passster-form input[type="text"],
 .passster-form input[type="email"],
 .passster-form input[type="password"],
 .passster-form input.passster-password {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 40px !important;
-    border: 1px solid #CCC !important;
-    border-radius: 4px !important;
-    background: #FFF !important;
-    margin: 0 0 10px !important;
-    padding: 10px !important;
-    box-sizing: border-box !important;
-    font-size: 16px !important;
-    line-height: 1.4 !important;
-    float: none !important;
-    flex: none !important;
-    position: relative !important;
-    transform: none !important;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 40px;
+    border: 1px solid #CCC;
+    border-radius: 4px;
+    background: #FFF;
+    margin: 0 0 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1.4;
+    float: none;
+    flex: none;
+    position: relative;
+    transform: none;
 }
 
 .passster-form input[type="text"]:hover,
 .passster-form input[type="email"]:hover,
 .passster-form input[type="password"]:hover {
-    border-color: #AAA !important;
-    transition: border-color 0.3s ease-in-out !important;
+    border-color: #AAA;
+    transition: border-color 0.3s ease-in-out;
 }
 
 .passster-form input[type="text"]:focus,
 .passster-form input[type="email"]:focus,
 .passster-form input[type="password"]:focus,
 .passster-form input.passster-password:focus {
-    outline: none !important;
-    border-color: #0073aa !important;
-    box-shadow: 0 0 0 1px #0073aa !important;
-    transform: none !important;
-    position: relative !important;
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+    transform: none;
+    position: relative;
 }
 
-/* Submit button */
 .passster-form button[type="submit"],
 .passster-form .passster-submit {
-    display: block !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    height: auto !important;
-    min-height: 40px !important;
-    cursor: pointer !important;
-    border: none !important;
-    border-radius: 4px !important;
-    text-decoration: none !important;
-    font-size: 16px !important;
-    line-height: 1.4 !important;
-    padding: 10px 20px !important;
-    margin: 0 !important;
-    float: none !important;
-    flex: none !important;
-    position: relative !important;
-    transform: none !important;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 40px;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 16px;
+    line-height: 1.4;
+    padding: 10px 20px;
+    margin: 0;
+    float: none;
+    flex: none;
+    position: relative;
+    transform: none;
 }
 
 .passster-form button[type="submit"]:hover {
-    transition: background-color 0.3s ease-in-out !important;
+    transition: background-color 0.3s ease-in-out;
 }
 
 .passster-form button[type="submit"]:active {
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .passster-form button[type="submit"]:focus {
-    outline: 2px solid #0073aa !important;
-    outline-offset: 2px !important;
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
 }
 
-/* Placeholder text */
 .passster-form input::placeholder {
-    color: #888 !important;
-    opacity: 1 !important;
+    color: #888;
+    opacity: 1;
 }
 
 .passster-form input::-webkit-input-placeholder {
-    color: #888 !important;
+    color: #888;
 }
 
 .passster-form input:-moz-placeholder {
-    color: #888 !important;
+    color: #888;
 }
 
 .passster-form input::-moz-placeholder {
-    color: #888 !important;
+    color: #888;
 }
 
 .passster-form input:-ms-input-placeholder {
-    color: #888 !important;
+    color: #888;
 }
 
-/* Form text elements */
 .passster-form .ps-form-headline {
-    display: block !important;
-    position: relative !important;
-    margin-bottom: 10px !important;
+    display: block;
+    position: relative;
+    margin-bottom: 10px;
 }
 
 .passster-form p {
-    display: block !important;
-    position: relative !important;
-    margin: 0 0 15px !important;
+    display: block;
+    position: relative;
+    margin: 0 0 15px;
 }
 
-/* Captcha layouts */
 .passster-captcha-input {
-    float: left !important;
-    width: 70% !important;
-    padding-right: 20px !important;
-    box-sizing: border-box !important;
+    float: left;
+    width: 70%;
+    padding-right: 20px;
+    box-sizing: border-box;
 }
 
 .passster-recaptcha-input {
-    float: right !important;
-    width: 30% !important;
-    padding-top: 15px !important;
+    float: right;
+    width: 30%;
+    padding-top: 15px;
 }
 
 .passster-recaptcha {
-    float: left !important;
-    width: 50% !important;
-    padding-left: 20px !important;
-    box-sizing: border-box !important;
+    float: left;
+    width: 50%;
+    padding-left: 20px;
+    box-sizing: border-box;
 }
 
-/* Error message */
 .passster-form .passster-error {
     display: none;
-    width: 100% !important;
-    max-width: 100% !important;
-    text-align: center !important;
-    float: none !important;
-    clear: both !important;
-    padding: 10px !important;
-    margin-top: 10px !important;
-    background: #e95353 !important;
-    color: white !important;
-    font-size: 14px !important;
-    border-radius: 4px !important;
-    box-sizing: border-box !important;
+    width: 100%;
+    max-width: 100%;
+    text-align: center;
+    float: none;
+    clear: both;
+    padding: 10px;
+    margin-top: 10px;
+    background: #e95353;
+    color: white;
+    font-size: 14px;
+    border-radius: 4px;
+    box-sizing: border-box;
 }
 
-/* Hide class */
 .passster-hide {
-    display: none !important;
+    display: none;
 }
 
-/* Show password toggle */
 .passster-form .show-password-link {
-    display: block !important;
-    position: absolute !important;
-    z-index: 11 !important;
-    font-size: 0.8rem !important;
-    right: 10px !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
+    display: block;
+    position: absolute;
+    z-index: 11;
+    font-size: 0.8rem;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .passster-form .password-showing {
-    width: 100% !important;
-    display: inline !important;
+    width: 100%;
+    display: inline;
 }
 
-/* Loader - hidden by default, shown via .is-loading class */
 .passster-form .ps-loader {
     display: none;
-    width: 30% !important;
-    max-width: 100px !important;
-    margin: 0 auto 10px auto !important;
-    text-align: center !important;
+    width: 30%;
+    max-width: 100px;
+    margin: 0 auto 10px auto;
+    text-align: center;
 }
 
 .passster-form .ps-loader img {
-    max-width: 100% !important;
-    height: auto !important;
+    max-width: 100%;
+    height: auto;
 }
 
-.passster-form .passster-hidden{
+.passster-form .passster-hidden {
     display: none;
 }
 
-/* Label */
 .passster-form label:not(.passster-hidden) {
-    display: block !important;
-    margin-bottom: 5px !important;
+    display: block;
+    margin-bottom: 5px;
 }
 
-/* Clearfix */
 .passster-form::after {
-    content: "" !important;
-    display: table !important;
-    clear: both !important;
+    content: "";
+    display: table;
+    clear: both;
 }

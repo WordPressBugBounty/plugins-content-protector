@@ -91,8 +91,8 @@ class PS_Dynamic_Styles {
 		?>
         <style>
             .passster-form {
-                max-width: <?php echo esc_html($options['form_max_width']); ?> !important;
-            <?php if( isset($options['center_form']) && $options['center_form']) : ?> margin: 0 auto !important;
+                max-width: <?php echo esc_html($options['form_max_width']); ?>;
+            <?php if( isset($options['center_form']) && $options['center_form']) : ?> margin: 0 auto;
             <?php endif; ?>
             }
 
@@ -115,8 +115,8 @@ class PS_Dynamic_Styles {
                 color: <?php echo esc_html($options['instruction_font_color']); ?>;
             }
 
-            .passster-submit, .passster-submit-recaptcha,
-			.passster-submit, .passster-submit-turnstile {
+            .passster-form button[type="submit"], .passster-form .passster-submit,
+            .passster-form .passster-submit-recaptcha, .passster-form .passster-submit-turnstile {
                 background: <?php echo esc_html($options['button_background_color']); ?>;
                 padding: <?php echo esc_html($button_spacing['padding']['top']); ?> <?php echo esc_html($button_spacing['padding']['right']); ?> <?php echo esc_html($button_spacing['padding']['bottom']); ?> <?php echo esc_html($button_spacing['padding']['left']); ?>;
                 margin: <?php echo esc_html($button_spacing['margin']['top']); ?> <?php echo esc_html($button_spacing['margin']['right']); ?> <?php echo esc_html($button_spacing['margin']['bottom']); ?> <?php echo esc_html($button_spacing['margin']['left']); ?>;
@@ -126,8 +126,8 @@ class PS_Dynamic_Styles {
                 color: <?php echo esc_html($options['button_font_color']); ?>;
             }
 
-            .passster-submit:hover, .passster-submit-recaptcha:hover,
-            .passster-submit:hover, .passster-submit-turnstile:hover {
+            .passster-form button[type="submit"]:hover, .passster-form .passster-submit:hover,
+            .passster-form .passster-submit-recaptcha:hover, .passster-form .passster-submit-turnstile:hover {
                 background: <?php echo esc_html($options['button_background_color_hover']); ?>;
                 color: <?php echo esc_html($options['button_font_color_hover']); ?>;
             }

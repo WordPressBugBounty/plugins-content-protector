@@ -29,7 +29,7 @@ class PS_Public {
         add_filter( 'acf_the_content', array($this, 'filter_the_content') );
         add_filter( 'get_the_excerpt', array($this, 'filter_the_content') );
         add_action( 'template_redirect', array($this, 'check_global_proctection') );
-        add_action( 'wp_enqueue_scripts', array($this, 'add_public_scripts') );
+        add_action( 'wp_enqueue_scripts', array($this, 'add_public_scripts'), 9999 );
     }
 
     /**
