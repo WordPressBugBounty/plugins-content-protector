@@ -1119,11 +1119,13 @@ class PS_Rest_API {
         // Get content based on protection type (mirrors AJAX logic).
         $content = '';
         $requires_reload = false;
+        $captcha_protection_types = array('recaptcha', 'turnstile');
         if ( 'full' !== $protection ) {
             if ( 'area' === $protection ) {
                 if ( !empty( $area_id ) ) {
                     $area = get_post( $area_id );
-                    if ( $area && 'protected_areas' === $area->post_type && 'publish' === $area->post_status ) {
+                    $area_protection_type = get_post_meta( $area_id, 'passster_protection_type', true );
+                    if ( $area && 'protected_areas' === $area->post_type && 'publish' === $area->post_status && in_array( $area_protection_type, $captcha_protection_types, true ) ) {
                         $content = apply_filters( 'passster_compatibility_actions', $area->post_content, $area_id );
                     }
                 }
@@ -1138,7 +1140,8 @@ class PS_Rest_API {
         } else {
             $post = get_post( $post_id );
             $post_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
-            if ( $post && 'publish' === $post->post_status && $post_protection ) {
+            $post_protection_type = get_post_meta( $post_id, 'passster_protection_type', true );
+            if ( $post && 'publish' === $post->post_status && $post_protection && in_array( $post_protection_type, $captcha_protection_types, true ) ) {
                 $content = apply_filters( 'passster_compatibility_actions', $post->post_content, $post_id );
             } elseif ( $post && 'publish' === $post->post_status && !$post_protection && class_exists( 'passster\\PS_Category_Lock' ) && PS_Category_Lock::get_instance()->get_protected_term_for_post( $post_id ) ) {
                 $requires_reload = true;
