@@ -126,6 +126,11 @@ class PS_Rest_API {
                         return wp_unslash( $value );
                     },
                 ),
+                'post_id'  => array(
+                    'required'          => true,
+                    'type'              => 'integer',
+                    'sanitize_callback' => 'absint',
+                ),
             ),
         ) );
         // reCAPTCHA/hCaptcha validation endpoint.
@@ -224,6 +229,7 @@ class PS_Rest_API {
             );
             if ( $result['valid'] ) {
                 do_action( 'passster_validation_success', $input );
+                PS_Helper::remember_unlock( hash_hmac( 'sha256', $input, get_option( 'passster_secure_key' ) ) );
                 $term_redirect = get_term_meta( $term_id, 'passster_redirect_url', true );
                 if ( !empty( $term_redirect ) ) {
                     return new \WP_REST_Response(array(
@@ -300,6 +306,7 @@ class PS_Rest_API {
                         'full'
                     );
                     do_action( 'passster_validation_success', $input );
+                    PS_Helper::remember_unlock( hash_hmac( 'sha256', $input, get_option( 'passster_secure_key' ) ) );
                     return new \WP_REST_Response($response_data, 200);
                 }
                 // Category protection exists but validation failed.
@@ -459,6 +466,7 @@ class PS_Rest_API {
             $source
         );
         do_action( 'passster_validation_success', $input );
+        PS_Helper::remember_unlock( hash_hmac( 'sha256', $input, get_option( 'passster_secure_key' ) ) );
         return new \WP_REST_Response($response_data, 200);
     }
 
@@ -1066,7 +1074,16 @@ class PS_Rest_API {
      */
     public function hash_password( \WP_REST_Request $request ) {
         $password = $request->get_param( 'password' );
+        $post_id = $request->get_param( 'post_id' );
+        $real_password = get_post_meta( $post_id, 'passster_password', true );
+        if ( empty( $real_password ) || !hash_equals( $real_password, $password ) ) {
+            return new \WP_REST_Response(array(
+                'success' => false,
+                'error'   => __( 'Invalid password.', 'content-protector' ),
+            ), 200);
+        }
         $hashed = hash_hmac( 'sha256', $password, get_option( 'passster_secure_key' ) );
+        PS_Helper::remember_unlock( $hashed );
         return new \WP_REST_Response(array(
             'success' => true,
             'hash'    => $hashed,
@@ -1134,7 +1151,7 @@ class PS_Rest_API {
                 $post = get_post( $post_id );
                 if ( $post ) {
                     $post_content = apply_filters( 'passster_compatibility_actions', $post->post_content, $post_id );
-                    $content = apply_filters( 'passster_compatibility_actions', PS_Helper::get_shortcode_content( $post_content, $captcha_id ) );
+                    $content = apply_filters( 'passster_compatibility_actions', PS_Helper::get_shortcode_content( $post_content, $captcha_id, 'captcha' ) );
                 }
             }
         } else {
@@ -1164,6 +1181,7 @@ class PS_Rest_API {
         $response_data = array(
             'success' => true,
         );
+        PS_Helper::remember_unlock( hash_hmac( 'sha256', 'captcha-verified', get_option( 'passster_secure_key' ) ) );
         if ( !empty( $redirect ) ) {
             $response_data['redirect'] = $redirect;
         } elseif ( $requires_reload ) {

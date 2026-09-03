@@ -188,7 +188,7 @@ class PS_Admin {
             $args['publicly_queryable'] = true;
         }
         $theme = wp_get_theme();
-        if ( current_user_can( 'administrator' ) && 'Divi' == $theme->name || 'Divi' == $theme->parent_theme ) {
+        if ( current_user_can( 'administrator' ) && ('Divi' == $theme->name || 'Divi' == $theme->parent_theme) ) {
             $args['public'] = true;
             $args['publicly_queryable'] = true;
         }
