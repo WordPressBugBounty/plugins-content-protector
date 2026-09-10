@@ -45,6 +45,20 @@ class PS_Public {
     }
 
     /**
+     * Avoids re-entering the_content recursively.
+     *
+     * @param string $content the unlocked content.
+     *
+     * @return string
+     */
+    private function render_unlocked_content( string $content ) : string {
+        if ( doing_filter( 'the_content' ) ) {
+            return wpautop( do_shortcode( $content ) );
+        }
+        return apply_filters( 'the_content', $content );
+    }
+
+    /**
      * Render the Passster shortcode.
      *
      * @param array $atts array of attributes.
@@ -71,7 +85,7 @@ class PS_Public {
                 if ( !$in_schedule ) {
                     $area = get_post( $area_id );
                     if ( $area && ('publish' === $area->post_status || current_user_can( 'edit_post', $area_id )) ) {
-                        return apply_filters( 'the_content', str_replace( '{post-id}', get_the_id(), $area->post_content ) );
+                        return $this->render_unlocked_content( str_replace( '{post-id}', get_the_id(), $area->post_content ) );
                     }
                     return $content ?? '';
                 }
@@ -87,10 +101,10 @@ class PS_Public {
                 if ( 'publish' === $area->post_status || current_user_can( 'edit_post', $area_id ) ) {
                     $content = $area->post_content;
                     do_action( 'passster_content_unlocked' );
-                    return apply_filters( 'the_content', str_replace( '{post-id}', get_the_id(), $content ) );
+                    return $this->render_unlocked_content( str_replace( '{post-id}', get_the_id(), $content ) );
                 }
             } else {
-                $content = apply_filters( 'the_content', $content );
+                $content = $this->render_unlocked_content( $content );
                 do_action( 'passster_content_unlocked' );
                 return apply_filters( 'passster_content', $content );
             }
