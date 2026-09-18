@@ -156,6 +156,7 @@ jQuery( document ).ready( function( $ ) {
 		const acf = $button.attr( 'data-acf' ) || '';
 		const redirect = $button.attr( 'data-redirect' ) || '';
 		const termId = parseInt( $button.attr( 'data-term-id' ) ) || 0;
+		const postType = $button.attr( 'data-post-type' ) || '';
 
 		// Get block ID from parent wrapper if exists.
 		const $wrapper = $form.closest( '.passster-protected-content' );
@@ -180,6 +181,7 @@ jQuery( document ).ready( function( $ ) {
 					acf,
 					redirect,
 					term_id: termId,
+					post_type: postType,
 				} ),
 			} );
 

@@ -1007,14 +1007,7 @@ class PS_Category_Lock {
             return;
         }
         // Check the term itself and then its ancestors for protection.
-        $protected_term_id = null;
-        $ids_to_check = array_merge( array($term->term_id), get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) );
-        foreach ( $ids_to_check as $check_id ) {
-            if ( get_term_meta( $check_id, 'passster_activate_protection', true ) ) {
-                $protected_term_id = $check_id;
-                break;
-            }
-        }
+        $protected_term_id = $this->get_active_protected_term_id( $term );
         if ( !$protected_term_id ) {
             return;
         }
@@ -1066,6 +1059,22 @@ class PS_Category_Lock {
     // Helper Methods
     // -------------------------------------------------------------------------
     /**
+     * Check a term and its ancestors for active protection.
+     *
+     * @param \WP_Term $term Term to check (and walk up from).
+     * @return int|null The protected term ID (itself or an ancestor), or null if none.
+     */
+    public function get_active_protected_term_id( \WP_Term $term ) {
+        $ids_to_check = array_merge( array($term->term_id), get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) );
+        foreach ( $ids_to_check as $check_id ) {
+            if ( get_term_meta( $check_id, 'passster_activate_protection', true ) ) {
+                return $check_id;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Get the first protected term for a given post.
      *
      * @param int $post_id Post ID.
@@ -1080,15 +1089,12 @@ class PS_Category_Lock {
             }
             foreach ( $terms as $term ) {
                 // Check the term itself, then walk up its ancestor chain.
-                $ids_to_check = array_merge( array($term->term_id), get_ancestors( $term->term_id, $taxonomy, 'taxonomy' ) );
-                foreach ( $ids_to_check as $check_id ) {
-                    $activate = get_term_meta( $check_id, 'passster_activate_protection', true );
-                    if ( $activate ) {
-                        return array(
-                            'term_id'  => $check_id,
-                            'taxonomy' => $taxonomy,
-                        );
-                    }
+                $protected_term_id = $this->get_active_protected_term_id( $term );
+                if ( $protected_term_id ) {
+                    return array(
+                        'term_id'  => $protected_term_id,
+                        'taxonomy' => $taxonomy,
+                    );
                 }
             }
         }
