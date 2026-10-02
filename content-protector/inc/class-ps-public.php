@@ -53,6 +53,10 @@ class PS_Public {
      */
     private function render_unlocked_content( string $content ) : string {
         if ( doing_filter( 'the_content' ) ) {
+            // Mirror the_content order: blocks first, wpautop only for classic content.
+            if ( has_blocks( $content ) ) {
+                return do_shortcode( do_blocks( $content ) );
+            }
             return wpautop( do_shortcode( $content ) );
         }
         return apply_filters( 'the_content', $content );

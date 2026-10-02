@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.16
+Stable tag: 4.3.17
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,10 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.17 - 02.10.2026 =
+* Fixed: Blocks from plugins like Kadence Blocks not displaying inside Protected Areas after unlock.
+* Fixed: Error when using multiple password lists without any list selected.
+
 = 4.3.16 - 18.09.2026 =
 * Added: Post Type Level Protection: password-protect an entire post type at once.
 * Fixed: Unlock link redirects on archive pages.
