@@ -30,9 +30,19 @@ class PS_Rest_Handler {
 	 */
 	public function __construct() {
 		add_filter( 'rest_pre_dispatch', array( $this, 'restrict_rest_access' ), 10, 3 );
-		add_filter( 'rest_prepare_post', array( $this, 'filter_rest_response' ), 10, 3 );
-
+		add_action( 'rest_api_init', array( $this, 'register_response_filters' ) );
 		add_action( 'rest_api_init', array( $this, 'register_nonce_routes' ) );
+	}
+
+	/**
+	 * Hook the response filter on every post type exposed in the REST API.
+	 *
+	 * @return void
+	 */
+	public function register_response_filters() {
+		foreach ( get_post_types( array( 'show_in_rest' => true ) ) as $post_type ) {
+			add_filter( "rest_prepare_{$post_type}", array( $this, 'filter_rest_response' ) );
+		}
 	}
 
 	public function restrict_rest_access( $result, $server, $request ) {
@@ -88,11 +98,9 @@ class PS_Rest_Handler {
 	 * Filter REST API response to hide sensitive password data from unauthenticated users
 	 *
 	 * @param \WP_REST_Response $response The response object.
-	 * @param \WP_Post          $post     The post object.
-	 * @param \WP_REST_Request  $request  The request object.
 	 * @return \WP_REST_Response
 	 */
-	public function filter_rest_response( $response, $post, $request ) {
+	public function filter_rest_response( $response ) {
 		// Only filter for unauthenticated users or users without proper permissions
 		if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
 			return $response;
@@ -115,15 +123,6 @@ class PS_Rest_Handler {
 				if ( isset( $data['meta'][ $field ] ) ) {
 					unset( $data['meta'][ $field ] );
 				}
-			}
-		}
-
-		if ( $post && class_exists( 'passster\PS_Category_Lock' ) && PS_Category_Lock::get_instance()->get_active_category_lock( $post->ID ) ) {
-			if ( isset( $data['content']['rendered'] ) ) {
-				$data['content']['rendered'] = '';
-			}
-			if ( isset( $data['excerpt']['rendered'] ) ) {
-				$data['excerpt']['rendered'] = '';
 			}
 		}
 

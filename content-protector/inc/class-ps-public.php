@@ -27,7 +27,10 @@ class PS_Public {
         add_shortcode( 'passster', array($this, 'render_shortcode') );
         add_filter( 'the_content', array($this, 'filter_the_content') );
         add_filter( 'acf_the_content', array($this, 'filter_the_content') );
-        add_filter( 'get_the_excerpt', array($this, 'filter_the_content') );
+        add_filter( 'the_excerpt', array($this, 'filter_the_content') );
+        add_filter( 'render_block_core/post-excerpt', array($this, 'filter_the_content') );
+        add_filter( 'get_the_excerpt', array($this, 'filter_the_text') );
+        add_filter( 'the_content_feed', array($this, 'filter_the_text') );
         add_action( 'template_redirect', array($this, 'check_global_proctection') );
         add_action( 'wp_enqueue_scripts', array($this, 'add_public_scripts'), 9999 );
     }
@@ -231,18 +234,63 @@ class PS_Public {
             // or the form that was already generated
             return self::$rendered_protection[$post_id]['form'] ?? $content;
         }
-        $parent_id = wp_get_post_parent_id( $post_id );
-        if ( $parent_id ) {
-            $activate_protection = get_post_meta( $parent_id, 'passster_activate_protection', true );
-            $children_protection = get_post_meta( $parent_id, 'passster_protect_child_pages', true );
-            if ( $activate_protection && $children_protection ) {
-                $post_id = $parent_id;
-                // Check parent too
-                if ( isset( self::$rendered_protection[$post_id] ) ) {
-                    return self::$rendered_protection[$post_id]['form'] ?? $content;
-                }
-            }
+        $post_id = $this->get_protection_post_id( $post_id );
+        // Check parent too
+        if ( isset( self::$rendered_protection[$post_id] ) ) {
+            return self::$rendered_protection[$post_id]['form'] ?? $content;
         }
+        $shortcode = $this->get_protection_shortcode( $post_id );
+        if ( '' === $shortcode ) {
+            return $content;
+        }
+        // replace placeholder with content.
+        $shortcode = str_replace( '{content}', $content, $shortcode );
+        // Generate the form
+        $rendered_form = do_shortcode( $shortcode );
+        // Store reference to prevent duplicate rendering (Avada, Elementor, etc.)
+        self::$rendered_protection[$post_id] = array(
+            'form' => $rendered_form,
+        );
+        return $rendered_form;
+    }
+
+    /**
+     * Replace plain-text output (get_the_excerpt, feeds) of a protected post.
+     *
+     * @param string $text Excerpt or feed content.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function filter_the_text( string $text ) : string {
+        $post_id = $this->get_protection_post_id( get_the_id() );
+        return ( '' === $this->get_protection_shortcode( $post_id ) ? $text : PS_Helper::get_protected_text() );
+    }
+
+    /**
+     * Resolve the post whose protection applies (the parent when it protects its child pages).
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return int
+     */
+    private function get_protection_post_id( int $post_id ) : int {
+        $parent_id = wp_get_post_parent_id( $post_id );
+        if ( $parent_id && get_post_meta( $parent_id, 'passster_activate_protection', true ) && get_post_meta( $parent_id, 'passster_protect_child_pages', true ) ) {
+            return $parent_id;
+        }
+        return $post_id;
+    }
+
+    /**
+     * Build the protection shortcode for a post, or an empty string when the post is not locked.
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function get_protection_shortcode( int $post_id ) : string {
         $activate_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
         // user restriction.
         $user_restriction_type = get_post_meta( $post_id, 'passster_user_restriction_type', true );
@@ -257,7 +305,7 @@ class PS_Public {
         $button = ( $overwrite_defaults ? get_post_meta( $post_id, 'passster_button', true ) : '' );
         $id = get_post_meta( $post_id, 'passster_id', true );
         if ( !$activate_protection ) {
-            return $content;
+            return '';
         }
         // build atts array to validate.
         $atts = array();
@@ -287,17 +335,9 @@ class PS_Public {
         // check if valid before restrict anything.
         $valid = PS_Conditional::is_valid( $atts );
         if ( $valid ) {
-            return $content;
+            return '';
         }
-        // replace placeholder with content.
-        $shortcode = str_replace( '{content}', $content, $shortcode );
-        // Generate the form
-        $rendered_form = do_shortcode( $shortcode );
-        // Store reference to prevent duplicate rendering (Avada, Elementor, etc.)
-        self::$rendered_protection[$post_id] = array(
-            'form' => $rendered_form,
-        );
-        return $rendered_form;
+        return $shortcode;
     }
 
     /**

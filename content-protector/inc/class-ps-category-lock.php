@@ -72,7 +72,10 @@ class PS_Category_Lock {
         add_action( 'wp_ajax_passster_quick_edit_category', array($this, 'ajax_quick_edit_category') );
         // Frontend protection.
         add_filter( 'the_content', array($this, 'filter_content_by_category'), 11 );
-        add_filter( 'get_the_excerpt', array($this, 'filter_content_by_category'), 11 );
+        add_filter( 'the_excerpt', array($this, 'filter_content_by_category'), 11 );
+        add_filter( 'render_block_core/post-excerpt', array($this, 'filter_content_by_category'), 11 );
+        add_filter( 'get_the_excerpt', array($this, 'filter_text_by_category'), 11 );
+        add_filter( 'the_content_feed', array($this, 'filter_text_by_category'), 11 );
         add_action( 'template_redirect', array($this, 'protect_category_archive') );
     }
 
@@ -928,25 +931,53 @@ class PS_Category_Lock {
      * @return string
      */
     public function filter_content_by_category( $content ) {
-        if ( is_admin() ) {
-            return $content;
-        }
-        if ( is_category() || is_tax() ) {
-            return $content;
-        }
-        $post_id = get_the_id();
-        if ( !$post_id ) {
-            return $content;
-        }
-        if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-            return $content;
-        }
-        $term_data = $this->get_active_category_lock( $post_id );
+        $term_data = $this->get_current_post_category_lock();
         if ( !$term_data ) {
             return $content;
         }
         $shortcode = $this->build_shortcode_from_term( $term_data['term_id'], $content );
         return do_shortcode( $shortcode );
+    }
+
+    /**
+     * Replace plain-text output (get_the_excerpt, feeds) of a category-locked post.
+     *
+     * @param string $text Excerpt or feed content.
+     * @return string
+     */
+    public function filter_text_by_category( $text ) {
+        return ( $this->get_current_post_category_lock() ? PS_Helper::get_protected_text() : $text );
+    }
+
+    /**
+     * @return array|null
+     */
+    private function get_current_post_category_lock() {
+        if ( is_admin() || $this->is_locked_archive() ) {
+            return null;
+        }
+        $post_id = get_the_id();
+        if ( !$post_id ) {
+            return null;
+        }
+        // Block editor previews read REST content; keep them unlocked for users who can edit the post.
+        if ( defined( 'REST_REQUEST' ) && REST_REQUEST && current_user_can( 'edit_post', $post_id ) ) {
+            return null;
+        }
+        return $this->get_active_category_lock( $post_id );
+    }
+
+    /**
+     * Whether protect_category_archive() already replaced the whole archive with the form.
+     * Feeds bypass template replacement, so each item still has to be locked there.
+     *
+     * @return bool
+     */
+    private function is_locked_archive() : bool {
+        if ( is_feed() || !is_category() && !is_tax() ) {
+            return false;
+        }
+        return '' !== self::$protected_form || '' !== self::$woo_protected_form;
     }
 
     /**

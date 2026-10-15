@@ -40,6 +40,17 @@ class PS_Helper {
     }
 
     /**
+     * Plain-text replacement for locked content where a form can't be rendered (excerpts, feeds, SEO).
+     *
+     * @return string
+     */
+    public static function get_protected_text() : string {
+        $options = get_option( 'passster', array() );
+        $text = ( !empty( $options['instruction'] ) ? $options['instruction'] : __( 'This content is password-protected. Please verify with a password to unlock the content.', 'content-protector' ) );
+        return wp_strip_all_tags( $text );
+    }
+
+    /**
      * Get string between two strings.
      *
      * @param string $string string to find.
