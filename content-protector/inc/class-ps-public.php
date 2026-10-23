@@ -20,6 +20,13 @@ class PS_Public {
     private static $rendered_protection = array();
 
     /**
+     * Protection shortcode per post for the current request (empty string when not locked).
+     *
+     * @var array
+     */
+    private static $protection_shortcodes = array();
+
+    /**
      * Constructor for PS_Public
      */
     public function __construct() {
@@ -33,6 +40,30 @@ class PS_Public {
         add_filter( 'the_content_feed', array($this, 'filter_the_text') );
         add_action( 'template_redirect', array($this, 'check_global_proctection') );
         add_action( 'wp_enqueue_scripts', array($this, 'add_public_scripts'), 9999 );
+        add_filter( 'body_class', array($this, 'add_locked_body_class') );
+    }
+
+    /**
+     * Add a body class on locked pages so header/footer can be hidden with custom CSS.
+     *
+     * @param array $classes body classes.
+     *
+     * @return array
+     * @throws Exception
+     */
+    public function add_locked_body_class( array $classes ) : array {
+        if ( !is_singular() ) {
+            return $classes;
+        }
+        $current_id = get_queried_object_id();
+        $post_id = $this->get_protection_post_id( $current_id );
+        if ( '' !== $this->get_protection_shortcode( $post_id ) ) {
+            $post_type = sanitize_html_class( get_post_type( $current_id ) );
+            $classes[] = 'passster-locked-content';
+            $classes[] = 'passster-locked-' . $post_type;
+            $classes[] = 'passster-locked-' . $post_type . '-' . $current_id;
+        }
+        return $classes;
     }
 
     /**
@@ -291,12 +322,28 @@ class PS_Public {
      * @throws Exception
      */
     private function get_protection_shortcode( int $post_id ) : string {
+        // Cached so validation side effects (unlock link usage counting) run only once per request.
+        if ( !isset( self::$protection_shortcodes[$post_id] ) ) {
+            self::$protection_shortcodes[$post_id] = $this->build_protection_shortcode( $post_id );
+        }
+        return self::$protection_shortcodes[$post_id];
+    }
+
+    /**
+     * Build the protection shortcode for a post.
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return string
+     * @throws Exception
+     */
+    private function build_protection_shortcode( int $post_id ) : string {
         $activate_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
         // user restriction.
         $user_restriction_type = get_post_meta( $post_id, 'passster_user_restriction_type', true );
         $user_restriction = get_post_meta( $post_id, 'passster_user_restriction', true );
         // Redirection.
-        $redirection = get_post_meta( $post_id, 'passster_redirect_url', true );
+        $redirection = PS_Helper::get_redirect_url( $post_id );
         // texts.
         $overwrite_defaults = get_post_meta( $post_id, 'passster_activate_overwrite_defaults', true );
         $headline = ( $overwrite_defaults ? get_post_meta( $post_id, 'passster_headline', true ) : '' );
@@ -386,14 +433,14 @@ class PS_Public {
                         }
                     }
                 }
-                // Check if cookie is set.
-                $cookie = esc_html( $_COOKIE['passster'] );
                 if ( !PS_Conditional::is_valid( $atts ) ) {
                     $global_protection_url = get_permalink( $post_id );
                     $pass_param = filter_input( INPUT_GET, 'pass', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
                     if ( !empty( $pass_param ) ) {
                         $global_protection_url = add_query_arg( 'pass', $pass_param, $global_protection_url );
                     }
+                    // A cached redirect would keep sending unlocked visitors back to the protection page.
+                    nocache_headers();
                     wp_redirect( esc_url_raw( $global_protection_url ) );
                     exit;
                 }

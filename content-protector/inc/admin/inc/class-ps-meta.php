@@ -127,7 +127,8 @@ class PS_Meta {
                 'wp-api-fetch',
                 'wp-data',
                 'wp-editor',
-                'wp-i18n'
+                'wp-i18n',
+                'wp-date'
             ),
             PASSSTER_VERSION,
             true

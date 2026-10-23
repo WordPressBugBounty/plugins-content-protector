@@ -40,6 +40,20 @@ class PS_Helper {
     }
 
     /**
+     * Redirect URL of a protected post, only when Advanced Options is enabled (a stale value may remain saved after disabling it).
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return string
+     */
+    public static function get_redirect_url( $post_id ) : string {
+        if ( !get_post_meta( $post_id, 'passster_activate_misc_settings', true ) ) {
+            return '';
+        }
+        return (string) get_post_meta( $post_id, 'passster_redirect_url', true );
+    }
+
+    /**
      * Plain-text replacement for locked content where a form can't be rendered (excerpts, feeds, SEO).
      *
      * @return string
@@ -96,6 +110,25 @@ class PS_Helper {
             $string = self::get_string_between( $content, $m[0], '[/passster]' );
         }
         return $string;
+    }
+
+    /**
+     * Split a comma-separated password string, dropping empty entries.
+     *
+     * @param mixed $passwords_str Raw meta value.
+     * @param bool  $remove_spaces Whether to strip spaces first.
+     *
+     * @return array
+     */
+    public static function parse_password_list( $passwords_str, bool $remove_spaces = false ) : array {
+        $passwords_str = (string) $passwords_str;
+        if ( $remove_spaces ) {
+            $passwords_str = str_replace( ' ', '', $passwords_str );
+        }
+        // A missing/empty meta value explodes to [''], which would match an empty input.
+        return array_values( array_filter( explode( ',', $passwords_str ), function ( $password ) {
+            return '' !== trim( $password );
+        } ) );
     }
 
 }

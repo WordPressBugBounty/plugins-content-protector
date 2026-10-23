@@ -190,7 +190,7 @@ class PS_Block_Editor {
         $placeholder = esc_attr( $attributes['placeholder'] );
         $id = get_post_meta( $area_id, 'passster_id', true );
         // Redirection.
-        $redirection = get_post_meta( $area_id, 'passster_redirect_url', true );
+        $redirection = PS_Helper::get_redirect_url( $area_id );
         $atts = array();
         $password = get_post_meta( $area_id, 'passster_password', true );
         $atts['password'] = $password;

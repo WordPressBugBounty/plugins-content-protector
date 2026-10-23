@@ -41,6 +41,21 @@ class PS_Conditional {
     }
 
     /**
+     * Strip spaces from a comma-separated password string, matching the REST unlock validation.
+     *
+     * @param mixed $passwords comma-separated passwords.
+     *
+     * @return string
+     */
+    private static function maybe_remove_spaces( $passwords ) : string {
+        $passwords = (string) $passwords;
+        if ( apply_filters( 'passster_remove_spaces_from_list', true ) ) {
+            $passwords = str_replace( ' ', '', $passwords );
+        }
+        return $passwords;
+    }
+
+    /**
      * Validate the password.
      *
      * @param string $input given password to validate.
@@ -53,6 +68,32 @@ class PS_Conditional {
         // password.
         if ( !empty( $atts['password'] ) ) {
             $hash = hash_hmac( 'sha256', wp_unslash( $atts['password'] ), get_option( 'passster_secure_key' ) );
+            if ( hash_equals( $hash, $input ) ) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Keep an existing unlock valid after its password was removed from the list by usage expiration.
+     * Time-based expirations stay invalid.
+     *
+     * @param mixed  $list_id password list id.
+     * @param string $input   hash from the cookie.
+     *
+     * @return bool
+     */
+    private static function is_used_password_hash( $list_id, string $input ) : bool {
+        $expired_passwords = get_post_meta( $list_id, 'passster_expired_passwords', true );
+        if ( !is_array( $expired_passwords ) ) {
+            return false;
+        }
+        foreach ( $expired_passwords as $entry ) {
+            if ( empty( $entry['expired'] ) || !empty( $entry['time'] ) || !isset( $entry['password'] ) ) {
+                continue;
+            }
+            $hash = hash_hmac( 'sha256', (string) $entry['password'], get_option( 'passster_secure_key' ) );
             if ( hash_equals( $hash, $input ) ) {
                 return true;
             }

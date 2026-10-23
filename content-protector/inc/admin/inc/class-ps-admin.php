@@ -442,7 +442,7 @@ class PS_Admin {
                 }
                 break;
             case 'redirect':
-                $redirect = get_post_meta( $post_id, 'passster_redirect_url', true );
+                $redirect = PS_Helper::get_redirect_url( $post_id );
                 if ( !empty( $redirect ) ) {
                     echo '<a href="' . esc_url( $redirect ) . '">' . esc_url( $redirect ) . '</a>';
                 } else {

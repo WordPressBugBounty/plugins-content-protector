@@ -1,9 +1,0 @@
-The string "Passster" has 2 different translator comments. (content-protector.php)
-Name of the plugin
-block keyword
-The string "Protected Area" has 2 different translator comments. (inc/class-ps-migrator.php:83)
-block title
-block keyword
-The string "Protected block in %s" contains placeholders but has no "translators:" comment to clarify their meaning. (inc/class-ps-block-editor.php:380)
-The string "[%s] Your personal password" contains placeholders but has no "translators:" comment to clarify their meaning. (inc/woocommerce/class-ps-wc-email-template.php:32)
-The string "Edit block in &#8220;%s&#8221;" contains placeholders but has no "translators:" comment to clarify their meaning. (inc/admin/inc/class-ps-admin.php:909)

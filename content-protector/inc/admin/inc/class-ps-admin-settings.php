@@ -72,7 +72,8 @@ class PS_Admin_Settings {
                 'wp-element',
                 'wp-api-fetch',
                 'wp-data',
-                'wp-i18n'
+                'wp-i18n',
+                'wp-date'
             ),
             PASSSTER_VERSION,
             true

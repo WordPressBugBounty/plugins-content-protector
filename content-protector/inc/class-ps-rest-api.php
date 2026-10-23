@@ -218,6 +218,12 @@ class PS_Rest_API {
         // Default error response.
         $error_message = $options['error'] ?? __( 'Invalid password.', 'content-protector' );
         $remove_spaces = apply_filters( 'passster_remove_spaces_from_list', true );
+        if ( '' === trim( (string) $input ) ) {
+            return new \WP_REST_Response(array(
+                'success' => false,
+                'error'   => $error_message,
+            ), 200);
+        }
         if ( empty( $protection ) ) {
             $protection = false;
         }
@@ -250,7 +256,7 @@ class PS_Rest_API {
             }
             return new \WP_REST_Response(array(
                 'success' => false,
-                'error'   => $error_message,
+                'error'   => $result['error'] ?? $error_message,
             ), 200);
         }
         // Post type archive protection: post_type is passed directly from the form
@@ -281,7 +287,7 @@ class PS_Rest_API {
             }
             return new \WP_REST_Response(array(
                 'success' => false,
-                'error'   => $error_message,
+                'error'   => $result['error'] ?? $error_message,
             ), 200);
         }
         // Parent page protection inheritance.
@@ -352,7 +358,7 @@ class PS_Rest_API {
                 // Category protection exists but validation failed.
                 return new \WP_REST_Response(array(
                     'success' => false,
-                    'error'   => $error_message,
+                    'error'   => $result['error'] ?? $error_message,
                 ), 200);
             }
             // Post type level protection: applies only when the post has neither its
@@ -396,7 +402,7 @@ class PS_Rest_API {
                     // Post type protection exists but validation failed.
                     return new \WP_REST_Response(array(
                         'success' => false,
-                        'error'   => $error_message,
+                        'error'   => $result['error'] ?? $error_message,
                     ), 200);
                 }
             }
@@ -418,10 +424,7 @@ class PS_Rest_API {
                     $result = $this->get_block_passwords( $post_id, $block_id );
                     if ( !empty( $result['passwords'] ) ) {
                         $passwords_str = $result['passwords'];
-                        if ( $remove_spaces ) {
-                            $passwords_str = str_replace( ' ', '', $passwords_str );
-                        }
-                        $passwords = explode( ',', $passwords_str );
+                        $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
                         if ( in_array( $input, $passwords, true ) ) {
                             $valid = true;
                             $result_content = $result['content'];
@@ -514,7 +517,7 @@ class PS_Rest_API {
         if ( !$valid ) {
             return new \WP_REST_Response(array(
                 'success' => false,
-                'error'   => $error_message,
+                'error'   => $result['error'] ?? $error_message,
             ), 200);
         }
         // Success - prepare response.
@@ -654,10 +657,7 @@ class PS_Rest_API {
         switch ( $protection ) {
             case 'full':
                 $passwords_str = get_post_meta( $post_id, 'passster_passwords', true );
-                if ( $remove_spaces ) {
-                    $passwords_str = str_replace( ' ', '', $passwords_str );
-                }
-                $passwords = explode( ',', $passwords_str );
+                $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
                 if ( !empty( $passwords ) && in_array( $input, $passwords, true ) ) {
                     if ( $post && 'publish' === $post->post_status ) {
                         return array(
@@ -670,10 +670,7 @@ class PS_Rest_API {
             case 'area':
                 if ( !empty( $area_id ) ) {
                     $passwords_str = get_post_meta( $area_id, 'passster_passwords', true );
-                    if ( $remove_spaces ) {
-                        $passwords_str = str_replace( ' ', '', $passwords_str );
-                    }
-                    $passwords = explode( ',', $passwords_str );
+                    $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
                     if ( !empty( $passwords ) && in_array( $input, $passwords, true ) ) {
                         $area = get_post( $area_id );
                         if ( $area && 'protected_areas' === $area->post_type && 'publish' === $area->post_status ) {
@@ -741,10 +738,7 @@ class PS_Rest_API {
             );
         }
         $passwords_str = get_post_meta( $list_id, 'passster_passwords', true );
-        if ( $remove_spaces ) {
-            $passwords_str = str_replace( ' ', '', $passwords_str );
-        }
-        $passwords = explode( ',', $passwords_str );
+        $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
         return $this->validate_single_list(
             $input,
             $passwords,
@@ -792,12 +786,10 @@ class PS_Rest_API {
             );
         }
         $password_list_ids = explode( '|', $lists );
+        $list_error = null;
         foreach ( $password_list_ids as $pid ) {
             $passwords_str = get_post_meta( $pid, 'passster_passwords', true );
-            if ( $remove_spaces ) {
-                $passwords_str = str_replace( ' ', '', $passwords_str );
-            }
-            $passwords = explode( ',', $passwords_str );
+            $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
             $result = $this->validate_single_list(
                 $input,
                 $passwords,
@@ -812,10 +804,14 @@ class PS_Rest_API {
             if ( $result['valid'] ) {
                 return $result;
             }
+            if ( !empty( $result['error'] ) ) {
+                $list_error = $result['error'];
+            }
         }
         return array(
             'valid'   => false,
             'content' => '',
+            'error'   => $list_error,
         );
     }
 
@@ -846,6 +842,13 @@ class PS_Rest_API {
     ) {
         $valid = false;
         $result_content = '';
+        if ( !empty( $passwords ) && in_array( $input, $passwords, true ) && PS_Conditional::is_password_list_past_fixed_expiration__premium_only( $list_id ) ) {
+            return array(
+                'valid'   => false,
+                'content' => '',
+                'error'   => __( 'This password has expired. Please contact the site owner.', 'content-protector' ),
+            );
+        }
         switch ( $protection ) {
             case 'full':
                 if ( !empty( $passwords ) && in_array( $input, $passwords, true ) ) {
@@ -1065,10 +1068,7 @@ class PS_Rest_API {
                 break;
             case 'passwords':
                 $passwords_str = $config['passster_passwords'];
-                if ( $remove_spaces ) {
-                    $passwords_str = str_replace( ' ', '', $passwords_str );
-                }
-                $passwords = explode( ',', $passwords_str );
+                $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
                 if ( !empty( $passwords ) && in_array( $input, $passwords, true ) ) {
                     return array(
                         'valid'   => true,
@@ -1080,11 +1080,15 @@ class PS_Rest_API {
                 $list_id = $config['passster_password_list'];
                 if ( !empty( $list_id ) ) {
                     $passwords_str = get_post_meta( $list_id, 'passster_passwords', true );
-                    if ( $remove_spaces ) {
-                        $passwords_str = str_replace( ' ', '', $passwords_str );
-                    }
-                    $passwords = explode( ',', $passwords_str );
+                    $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
                     if ( in_array( $input, $passwords, true ) ) {
+                        if ( PS_Conditional::is_password_list_past_fixed_expiration__premium_only( $list_id ) ) {
+                            return array(
+                                'valid'   => false,
+                                'content' => '',
+                                'error'   => __( 'This password has expired. Please contact the site owner.', 'content-protector' ),
+                            );
+                        }
                         do_action(
                             'passster_validation_success_list',
                             $input,
@@ -1102,11 +1106,15 @@ class PS_Rest_API {
             case 'password_lists':
                 foreach ( (array) $config['passster_password_lists'] as $list_id ) {
                     $passwords_str = get_post_meta( $list_id, 'passster_passwords', true );
-                    if ( $remove_spaces ) {
-                        $passwords_str = str_replace( ' ', '', $passwords_str );
-                    }
-                    $passwords = explode( ',', $passwords_str );
+                    $passwords = PS_Helper::parse_password_list( $passwords_str, $remove_spaces );
                     if ( in_array( $input, $passwords, true ) ) {
+                        if ( PS_Conditional::is_password_list_past_fixed_expiration__premium_only( $list_id ) ) {
+                            return array(
+                                'valid'   => false,
+                                'content' => '',
+                                'error'   => __( 'This password has expired. Please contact the site owner.', 'content-protector' ),
+                            );
+                        }
                         do_action(
                             'passster_validation_success_list',
                             $input,
