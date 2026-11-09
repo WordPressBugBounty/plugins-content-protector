@@ -4,7 +4,7 @@
  * Plugin Name:       Passster
  * Plugin URI:        https://passster.com/
  * Description:       A simple plugin to password-protect your complete website, some pages/posts or just parts of your content.
- * Version:           4.3.20
+ * Version:           4.3.21
  * Author:            WPChill
  * Author URI:        https://wpchill.com
  * License:           GPL-2.0+
@@ -17,9 +17,10 @@
  * NOTE:
  * Patrick Posner transferred ownership rights on: 6th of December, 2024 when ownership was handed over to WPChill
  */
+defined( 'ABSPATH' ) || exit;
 define( 'PASSSTER_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PASSSTER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'PASSSTER_VERSION', '4.3.20' );
+define( 'PASSSTER_VERSION', '4.3.21' );
 // run plugin.
 if ( !function_exists( 'passster_run_plugin' ) ) {
     add_action( 'plugins_loaded', 'passster_run_plugin' );
@@ -34,7 +35,10 @@ if ( !function_exists( 'passster_run_plugin' ) ) {
         require_once PASSSTER_PATH . '/inc/class-ps-conditional.php';
         require_once PASSSTER_PATH . '/inc/class-ps-helper.php';
         require_once PASSSTER_PATH . '/inc/class-ps-form.php';
+        require_once PASSSTER_PATH . '/inc/class-ps-global-protection.php';
         require_once PASSSTER_PATH . '/inc/class-ps-public.php';
+        require_once PASSSTER_PATH . '/inc/class-ps-comment-protection.php';
+        require_once PASSSTER_PATH . '/inc/class-ps-product-protection.php';
         require_once PASSSTER_PATH . '/inc/class-ps-migrator.php';
         require_once PASSSTER_PATH . '/inc/class-ps-block-editor.php';
         require_once PASSSTER_PATH . '/inc/class-ps-rest-handler.php';
@@ -61,7 +65,10 @@ if ( !function_exists( 'passster_run_plugin' ) ) {
         passster\PS_Meta::get_instance();
         passster\PS_Dynamic_Styles::get_instance();
         passster\PS_Form::get_instance();
+        passster\PS_Global_Protection::get_instance();
         passster\PS_Public::get_instance();
+        passster\PS_Comment_Protection::get_instance();
+        passster\PS_Product_Protection::get_instance();
         passster\PS_Block_Editor::get_instance();
         passster\PS_Rest_Handler::get_instance();
         passster\PS_Rest_API::get_instance();

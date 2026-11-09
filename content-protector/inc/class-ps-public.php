@@ -27,6 +27,13 @@ class PS_Public {
     private static $protection_shortcodes = array();
 
     /**
+     * Lock state per post for the current request.
+     *
+     * @var array
+     */
+    private static $locked_posts = array();
+
+    /**
      * Constructor for PS_Public
      */
     public function __construct() {
@@ -36,9 +43,13 @@ class PS_Public {
         add_filter( 'acf_the_content', array($this, 'filter_the_content') );
         add_filter( 'the_excerpt', array($this, 'filter_the_content') );
         add_filter( 'render_block_core/post-excerpt', array($this, 'filter_the_content') );
-        add_filter( 'get_the_excerpt', array($this, 'filter_the_text') );
+        add_filter(
+            'get_the_excerpt',
+            array($this, 'filter_the_text'),
+            10,
+            2
+        );
         add_filter( 'the_content_feed', array($this, 'filter_the_text') );
-        add_action( 'template_redirect', array($this, 'check_global_proctection') );
         add_action( 'wp_enqueue_scripts', array($this, 'add_public_scripts'), 9999 );
         add_filter( 'body_class', array($this, 'add_locked_body_class') );
     }
@@ -259,6 +270,9 @@ class PS_Public {
      */
     public function filter_the_content( string $content ) : string {
         $post_id = get_the_id();
+        if ( PS_Global_Protection::is_post_hidden( (int) $post_id ) ) {
+            return '<p>' . esc_html( PS_Helper::get_protected_text() ) . '</p>';
+        }
         // Prevent duplicate form rendering (fixes issue with Avada and other page builders)
         if ( isset( self::$rendered_protection[$post_id] ) ) {
             // Already rendered the protection form for this post, return protected content placeholder
@@ -288,14 +302,51 @@ class PS_Public {
     /**
      * Replace plain-text output (get_the_excerpt, feeds) of a protected post.
      *
-     * @param string $text Excerpt or feed content.
+     * @param string        $text Excerpt or feed content.
+     * @param \WP_Post|null $post Post the excerpt belongs to, which may not be the global post.
      *
      * @return string
      * @throws Exception
      */
-    public function filter_the_text( string $text ) : string {
-        $post_id = $this->get_protection_post_id( get_the_id() );
+    public function filter_the_text( string $text, $post = null ) : string {
+        $post_id = ( $post instanceof \WP_Post ? $post->ID : (int) get_the_id() );
+        if ( PS_Global_Protection::is_post_hidden( $post_id ) ) {
+            return PS_Helper::get_protected_text();
+        }
+        $post_id = $this->get_protection_post_id( $post_id );
         return ( '' === $this->get_protection_shortcode( $post_id ) ? $text : PS_Helper::get_protected_text() );
+    }
+
+    /**
+     * Password form of a post with its own protection, or an empty string when it isn't locked.
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function get_protection_form( int $post_id ) : string {
+        $shortcode = $this->get_protection_shortcode( $this->get_protection_post_id( $post_id ) );
+        return ( '' === $shortcode ? '' : do_shortcode( str_replace( '{content}', '', $shortcode ) ) );
+    }
+
+    /**
+     * Whether any protection level currently locks a post for this visitor.
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function is_post_locked( int $post_id ) : bool {
+        if ( !$post_id || PS_Global_Protection::is_internal_request() ) {
+            return false;
+        }
+        // Cached so validation side effects (unlock link usage counting) don't repeat per comment.
+        if ( !isset( self::$locked_posts[$post_id] ) ) {
+            self::$locked_posts[$post_id] = !current_user_can( 'edit_post', $post_id ) && (PS_Global_Protection::is_post_hidden( $post_id ) || '' !== $this->get_protection_shortcode( $this->get_protection_post_id( $post_id ) ) || PS_Category_Lock::get_instance()->get_active_category_lock( $post_id ) || class_exists( PS_Post_Type_Lock::class ) && PS_Post_Type_Lock::get_instance()->get_active_post_type_lock( $post_id ));
+        }
+        return self::$locked_posts[$post_id];
     }
 
     /**
@@ -339,9 +390,6 @@ class PS_Public {
      */
     private function build_protection_shortcode( int $post_id ) : string {
         $activate_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
-        // user restriction.
-        $user_restriction_type = get_post_meta( $post_id, 'passster_user_restriction_type', true );
-        $user_restriction = get_post_meta( $post_id, 'passster_user_restriction', true );
         // Redirection.
         $redirection = PS_Helper::get_redirect_url( $post_id );
         // texts.
@@ -355,11 +403,13 @@ class PS_Public {
             return '';
         }
         // build atts array to validate.
-        $atts = array();
-        $shortcode = '';
-        $password = get_post_meta( $post_id, 'passster_password', true );
-        $atts['password'] = $password;
-        $shortcode = '[passster password="' . $password . '" protection="full" ';
+        $atts = PS_Helper::get_protection_atts( $post_id );
+        $shortcode = '[passster ';
+        // Role and user restrictions only apply to the validation below.
+        foreach ( array_diff_key( $atts, array_flip( array('role', 'user') ) ) as $key => $value ) {
+            $shortcode .= $key . '="' . (( true === $value ? 'true' : $value )) . '" ';
+        }
+        $shortcode .= 'protection="full" ';
         if ( !empty( $redirection ) ) {
             $shortcode .= 'redirect="' . $redirection . '" ';
         }
@@ -385,67 +435,6 @@ class PS_Public {
             return '';
         }
         return $shortcode;
-    }
-
-    /**
-     * Redirect if global protection is activated and no password is set.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function check_global_proctection() {
-        $options = get_option( 'passster' );
-        $post_id = get_queried_object_id();
-        if ( !$post_id ) {
-            return;
-        }
-        // Allow Elementor editing the page.
-        $elementor_preview = filter_input( INPUT_GET, 'elementor-preview', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-        // Allow Live Canvas Editor.
-        $live_canvas_preview = filter_input( INPUT_GET, 'lc_action_launch_editing', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-        if ( is_preview() || $elementor_preview || $live_canvas_preview ) {
-            if ( is_user_logged_in() && current_user_can( 'edit_post', $post_id ) ) {
-                return;
-            }
-        }
-        if ( !isset( $options['global_protection_id'] ) ) {
-            return;
-        }
-        if ( !isset( $options['activate_global_protection'] ) ) {
-            return;
-        }
-        // Build $atts array based on protection settings.
-        $post_id = esc_html( $options['global_protection_id'] );
-        $is_active = esc_html( $options['activate_global_protection'] );
-        $atts = array();
-        $password = get_post_meta( $post_id, 'passster_password', true );
-        $atts['password'] = $password;
-        if ( !empty( $post_id ) ) {
-            if ( $is_active ) {
-                if ( is_page( $post_id ) || is_single( $post_id ) ) {
-                    return;
-                }
-                // Check excluded pages.
-                if ( isset( $options['exclude_pages'] ) ) {
-                    foreach ( $options['exclude_pages'] as $excluded_page_id ) {
-                        if ( is_page( $excluded_page_id ) ) {
-                            return;
-                        }
-                    }
-                }
-                if ( !PS_Conditional::is_valid( $atts ) ) {
-                    $global_protection_url = get_permalink( $post_id );
-                    $pass_param = filter_input( INPUT_GET, 'pass', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-                    if ( !empty( $pass_param ) ) {
-                        $global_protection_url = add_query_arg( 'pass', $pass_param, $global_protection_url );
-                    }
-                    // A cached redirect would keep sending unlocked visitors back to the protection page.
-                    nocache_headers();
-                    wp_redirect( esc_url_raw( $global_protection_url ) );
-                    exit;
-                }
-            }
-        }
     }
 
     /**

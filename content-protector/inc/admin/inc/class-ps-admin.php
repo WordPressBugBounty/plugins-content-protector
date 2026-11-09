@@ -220,6 +220,11 @@ class PS_Admin {
             case 'protected':
                 $protected = get_post_meta( $post_id, 'passster_activate_protection', true );
                 if ( $protected ) {
+                    // The list table also shows posts the current user can't edit.
+                    if ( !current_user_can( 'edit_post', $post_id ) ) {
+                        esc_html_e( 'Protected', 'content-protector' );
+                        break;
+                    }
                     $protection_type = get_post_meta( $post_id, 'passster_protection_type', true );
                     $password = get_post_meta( $post_id, 'passster_password', true );
                     echo esc_html( $password );
@@ -228,13 +233,14 @@ class PS_Admin {
                     $term_data = PS_Category_Lock::get_instance()->get_protected_term_for_post( $post_id );
                     if ( $term_data ) {
                         $term = get_term( $term_data['term_id'] );
-                        $edit_url = get_edit_term_link( $term_data['term_id'], $term_data['taxonomy'] );
                         echo '<span class="dashicons dashicons-category" style="font-size:14px;width:14px;height:14px;color:#007cba;vertical-align:middle;"></span> ';
-                        echo '<a href="' . esc_url( $edit_url ) . '" title="' . esc_attr__( 'Edit category protection', 'content-protector' ) . '">';
-                        echo esc_html( $term->name );
-                        echo '</a><br>';
-                        $protection_type = ( get_term_meta( $term_data['term_id'], 'passster_protection_type', true ) ?: 'password' );
-                        echo esc_html( get_term_meta( $term_data['term_id'], 'passster_password', true ) );
+                        if ( current_user_can( 'edit_term', $term_data['term_id'] ) ) {
+                            echo '<a href="' . esc_url( get_edit_term_link( $term_data['term_id'], $term_data['taxonomy'] ) ) . '" title="' . esc_attr__( 'Edit category protection', 'content-protector' ) . '">';
+                            echo esc_html( $term->name );
+                            echo '</a>';
+                        } else {
+                            echo esc_html( $term->name );
+                        }
                     }
                 }
                 break;
@@ -417,7 +423,7 @@ class PS_Admin {
                         $edit_url = admin_url( 'post.php?post=' . esc_html( $password_list_id ) . '&action=edit', 'https' );
                         $lists_string .= '<a href="' . esc_url( $edit_url ) . '">' . esc_html( $password_list_id ) . '</a> | ';
                     }
-                    echo rtrim( $lists_string, " |" );
+                    echo wp_kses_post( rtrim( $lists_string, " |" ) );
                 } else {
                     echo esc_html( $protection_types[$type] );
                 }

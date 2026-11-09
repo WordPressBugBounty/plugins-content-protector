@@ -70,20 +70,8 @@ class PS_Rest_Handler {
 			return null;
 		}
 
-		// Global protection activated?
-		$settings           = get_option( 'passster' );
-		$protection_enabled = $settings['activate_global_protection'] ?? false;
-
-		// Check if access is allowed.
-		$valid = false;
-
-		if ( ! empty( $settings['global_protection_id'] ) ) {
-			$page_id = esc_attr( $settings['global_protection_id'] );
-			$atts    = array( 'password' => get_post_meta( $page_id, 'passster_password', true ) );
-			$valid   = PS_Conditional::is_valid( $atts );
-		}
-
-		if ( $protection_enabled && ! $valid && ! current_user_can( 'manage_options' ) ) {
+		// Editors keep the block and page builder editors: the dashboard already shows them all posts. Don't widen to edit_posts.
+		if ( ! current_user_can( 'manage_options' ) && ! current_user_can( 'edit_others_posts' ) && PS_Global_Protection::is_visitor_locked() ) {
 			return new \WP_Error(
 				'rest_not_logged_in',
 				__( 'You are not allowed to access this content. Please authenticate with a password first.', 'content-protector' ),

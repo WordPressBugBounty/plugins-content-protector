@@ -54,6 +54,19 @@ class PS_Helper {
     }
 
     /**
+     * Build the $atts array that PS_Conditional::is_valid() checks for a post.
+     *
+     * @param int $post_id Post ID.
+     *
+     * @return array
+     */
+    public static function get_protection_atts( int $post_id ) : array {
+        $atts = array();
+        $atts['password'] = get_post_meta( $post_id, 'passster_password', true );
+        return $atts;
+    }
+
+    /**
      * Plain-text replacement for locked content where a form can't be rendered (excerpts, feeds, SEO).
      *
      * @return string
