@@ -407,26 +407,26 @@ class PS_Public {
         $shortcode = '[passster ';
         // Role and user restrictions only apply to the validation below.
         foreach ( array_diff_key( $atts, array_flip( array('role', 'user') ) ) as $key => $value ) {
-            $shortcode .= $key . '="' . (( true === $value ? 'true' : $value )) . '" ';
+            $shortcode .= $key . '="' . (( true === $value ? 'true' : PS_Helper::shortcode_attr( $value ) )) . '" ';
         }
         $shortcode .= 'protection="full" ';
         if ( !empty( $redirection ) ) {
-            $shortcode .= 'redirect="' . $redirection . '" ';
+            $shortcode .= 'redirect="' . PS_Helper::shortcode_attr( esc_url( $redirection ) ) . '" ';
         }
         if ( !empty( $headline ) ) {
-            $shortcode .= 'headline="' . $headline . '" ';
+            $shortcode .= 'headline="' . PS_Helper::shortcode_attr( $headline ) . '" ';
         }
         if ( !empty( $instruction ) ) {
             $shortcode .= 'instruction="' . base64_encode( $instruction ) . '" ';
         }
         if ( !empty( $placeholder ) ) {
-            $shortcode .= 'placeholder="' . $placeholder . '" ';
+            $shortcode .= 'placeholder="' . PS_Helper::shortcode_attr( $placeholder ) . '" ';
         }
         if ( !empty( $button ) ) {
-            $shortcode .= 'button="' . $button . '" ';
+            $shortcode .= 'button="' . PS_Helper::shortcode_attr( $button ) . '" ';
         }
         if ( !empty( $id ) ) {
-            $shortcode .= 'id="' . $id . '" ';
+            $shortcode .= 'id="' . PS_Helper::shortcode_attr( $id ) . '" ';
         }
         $shortcode .= ']{content}[/passster]';
         // check if valid before restrict anything.

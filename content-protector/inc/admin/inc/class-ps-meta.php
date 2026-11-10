@@ -32,6 +32,33 @@ class PS_Meta {
         add_action( 'admin_enqueue_scripts', array($this, 'add_meta_scripts') );
         add_action( 'rest_api_init', array($this, 'rest_api_init') );
         add_action( 'add_meta_boxes', array($this, 'add_metaboxes') );
+        add_filter(
+            'is_protected_meta',
+            array($this, 'protect_meta_keys'),
+            10,
+            2
+        );
+    }
+
+    /**
+     * REST auth for protected Passster meta.
+     *
+     * @return bool
+     */
+    public function can_edit_meta() {
+        return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
+    }
+
+    /**
+     * Keep Passster meta out of core's Custom Fields UI/AJAX so only the plugin's own (capability-checked) paths can write it.
+     *
+     * @param bool   $protected Whether the key is protected.
+     * @param string $meta_key  Meta key.
+     *
+     * @return bool
+     */
+    public function protect_meta_keys( $protected, $meta_key ) {
+        return $protected || 0 === strpos( (string) $meta_key, 'passster_' );
     }
 
     /**

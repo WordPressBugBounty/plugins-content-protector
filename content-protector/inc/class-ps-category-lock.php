@@ -1155,18 +1155,18 @@ class PS_Category_Lock {
         $options = get_option( 'passster' );
         $shortcode = '[passster ';
         $password = get_term_meta( $term_id, 'passster_password', true );
-        $shortcode .= 'password="' . esc_attr( $password ) . '" ';
+        $shortcode .= 'password="' . PS_Helper::shortcode_attr( $password ) . '" ';
         $shortcode .= 'protection="full" ';
         $shortcode .= 'term_id="' . $term_id . '" ';
         // Redirect.
         $redirect = get_term_meta( $term_id, 'passster_redirect_url', true );
         if ( !empty( $redirect ) ) {
-            $shortcode .= 'redirect="' . esc_url( $redirect ) . '" ';
+            $shortcode .= 'redirect="' . PS_Helper::shortcode_attr( esc_url( $redirect ) ) . '" ';
         }
         // Overwrite defaults.
         $headline = get_term_meta( $term_id, 'passster_headline', true );
         if ( !empty( $headline ) ) {
-            $shortcode .= 'headline="' . esc_attr( $headline ) . '" ';
+            $shortcode .= 'headline="' . PS_Helper::shortcode_attr( $headline ) . '" ';
         }
         $instruction = get_term_meta( $term_id, 'passster_instruction', true );
         if ( !empty( $instruction ) ) {
@@ -1174,11 +1174,11 @@ class PS_Category_Lock {
         }
         $placeholder = get_term_meta( $term_id, 'passster_placeholder', true );
         if ( !empty( $placeholder ) ) {
-            $shortcode .= 'placeholder="' . esc_attr( $placeholder ) . '" ';
+            $shortcode .= 'placeholder="' . PS_Helper::shortcode_attr( $placeholder ) . '" ';
         }
         $button = get_term_meta( $term_id, 'passster_button', true );
         if ( !empty( $button ) ) {
-            $shortcode .= 'button="' . esc_attr( $button ) . '" ';
+            $shortcode .= 'button="' . PS_Helper::shortcode_attr( $button ) . '" ';
         }
         $shortcode .= ']' . $content . '[/passster]';
         return $shortcode;

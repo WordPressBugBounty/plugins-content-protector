@@ -54,6 +54,18 @@ class PS_Helper {
     }
 
     /**
+     * Escape a value for use inside a quoted shortcode attribute.
+     * Brackets are encoded too, since shortcode parsing stops at them even inside quotes.
+     *
+     * @param mixed $value Attribute value.
+     *
+     * @return string
+     */
+    public static function shortcode_attr( $value ) : string {
+        return str_replace( array('[', ']'), array('&#91;', '&#93;'), esc_attr( (string) $value ) );
+    }
+
+    /**
      * Build the $atts array that PS_Conditional::is_valid() checks for a post.
      *
      * @param int $post_id Post ID.
