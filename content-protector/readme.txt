@@ -6,7 +6,7 @@ Tested up to: 7.1
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.22
+Stable tag: 4.3.23
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,8 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.23 - 16.11.2026 =
+* Fixed: Extra paragraphs breaking the layout of tables and other shortcodes inside protected content.
 = 4.3.22 - 10.11.2026 =
 * Fixed: Security update.
 

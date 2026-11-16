@@ -102,7 +102,7 @@ class PS_Public {
             if ( has_blocks( $content ) ) {
                 return do_shortcode( do_blocks( $content ) );
             }
-            return wpautop( do_shortcode( $content ) );
+            return do_shortcode( shortcode_unautop( wpautop( $content ) ) );
         }
         return apply_filters( 'the_content', $content );
     }
