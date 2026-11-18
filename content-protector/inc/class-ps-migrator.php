@@ -5,6 +5,17 @@ namespace passster;
 class PS_Migrator {
 
 	/**
+	 * Create the settings on first run. Hooked on init: the default texts need translations loaded.
+	 *
+	 * @return void
+	 */
+	public static function maybe_migrate() {
+		if ( empty( get_option( 'passster' ) ) ) {
+			self::migrate();
+		}
+	}
+
+	/**
 	 * Handle the migration from v3 to v4 in Passster.
 	 *
 	 * @return void

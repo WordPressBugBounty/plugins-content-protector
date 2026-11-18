@@ -227,6 +227,12 @@ class PS_Rest_API {
         if ( empty( $protection ) ) {
             $protection = false;
         }
+        if ( !$this->can_receive_content( $post_id, $area_id, $protection ) ) {
+            return new \WP_REST_Response(array(
+                'success' => false,
+                'error'   => $error_message,
+            ), 200);
+        }
         // Category archive protection: term_id is passed directly from the form.
         if ( $term_id > 0 ) {
             $result = $this->validate_category_unlock(
@@ -1307,6 +1313,12 @@ class PS_Rest_API {
             $captcha_id = str_replace( array('_v2', '_v3'), '', $type );
         }
         $error_message = $options['error'] ?? __( 'Captcha validation failed.', 'content-protector' );
+        if ( !$this->can_receive_content( $post_id, $area_id, $protection ) ) {
+            return new \WP_REST_Response(array(
+                'success' => false,
+                'error'   => $error_message,
+            ), 200);
+        }
         // Validate captcha based on type.
         $valid = false;
         switch ( $type ) {
@@ -1384,6 +1396,20 @@ class PS_Rest_API {
             $response_data['content'] = $content;
         }
         return new \WP_REST_Response($response_data, 200);
+    }
+
+    /**
+     * Global Protection check for the object whose content the endpoint would send.
+     * An area isn't tied to the page it's shown on, so it's judged on its own.
+     *
+     * @param int         $post_id    Requested post ID.
+     * @param int         $area_id    Requested area ID.
+     * @param string|bool $protection Protection type.
+     * @return bool
+     */
+    private function can_receive_content( $post_id, $area_id, $protection ) {
+        $object_id = ( 'area' === $protection ? $area_id : $post_id );
+        return PS_Global_Protection::can_receive_content( absint( $object_id ) );
     }
 
     /**

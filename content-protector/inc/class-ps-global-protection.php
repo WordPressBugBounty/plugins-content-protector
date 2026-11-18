@@ -206,6 +206,22 @@ class PS_Global_Protection {
 	}
 
 	/**
+	 * Whether a public endpoint may send this object's content. Locked visitors only reach the protection page and excluded pages.
+	 *
+	 * @param int $object_id Post or protected area ID whose content would be sent.
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public static function can_receive_content( int $object_id ): bool {
+		if ( ! self::is_visitor_locked() ) {
+			return true;
+		}
+
+		return $object_id && self::is_exempt_post( $object_id );
+	}
+
+	/**
 	 * Requests where nobody is browsing the site: dashboard, cron, WP-CLI.
 	 *
 	 * @return bool

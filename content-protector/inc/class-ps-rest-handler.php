@@ -53,7 +53,7 @@ class PS_Rest_Handler {
 			return $result;
 		}
 
-		// Allow Passster public endpoints (unlock flow must work for guests).
+		// Public so guests can pass the protection page; endpoints that send content check Global Protection themselves.
 		$public_passster_paths = array(
 			'/passster/v1/nonces',
 			'/passster/v1/unlock',

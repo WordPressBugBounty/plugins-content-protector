@@ -4,7 +4,7 @@
  * Plugin Name:       Passster
  * Plugin URI:        https://passster.com/
  * Description:       A simple plugin to password-protect your complete website, some pages/posts or just parts of your content.
- * Version:           4.3.23
+ * Version:           4.3.24
  * Author:            WPChill
  * Author URI:        https://wpchill.com
  * License:           GPL-2.0+
@@ -20,7 +20,7 @@
 defined( 'ABSPATH' ) || exit;
 define( 'PASSSTER_PATH', untrailingslashit( plugin_dir_path( __FILE__ ) ) );
 define( 'PASSSTER_URL', untrailingslashit( plugin_dir_url( __FILE__ ) ) );
-define( 'PASSSTER_VERSION', '4.3.23' );
+define( 'PASSSTER_VERSION', '4.3.24' );
 // run plugin.
 if ( !function_exists( 'passster_run_plugin' ) ) {
     add_action( 'plugins_loaded', 'passster_run_plugin' );
@@ -73,11 +73,7 @@ if ( !function_exists( 'passster_run_plugin' ) ) {
         passster\PS_Rest_Handler::get_instance();
         passster\PS_Rest_API::get_instance();
         passster\PS_Upsells::get_instance();
-        // Maybe migrate settings.
-        $options = get_option( 'passster' );
-        if ( empty( $options ) ) {
-            passster\PS_Migrator::migrate();
-        }
+        add_action( 'init', array('passster\\PS_Migrator', 'maybe_migrate'), 0 );
         passster\PS_Protected_Posts::get_instance();
         passster\PS_Category_Lock::get_instance();
     }
