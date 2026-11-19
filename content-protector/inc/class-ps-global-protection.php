@@ -44,7 +44,21 @@ class PS_Global_Protection {
 		add_action( 'template_redirect', array( $this, 'protect_queried_object_routes' ) );
 		// Runs last: a plugin callback on a URL that looks like the home page must finish first.
 		add_action( 'template_redirect', array( $this, 'protect_listing_routes' ), PHP_INT_MAX );
+		// WP 7.2 redirects /random/ listings to a post at priority 100, before the listing lock above runs.
+		add_action( 'template_redirect', array( $this, 'protect_random_routes' ), 99 );
 		add_filter( 'template_include', array( $this, 'protect_home_template' ), PHP_INT_MAX );
+	}
+
+	/**
+	 * Lock random content listings (WP 7.2+) before core redirects to a random post.
+	 *
+	 * @return void
+	 * @throws Exception
+	 */
+	public function protect_random_routes() {
+		if ( function_exists( 'is_random' ) && is_random() ) {
+			$this->protect_listing_routes();
+		}
 	}
 
 	/**

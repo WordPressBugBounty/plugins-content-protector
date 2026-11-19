@@ -407,15 +407,20 @@ class PS_Admin {
                 );
                 // Build the edit link if it's a password list.
                 if ( 'password_list' === $type ) {
+                    // No edit link when the password_lists post type isn't registered (free version).
                     $edit_link = get_edit_post_link( $protection_types[$type] );
-                    ?>
+                    if ( $edit_link ) {
+                        ?>
                     <a target="_blank"
                        href="<?php 
-                    echo esc_url( $edit_link );
-                    ?>"><?php 
-                    echo esc_html( $protection_types[$type] );
-                    ?></a>
-					<?php 
+                        echo esc_url( $edit_link );
+                        ?>"><?php 
+                        echo esc_html( $protection_types[$type] );
+                        ?></a>
+						<?php 
+                    } else {
+                        echo esc_html( $protection_types[$type] );
+                    }
                 } elseif ( 'password_lists' === $type ) {
                     $password_list_ids = get_post_meta( $post_id, 'passster_password_lists', true );
                     $lists_string = '';

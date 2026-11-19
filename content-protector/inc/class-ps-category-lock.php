@@ -1051,6 +1051,8 @@ class PS_Category_Lock {
         if ( PS_Conditional::is_valid( $atts ) ) {
             return;
         }
+        // A locked archive must not hand out its posts' URLs through WP 7.2 random content redirects.
+        add_filter( 'wp_enable_random_content_redirect', '__return_false' );
         // Check for redirect.
         $redirect = get_term_meta( $term->term_id, 'passster_redirect_url', true );
         if ( !empty( $redirect ) ) {

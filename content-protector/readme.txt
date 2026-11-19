@@ -2,11 +2,11 @@
 Contributors: wpchill, silkalns
 Tags: password protect, password, restrict content, sitewide, password protection
 Requires at least: 6.5
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 4.3.24
+Stable tag: 4.3.25
 
 == Description ==
 ## Password Protect Pages, Posts & Content in WordPress
@@ -110,6 +110,9 @@ Passster is simple to install:
 6. Customise your settings and your good to go!
 
 == Changelog ==
+= 4.3.25 - 19.11.2026 =
+* Fixed: Random content links (WordPress 7.2) revealing posts from protected areas of the site.
+
 = 4.3.24 - 18.11.2026 =
 * Fixed: Security update.
 * Fixed: Default form texts not being translated on new installs.
