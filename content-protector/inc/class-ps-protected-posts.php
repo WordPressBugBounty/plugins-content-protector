@@ -33,6 +33,7 @@ class PS_Protected_Posts {
 	 */
 	public function __construct() {
 		add_filter( 'pre_get_posts', array( $this, 'exclude_protected_posts_from_search' ) );
+		add_filter( 'posts_search', array( $this, 'skip_protected_sections_in_search' ), 10, 2 );
 	}
 
 	/**
@@ -69,7 +70,124 @@ class PS_Protected_Posts {
 
 		$query->set( 'meta_query', $meta_query );
 
+		$this->exclude_locked_terms( $query );
+		$this->exclude_protected_children( $query );
+
 		return $query;
+	}
+
+	/**
+	 * Exclude posts of locked categories (and their subcategories).
+	 *
+	 * @param \WP_Query $query The WP_Query instance.
+	 * @return void
+	 */
+	private function exclude_locked_terms( $query ) {
+		$tax_query = array();
+		foreach ( PS_Category_Lock::get_instance()->get_locked_term_ids() as $taxonomy => $term_ids ) {
+			$tax_query[] = array(
+				'taxonomy'         => $taxonomy,
+				'terms'            => $term_ids,
+				'operator'         => 'NOT IN',
+				'include_children' => true,
+			);
+		}
+
+		if ( ! $tax_query ) {
+			return;
+		}
+
+		$existing_tax_query = $query->get( 'tax_query' );
+		if ( ! empty( $existing_tax_query ) ) {
+			$tax_query[] = $existing_tax_query;
+		}
+
+		$query->set( 'tax_query', array_merge( array( 'relation' => 'AND' ), $tax_query ) );
+	}
+
+	/**
+	 * Exclude child pages of parents that protect them.
+	 *
+	 * @param \WP_Query $query The WP_Query instance.
+	 * @return void
+	 */
+	private function exclude_protected_children( $query ) {
+		global $wpdb;
+
+		// Direct query: get_posts() would skip post types and statuses that can still be parents.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$parent_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT a.post_id FROM {$wpdb->postmeta} a
+				INNER JOIN {$wpdb->postmeta} b ON b.post_id = a.post_id AND b.meta_key = %s AND b.meta_value NOT IN ( '', '0' )
+				WHERE a.meta_key = %s AND a.meta_value NOT IN ( '', '0' )",
+				'passster_protect_child_pages',
+				self::PASSTER_META_KEY
+			)
+		);
+
+		if ( ! $parent_ids ) {
+			return;
+		}
+
+		$query->set( 'post_parent__not_in', array_merge( (array) $query->get( 'post_parent__not_in', array() ), array_map( 'intval', $parent_ids ) ) );
+	}
+
+	/**
+	 * Posts holding a Passster shortcode or block are matched on title and excerpt only, since their
+	 * stored content contains the hidden section and its password.
+	 *
+	 * @param string    $search Search SQL for the WHERE clause.
+	 * @param \WP_Query $query  The WP_Query instance.
+	 * @return string
+	 */
+	public function skip_protected_sections_in_search( $search, $query ) {
+		global $wpdb;
+
+		if ( '' === trim( (string) $search ) || ! $this->should_exclude_from_search( $query ) ) {
+			return $search;
+		}
+
+		$has_section = array();
+		foreach ( array( '[passster', '[content_protector', 'wp:passster/content-lock' ) as $marker ) {
+			$has_section[] = $wpdb->prepare( "{$wpdb->posts}.post_content LIKE %s", '%' . $wpdb->esc_like( $marker ) . '%' );
+		}
+		$has_section = '(' . implode( ' OR ', $has_section ) . ')';
+
+		$columns = $query->get( 'search_columns' );
+		$columns = array_diff( empty( $columns ) ? array( 'post_title', 'post_excerpt', 'post_content' ) : (array) $columns, array( 'post_content' ) );
+
+		$public_search = $columns ? $this->build_search_sql( $query, $columns ) : '';
+		if ( '' === trim( $public_search ) ) {
+			$public_search = ' AND 1=0 ';
+		}
+
+		return " AND ( ( NOT {$has_section} {$search} ) OR ( {$has_section} {$public_search} ) ) ";
+	}
+
+	/**
+	 * Core's search SQL for the same search, limited to the given columns.
+	 *
+	 * @param \WP_Query $query   The WP_Query instance.
+	 * @param array     $columns Columns to search.
+	 * @return string
+	 */
+	private function build_search_sql( $query, array $columns ): string {
+		$vars = array(
+			// Core already unslashed the term on the original query and unslashes it again here.
+			's'              => wp_slash( (string) $query->get( 's' ) ),
+			'sentence'       => $query->get( 'sentence' ),
+			'exact'          => $query->get( 'exact' ),
+			'search_columns' => array_values( $columns ),
+		);
+
+		$builder = new class() extends \WP_Query {
+			public function search_sql( array $vars ): string {
+				return $this->parse_search( $vars );
+			}
+		};
+
+		return $builder->search_sql( $vars );
 	}
 
 	/**
