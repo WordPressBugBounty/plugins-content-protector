@@ -1,61 +1,55 @@
 <?php
 
-if ( ! function_exists( 'passster_fs' ) ) {
-	// Create a helper function for easy SDK access.
-	function passster_fs() {
-		global $passster_fs;
+if ( !function_exists( 'passster_fs' ) ) {
+    // Create a helper function for easy SDK access.
+    function passster_fs() {
+        global $passster_fs;
+        if ( !isset( $passster_fs ) ) {
+            // Activate multisite network integration.
+            if ( !defined( 'WP_FS__PRODUCT_1938_MULTISITE' ) ) {
+                define( 'WP_FS__PRODUCT_1938_MULTISITE', true );
+            }
+            // Include Freemius SDK.
+            require_once dirname( __FILE__ ) . '/freemius/start.php';
+            $passster_fs = fs_dynamic_init( array(
+                'id'               => '1938',
+                'slug'             => 'content-protector',
+                'type'             => 'plugin',
+                'public_key'       => 'pk_9d9d6d17bd34372b199f36e37dd4b',
+                'is_premium'       => false,
+                'premium_suffix'   => '',
+                'has_addons'       => false,
+                'has_paid_plans'   => true,
+                'has_affiliation'  => 'selected',
+                'menu'             => array(
+                    'contact' => false,
+                    'support' => false,
+                ),
+                'is_live'          => true,
+                'is_org_compliant' => true,
+            ) );
+        }
+        return $passster_fs;
+    }
 
-		if ( ! isset( $passster_fs ) ) {
-			// Activate multisite network integration.
-			if ( ! defined( 'WP_FS__PRODUCT_1938_MULTISITE' ) ) {
-				define( 'WP_FS__PRODUCT_1938_MULTISITE', true );
-			}
-
-			// Include Freemius SDK.
-			require_once dirname( __FILE__ ) . '/freemius/start.php';
-
-			$passster_fs = fs_dynamic_init( array(
-				'id'                  => '1938',
-				'slug'                => 'content-protector',
-				'type'                => 'plugin',
-				'public_key'          => 'pk_9d9d6d17bd34372b199f36e37dd4b',
-				'is_premium'          => true,
-				'premium_suffix'      => '',
-				'has_premium_version' => true,
-				'has_addons'          => false,
-				'has_paid_plans'      => true,
-				'has_affiliation'     => 'selected',
-				'menu'            => array(
-					'contact' => false,
-					'support' => false,
-				),
-			) );
-		}
-
-		return $passster_fs;
-	}
-
-	// Init Freemius.
-	passster_fs();
-	// Signal that SDK was initiated.
-	do_action( 'passster_fs_loaded' );
+    // Init Freemius.
+    passster_fs();
+    // Signal that SDK was initiated.
+    do_action( 'passster_fs_loaded' );
 }
-
 function passster_fs_settings_url() {
-	return admin_url( 'admin.php?page=passster-settings' );
+    return admin_url( 'admin.php?page=passster-settings' );
 }
 
-if ( ! passster_fs()->is_registered() && ! passster_fs()->is_anonymous() && ! passster_fs()->is_pending_activation() ) {
-	passster_fs()->skip_connection();
+if ( !passster_fs()->is_registered() && !passster_fs()->is_anonymous() && !passster_fs()->is_pending_activation() ) {
+    passster_fs()->skip_connection();
 }
-
 passster_fs()->add_filter( 'connect_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'after_skip_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'after_connect_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'after_pending_connect_url', 'passster_fs_settings_url' );
 passster_fs()->add_filter( 'show_deactivation_subscription_cancellation', '__return_false' );
 passster_fs()->add_filter( 'show_deactivation_feedback_form', '__return_false' );
-
 /**
  * Hide specific Freemius sticky admin notices.
  *
@@ -64,22 +58,26 @@ passster_fs()->add_filter( 'show_deactivation_feedback_form', '__return_false' )
  *
  * @return bool
  */
-function passster_hide_admin_notices( $show, $notice ) {
-	$hidden_notice_ids = array(
-		'connect_account',    // "We made a few tweaks to the plugin, Opt in to make it better!"
-		'premium_activated',  // "W00t! Premium plugin version was successfully activated."
-		'plan_upgraded',      // "Your account was successfully activated with the X plan."
-	);
-
-	if ( in_array( $notice['id'], $hidden_notice_ids, true ) ) {
-		return false;
-	}
-
-	return $show;
+function passster_hide_admin_notices(  $show, $notice  ) {
+    $hidden_notice_ids = array(
+        'connect_account',
+        // "We made a few tweaks to the plugin, Opt in to make it better!"
+        'premium_activated',
+        // "W00t! Premium plugin version was successfully activated."
+        'plan_upgraded',
+    );
+    if ( in_array( $notice['id'], $hidden_notice_ids, true ) ) {
+        return false;
+    }
+    return $show;
 }
 
-passster_fs()->add_filter( 'show_admin_notice', 'passster_hide_admin_notices', 10, 2 );
-
+passster_fs()->add_filter(
+    'show_admin_notice',
+    'passster_hide_admin_notices',
+    10,
+    2
+);
 /**
  * Hide freemius submenus except account (for license management).
  *
@@ -88,55 +86,45 @@ passster_fs()->add_filter( 'show_admin_notice', 'passster_hide_admin_notices', 1
  *
  * @return bool
  */
-function passster_is_submenu_visible( $is_visible, $submenu_id ) {
-	// Show account submenu for license activation/management
-	if ( 'account' === $submenu_id ) {
-		return true;
-	}
-	return false;
+function passster_is_submenu_visible(  $is_visible, $submenu_id  ) {
+    // Show account submenu for license activation/management
+    if ( 'account' === $submenu_id ) {
+        return true;
+    }
+    return false;
 }
 
-passster_fs()->add_filter( 'is_submenu_visible', 'passster_is_submenu_visible', 10, 2 );
-
+passster_fs()->add_filter(
+    'is_submenu_visible',
+    'passster_is_submenu_visible',
+    10,
+    2
+);
 /**
  * Add custom icon for Freemius.
  *
  * @return string
  */
 passster_fs()->add_filter( 'plugin_icon', function () {
-	return PASSSTER_PATH . '/assets/admin/passster-icon.png';
+    return PASSSTER_PATH . '/assets/admin/passster-icon.png';
 } );
-
 passster_fs()->add_action( 'after_uninstall', function () {
-	global $wpdb;
-
-	// Delete option.
-	if ( is_multisite() ) {
-		delete_site_option( 'passster' );
-	} else {
-		delete_option( 'passster' );
-	}
-
-	// Delete tables.
-	$tables = [
-		$wpdb->prefix . "passster_concurrent_logins",
-		$wpdb->prefix . "passster_statistics",
-	];
-
-	foreach ( $tables as $table ) {
-		$wpdb->query( "DROP TABLE IF EXISTS $table" );
-	}
-
-	// Delete all password lists.
-	$wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type='password_lists'" );
-
-	// Delete all protected areas.
-	$wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type='protected_areas'" );
-
-	// Delete all assigned meta
-	$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE 'passster_%'" );
+    global $wpdb;
+    // Delete option.
+    if ( is_multisite() ) {
+        delete_site_option( 'passster' );
+    } else {
+        delete_option( 'passster' );
+    }
+    // Delete tables.
+    $tables = [$wpdb->prefix . "passster_concurrent_logins", $wpdb->prefix . "passster_statistics"];
+    foreach ( $tables as $table ) {
+        $wpdb->query( "DROP TABLE IF EXISTS {$table}" );
+    }
+    // Delete all password lists.
+    $wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type='password_lists'" );
+    // Delete all protected areas.
+    $wpdb->query( "DELETE FROM {$wpdb->posts} WHERE post_type='protected_areas'" );
+    // Delete all assigned meta
+    $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE 'passster_%'" );
 } );
-
-
-
-

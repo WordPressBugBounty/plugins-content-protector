@@ -15,6 +15,10 @@ class PS_Protected_Posts {
 	private static $instance = null;
 
 	const PASSTER_META_KEY = 'passster_activate_protection';
+
+	const HAS_SECTION_META_KEY = '_passster_has_section';
+
+	const SECTION_MARKERS = array( '[passster', '[content_protector', 'wp:passster/content-lock' );
 	/**
 	 * Returns instance of PS_Protected_Posts.
 	 *
@@ -34,6 +38,32 @@ class PS_Protected_Posts {
 	public function __construct() {
 		add_filter( 'pre_get_posts', array( $this, 'exclude_protected_posts_from_search' ) );
 		add_filter( 'posts_search', array( $this, 'skip_protected_sections_in_search' ), 10, 2 );
+		add_action( 'save_post', array( $this, 'flag_protected_sections' ), 10, 2 );
+	}
+
+	/**
+	 * Flag posts holding a Passster shortcode or block, so search can tell them apart cheaply.
+	 *
+	 * @param int      $post_id Post ID.
+	 * @param \WP_Post $post    Post object.
+	 * @return void
+	 */
+	public function flag_protected_sections( $post_id, $post ) {
+		if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+			return;
+		}
+
+		foreach ( self::SECTION_MARKERS as $marker ) {
+			if ( false !== stripos( (string) $post->post_content, $marker ) ) {
+				update_post_meta( $post_id, self::HAS_SECTION_META_KEY, 1 );
+				return;
+			}
+		}
+
+		// get_post_meta() reads from cache; delete_post_meta() would always hit the DB.
+		if ( get_post_meta( $post_id, self::HAS_SECTION_META_KEY, true ) ) {
+			delete_post_meta( $post_id, self::HAS_SECTION_META_KEY );
+		}
 	}
 
 	/**
@@ -148,11 +178,13 @@ class PS_Protected_Posts {
 			return $search;
 		}
 
-		$has_section = array();
-		foreach ( array( '[passster', '[content_protector', 'wp:passster/content-lock' ) as $marker ) {
-			$has_section[] = $wpdb->prepare( "{$wpdb->posts}.post_content LIKE %s", '%' . $wpdb->esc_like( $marker ) . '%' );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$section_ids = $wpdb->get_col( $wpdb->prepare( "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = %s", self::HAS_SECTION_META_KEY ) );
+		if ( ! $section_ids ) {
+			return $search;
 		}
-		$has_section = '(' . implode( ' OR ', $has_section ) . ')';
+
+		$has_section = "{$wpdb->posts}.ID IN (" . implode( ',', array_map( 'intval', $section_ids ) ) . ')';
 
 		$columns = $query->get( 'search_columns' );
 		$columns = array_diff( empty( $columns ) ? array( 'post_title', 'post_excerpt', 'post_content' ) : (array) $columns, array( 'post_content' ) );

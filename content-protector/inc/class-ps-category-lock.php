@@ -7,388 +7,264 @@ namespace passster;
  * Adds password protection to hierarchical taxonomy terms.
  */
 class PS_Category_Lock {
+    /**
+     * Contains instance or null
+     *
+     * @var object|null
+     */
+    private static $instance = null;
 
-	/**
-	 * Contains instance or null
-	 *
-	 * @var object|null
-	 */
-	private static $instance = null;
+    /**
+     * Rendered form HTML to pass to the protected WooCommerce template.
+     *
+     * @var string
+     */
+    private static $woo_protected_form = '';
 
-	/**
-	 * Rendered form HTML to pass to the protected WooCommerce template.
-	 *
-	 * @var string
-	 */
-	private static $woo_protected_form = '';
+    /**
+     * Rendered form HTML to pass to the protected regular category template.
+     *
+     * @var string
+     */
+    private static $protected_form = '';
 
-	/**
-	 * Rendered form HTML to pass to the protected regular category template.
-	 *
-	 * @var string
-	 */
-	private static $protected_form = '';
+    /**
+     * Get the stored protected form HTML (used by the WooCommerce override template).
+     *
+     * @return string
+     */
+    public static function get_woo_protected_form() : string {
+        return self::$woo_protected_form;
+    }
 
-	/**
-	 * Get the stored protected form HTML (used by the WooCommerce override template).
-	 *
-	 * @return string
-	 */
-	public static function get_woo_protected_form(): string {
-		return self::$woo_protected_form;
-	}
+    /**
+     * Get the stored protected form HTML (used by the regular category override template).
+     *
+     * @return string
+     */
+    public static function get_protected_form() : string {
+        return self::$protected_form;
+    }
 
-	/**
-	 * Get the stored protected form HTML (used by the regular category override template).
-	 *
-	 * @return string
-	 */
-	public static function get_protected_form(): string {
-		return self::$protected_form;
-	}
+    /**
+     * Returns instance of PS_Category_Lock.
+     *
+     * @return object
+     */
+    public static function get_instance() {
+        if ( null === self::$instance ) {
+            self::$instance = new self();
+        }
+        return self::$instance;
+    }
 
-	/**
-	 * Returns instance of PS_Category_Lock.
-	 *
-	 * @return object
-	 */
-	public static function get_instance() {
-		if ( null === self::$instance ) {
-			self::$instance = new self();
-		}
+    /**
+     * Constructor.
+     */
+    public function __construct() {
+        add_action( 'init', array($this, 'register_term_meta'), 99 );
+        add_action( 'init', array($this, 'register_taxonomy_hooks'), 99 );
+        // REST API endpoints for React metabox.
+        add_action( 'rest_api_init', array($this, 'rest_api_init') );
+        // Enqueue React scripts on term edit pages.
+        add_action( 'admin_enqueue_scripts', array($this, 'add_term_meta_scripts') );
+        // AJAX handler for quick edit modal.
+        add_action( 'wp_ajax_passster_quick_edit_category', array($this, 'ajax_quick_edit_category') );
+        // Frontend protection.
+        add_filter( 'the_content', array($this, 'filter_content_by_category'), 11 );
+        add_filter( 'the_excerpt', array($this, 'filter_content_by_category'), 11 );
+        add_filter( 'render_block_core/post-excerpt', array($this, 'filter_content_by_category'), 11 );
+        add_filter( 'get_the_excerpt', array($this, 'filter_text_by_category'), 11 );
+        add_filter( 'the_content_feed', array($this, 'filter_text_by_category'), 11 );
+        add_action( 'template_redirect', array($this, 'protect_category_archive') );
+    }
 
-		return self::$instance;
-	}
+    /**
+     * Swap WooCommerce's archive template for a minimal protected-category template.
+     *
+     * @param string $template Current template path.
+     * @return string
+     */
+    public function use_protected_category_template( string $template ) : string {
+        return plugin_dir_path( __FILE__ ) . 'templates/woo-category-protected.php';
+    }
 
-	/**
-	 * Constructor.
-	 */
-	public function __construct() {
-		add_action( 'init', array( $this, 'register_term_meta' ), 99 );
-		add_action( 'init', array( $this, 'register_taxonomy_hooks' ), 99 );
+    /**
+     * Swap the archive template for the protected regular-category template (classic themes only).
+     *
+     * @param string $template Current template path.
+     * @return string
+     */
+    public function use_protected_regular_category_template( string $template ) : string {
+        return plugin_dir_path( __FILE__ ) . 'templates/category-protected.php';
+    }
 
-		// REST API endpoints for React metabox.
-		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
+    /**
+     * Replace the core/query block output with the password form (FSE/block themes only).
+     *
+     * @param string $block_content Rendered block HTML.
+     * @param array  $block         Block data.
+     * @return string
+     */
+    public function replace_query_block_with_form( string $block_content, array $block ) : string {
+        if ( 'core/query' !== $block['blockName'] ) {
+            return $block_content;
+        }
+        return self::$protected_form;
+    }
 
-		// Enqueue React scripts on term edit pages.
-		add_action( 'admin_enqueue_scripts', array( $this, 'add_term_meta_scripts' ) );
+    /**
+     * Get all public hierarchical taxonomies.
+     *
+     * @return array
+     */
+    private function get_taxonomies() : array {
+        return get_taxonomies( array(
+            'public'       => true,
+            'hierarchical' => true,
+        ), 'names' );
+    }
 
-		// AJAX handler for quick edit modal.
-		add_action( 'wp_ajax_passster_quick_edit_category', array( $this, 'ajax_quick_edit_category' ) );
+    /**
+     * Register term meta fields.
+     *
+     * @return void
+     */
+    public function register_term_meta() {
+        $taxonomies = $this->get_taxonomies();
+        foreach ( $taxonomies as $taxonomy ) {
+            register_term_meta( $taxonomy, 'passster_activate_protection', array(
+                'type'              => 'boolean',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'rest_sanitize_boolean',
+            ) );
+            register_term_meta( $taxonomy, 'passster_password', array(
+                'type'              => 'string',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'sanitize_text_field',
+            ) );
+            register_term_meta( $taxonomy, 'passster_redirect_url', array(
+                'type'              => 'string',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'esc_url_raw',
+            ) );
+            register_term_meta( $taxonomy, 'passster_headline', array(
+                'type'              => 'string',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'sanitize_text_field',
+            ) );
+            register_term_meta( $taxonomy, 'passster_instruction', array(
+                'type'              => 'string',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'wp_kses_post',
+            ) );
+            register_term_meta( $taxonomy, 'passster_placeholder', array(
+                'type'              => 'string',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'sanitize_text_field',
+            ) );
+            register_term_meta( $taxonomy, 'passster_button', array(
+                'type'              => 'string',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'sanitize_text_field',
+            ) );
+            register_term_meta( $taxonomy, 'passster_activate_overwrite_defaults', array(
+                'type'              => 'boolean',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'rest_sanitize_boolean',
+            ) );
+            register_term_meta( $taxonomy, 'passster_activate_misc_settings', array(
+                'type'              => 'boolean',
+                'single'            => true,
+                'show_in_rest'      => false,
+                'sanitize_callback' => 'rest_sanitize_boolean',
+            ) );
+        }
+    }
 
-		// Frontend protection.
-		add_filter( 'the_content', array( $this, 'filter_content_by_category' ), 11 );
-		add_filter( 'the_excerpt', array( $this, 'filter_content_by_category' ), 11 );
-		add_filter( 'render_block_core/post-excerpt', array( $this, 'filter_content_by_category' ), 11 );
-		add_filter( 'get_the_excerpt', array( $this, 'filter_text_by_category' ), 11 );
-		add_filter( 'the_content_feed', array( $this, 'filter_text_by_category' ), 11 );
-		add_action( 'template_redirect', array( $this, 'protect_category_archive' ) );
-	}
+    /**
+     * Register hooks for each taxonomy (form fields, columns, row actions).
+     *
+     * @return void
+     */
+    public function register_taxonomy_hooks() {
+        $taxonomies = $this->get_taxonomies();
+        foreach ( $taxonomies as $taxonomy ) {
+            // Add/Edit form fields.
+            add_action( "{$taxonomy}_add_form_fields", array($this, 'add_form_fields') );
+            add_action(
+                "{$taxonomy}_edit_form_fields",
+                array($this, 'edit_form_fields'),
+                10,
+                2
+            );
+            // Save term meta (only on create; edit uses React + REST API).
+            add_action( "created_{$taxonomy}", array($this, 'save_term_meta') );
+            // Admin columns.
+            add_filter( "manage_edit-{$taxonomy}_columns", array($this, 'add_columns') );
+            add_filter(
+                "manage_{$taxonomy}_custom_column",
+                array($this, 'render_column'),
+                10,
+                3
+            );
+            // Row actions.
+            add_filter(
+                "{$taxonomy}_row_actions",
+                array($this, 'add_row_actions'),
+                10,
+                2
+            );
+        }
+        // Quick edit modal UI.
+        add_action( 'admin_footer-edit-tags.php', array($this, 'quick_edit_ui') );
+    }
 
-	/**
-	 * Swap WooCommerce's archive template for a minimal protected-category template.
-	 *
-	 * @param string $template Current template path.
-	 * @return string
-	 */
-	public function use_protected_category_template( string $template ): string {
-		return plugin_dir_path( __FILE__ ) . 'templates/woo-category-protected.php';
-	}
-
-	/**
-	 * Swap the archive template for the protected regular-category template (classic themes only).
-	 *
-	 * @param string $template Current template path.
-	 * @return string
-	 */
-	public function use_protected_regular_category_template( string $template ): string {
-		return plugin_dir_path( __FILE__ ) . 'templates/category-protected.php';
-	}
-
-	/**
-	 * Replace the core/query block output with the password form (FSE/block themes only).
-	 *
-	 * @param string $block_content Rendered block HTML.
-	 * @param array  $block         Block data.
-	 * @return string
-	 */
-	public function replace_query_block_with_form( string $block_content, array $block ): string {
-		if ( 'core/query' !== $block['blockName'] ) {
-			return $block_content;
-		}
-		return self::$protected_form;
-	}
-
-	/**
-	 * Get all public hierarchical taxonomies.
-	 *
-	 * @return array
-	 */
-	private function get_taxonomies(): array {
-		return get_taxonomies(
-			array(
-				'public'       => true,
-				'hierarchical' => true,
-			),
-			'names'
-		);
-	}
-
-	/**
-	 * Register term meta fields.
-	 *
-	 * @return void
-	 */
-	public function register_term_meta() {
-		$taxonomies = $this->get_taxonomies();
-
-		foreach ( $taxonomies as $taxonomy ) {
-			register_term_meta(
-				$taxonomy,
-				'passster_activate_protection',
-				array(
-					'type'              => 'boolean',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'rest_sanitize_boolean',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_password',
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'sanitize_text_field',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_redirect_url',
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'esc_url_raw',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_headline',
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'sanitize_text_field',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_instruction',
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'wp_kses_post',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_placeholder',
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'sanitize_text_field',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_button',
-				array(
-					'type'              => 'string',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'sanitize_text_field',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_activate_overwrite_defaults',
-				array(
-					'type'              => 'boolean',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'rest_sanitize_boolean',
-				)
-			);
-
-			register_term_meta(
-				$taxonomy,
-				'passster_activate_misc_settings',
-				array(
-					'type'              => 'boolean',
-					'single'            => true,
-					'show_in_rest'      => false,
-					'sanitize_callback' => 'rest_sanitize_boolean',
-				)
-			);
-
-			if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-				register_term_meta(
-					$taxonomy,
-					'passster_protection_type',
-					array(
-						'type'              => 'string',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'default'           => 'password',
-						'sanitize_callback' => 'sanitize_text_field',
-					)
-				);
-
-				register_term_meta(
-					$taxonomy,
-					'passster_passwords',
-					array(
-						'type'              => 'string',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'sanitize_callback' => 'sanitize_text_field',
-					)
-				);
-
-				register_term_meta(
-					$taxonomy,
-					'passster_password_list',
-					array(
-						'type'              => 'integer',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'sanitize_callback' => 'absint',
-					)
-				);
-
-				register_term_meta(
-					$taxonomy,
-					'passster_password_lists',
-					array(
-						'type'              => 'string',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'sanitize_callback' => 'sanitize_text_field',
-					)
-				);
-
-				register_term_meta(
-					$taxonomy,
-					'passster_schedule_enabled',
-					array(
-						'type'              => 'boolean',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'sanitize_callback' => 'rest_sanitize_boolean',
-					)
-				);
-
-				register_term_meta(
-					$taxonomy,
-					'passster_schedule_start',
-					array(
-						'type'              => 'string',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'sanitize_callback' => 'sanitize_text_field',
-					)
-				);
-
-				register_term_meta(
-					$taxonomy,
-					'passster_schedule_end',
-					array(
-						'type'              => 'string',
-						'single'            => true,
-						'show_in_rest'      => false,
-						'sanitize_callback' => 'sanitize_text_field',
-					)
-				);
-			}
-		}
-	}
-
-	/**
-	 * Register hooks for each taxonomy (form fields, columns, row actions).
-	 *
-	 * @return void
-	 */
-	public function register_taxonomy_hooks() {
-		$taxonomies = $this->get_taxonomies();
-
-		foreach ( $taxonomies as $taxonomy ) {
-			// Add/Edit form fields.
-			add_action( "{$taxonomy}_add_form_fields", array( $this, 'add_form_fields' ) );
-			add_action( "{$taxonomy}_edit_form_fields", array( $this, 'edit_form_fields' ), 10, 2 );
-
-			// Save term meta (only on create; edit uses React + REST API).
-			add_action( "created_{$taxonomy}", array( $this, 'save_term_meta' ) );
-
-			// Admin columns.
-			add_filter( "manage_edit-{$taxonomy}_columns", array( $this, 'add_columns' ) );
-			add_filter( "manage_{$taxonomy}_custom_column", array( $this, 'render_column' ), 10, 3 );
-
-			// Row actions.
-			add_filter( "{$taxonomy}_row_actions", array( $this, 'add_row_actions' ), 10, 2 );
-		}
-
-		// Quick edit modal UI.
-		add_action( 'admin_footer-edit-tags.php', array( $this, 'quick_edit_ui' ) );
-	}
-
-	// -------------------------------------------------------------------------
-	// Add Form Fields (Add New Term screen)
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Render React container on the "Add New" term form.
-	 * The actual UI is rendered by TermMetabox.jsx.
-	 * Hidden inputs are managed by React to submit data with the form.
-	 *
-	 * @param string $taxonomy Current taxonomy slug.
-	 * @return void
-	 */
-	public function add_form_fields( $taxonomy ) {
-		?>
+    // -------------------------------------------------------------------------
+    // Add Form Fields (Add New Term screen)
+    // -------------------------------------------------------------------------
+    /**
+     * Render React container on the "Add New" term form.
+     * The actual UI is rendered by TermMetabox.jsx.
+     * Hidden inputs are managed by React to submit data with the form.
+     *
+     * @param string $taxonomy Current taxonomy slug.
+     * @return void
+     */
+    public function add_form_fields( $taxonomy ) {
+        ?>
 		<div class="form-field passster-term-fields">
 			<div id="passster-term-metabox-add"></div>
 		</div>
-		<?php
-	}
+		<?php 
+    }
 
-	// -------------------------------------------------------------------------
-	// Edit Form Fields (Edit Term screen) — React-based UI
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Render React container on the "Edit" term form.
-	 * The actual UI is rendered by TermMetabox.jsx via the React app.
-	 *
-	 * @param \WP_Term $term     Current term object.
-	 * @param string   $taxonomy Current taxonomy slug.
-	 * @return void
-	 */
-	public function edit_form_fields( $term, $taxonomy ) {
-		?>
+    // -------------------------------------------------------------------------
+    // Edit Form Fields (Edit Term screen) — React-based UI
+    // -------------------------------------------------------------------------
+    /**
+     * Render React container on the "Edit" term form.
+     * The actual UI is rendered by TermMetabox.jsx via the React app.
+     *
+     * @param \WP_Term $term     Current term object.
+     * @param string   $taxonomy Current taxonomy slug.
+     * @return void
+     */
+    public function edit_form_fields( $term, $taxonomy ) {
+        ?>
 		<tr class="form-field">
 			<th scope="row" colspan="2">
-				<h3 style="margin:0;"><?php esc_html_e( 'Passster Protection', 'content-protector' ); ?></h3>
+				<h3 style="margin:0;"><?php 
+        esc_html_e( 'Passster Protection', 'content-protector' );
+        ?></h3>
 			</th>
 		</tr>
 		<tr class="form-field">
@@ -396,478 +272,341 @@ class PS_Category_Lock {
 				<div id="passster-term-metabox"></div>
 			</td>
 		</tr>
-		<?php
-	}
-
-	// -------------------------------------------------------------------------
-	// Enqueue React Scripts for Term Edit
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Enqueue React scripts on term edit pages.
-	 *
-	 * @return void
-	 */
-	public function add_term_meta_scripts() {
-		$screen = get_current_screen();
-
-		if ( ! $screen || ! in_array( $screen->base, array( 'term', 'edit-tags' ), true ) ) {
-			return;
-		}
-
-		$taxonomies = $this->get_taxonomies();
-		if ( ! in_array( $screen->taxonomy, $taxonomies, true ) ) {
-			return;
-		}
-
-		wp_enqueue_script(
-			'passster-term-meta-settings',
-			PASSSTER_URL . '/inc/admin/build/index.js',
-			array(
-				'wp-api',
-				'wp-components',
-				'wp-element',
-				'wp-api-fetch',
-				'wp-data',
-				'wp-i18n',
-			),
-			PASSSTER_VERSION,
-			true
-		);
-
-		// On edit (term) page, get the term ID. On add new (edit-tags) page, term_id is 0.
-		if ( 'term' === $screen->base ) {
-			$term_id = isset( $_GET['tag_ID'] ) ? absint( $_GET['tag_ID'] ) : 0;
-		} else {
-			$term_id = 0;
-		}
-
-		$options = get_option( 'passster' );
-
-		$meta = array(
-			'passster_activate_protection'         => get_term_meta( $term_id, 'passster_activate_protection', true ),
-			'passster_protection_type'             => get_term_meta( $term_id, 'passster_protection_type', true ),
-			'passster_password'                    => get_term_meta( $term_id, 'passster_password', true ),
-			'passster_headline'                    => get_term_meta( $term_id, 'passster_headline', true ),
-			'passster_instruction'                 => get_term_meta( $term_id, 'passster_instruction', true ),
-			'passster_placeholder'                 => get_term_meta( $term_id, 'passster_placeholder', true ),
-			'passster_button'                      => get_term_meta( $term_id, 'passster_button', true ),
-			'passster_redirect_url'                => get_term_meta( $term_id, 'passster_redirect_url', true ),
-			'passster_activate_overwrite_defaults' => get_term_meta( $term_id, 'passster_activate_overwrite_defaults', true ),
-			'passster_activate_misc_settings'      => get_term_meta( $term_id, 'passster_activate_misc_settings', true ),
-		);
-
-		if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$meta['passster_passwords']        = get_term_meta( $term_id, 'passster_passwords', true );
-			$meta['passster_password_list']    = get_term_meta( $term_id, 'passster_password_list', true );
-			$meta['passster_password_lists']   = get_term_meta( $term_id, 'passster_password_lists', true );
-			$meta['passster_schedule_enabled'] = get_term_meta( $term_id, 'passster_schedule_enabled', true );
-			$meta['passster_schedule_start']   = get_term_meta( $term_id, 'passster_schedule_start', true );
-			$meta['passster_schedule_end']     = get_term_meta( $term_id, 'passster_schedule_end', true );
-		}
-
-		$args = array(
-			'screen'  => 'term-meta',
-			'is_pro'  => \passster_fs()->is_plan_or_trial__premium_only( 'pro' ),
-			'meta'    => $meta,
-			'term_id' => $term_id,
-		);
-
-		if ( isset( $options['password_length'] ) ) {
-			$args['password_length'] = esc_html( $options['password_length'] );
-		} else {
-			$args['password_length'] = 12;
-		}
-
-		if ( isset( $options['include_uppercase'] ) ) {
-			$args['include_uppercase'] = esc_html( $options['include_uppercase'] );
-		} else {
-			$args['include_uppercase'] = true;
-		}
-
-		if ( isset( $options['include_numbers'] ) ) {
-			$args['include_numbers'] = esc_html( $options['include_numbers'] );
-		} else {
-			$args['include_numbers'] = true;
-		}
-
-		if ( isset( $options['include_symbols'] ) ) {
-			$args['include_symbols'] = esc_html( $options['include_symbols'] );
-		} else {
-			$args['include_symbols'] = true;
-		}
-
-		if ( passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$args['timezone'] = wp_timezone_string();
-			$args['now']      = current_time( 'c' );
-		}
-
-		wp_localize_script( 'passster-term-meta-settings', 'options', $args );
-
-		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( 'passster-term-meta-settings', 'content-protector', PASSSTER_PATH . '/languages' );
-		}
-
-		wp_enqueue_style( 'passster-term-meta-style', PASSSTER_URL . '/inc/admin/build/index.css', array( 'wp-components' ) );
-	}
-
-	// -------------------------------------------------------------------------
-	// REST API Endpoints for Term Meta
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Register REST API routes for term meta.
-	 *
-	 * @return void
-	 */
-	public function rest_api_init() {
-		register_rest_route(
-			'passster/v1',
-			'/term-meta',
-			array(
-				'methods'             => 'POST',
-				'callback'            => array( $this, 'save_term_meta_rest' ),
-				'permission_callback' => function () {
-					return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
-				},
-			)
-		);
-
-		register_rest_route(
-			'passster/v1',
-			'/term-meta',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_term_meta_rest' ),
-				'permission_callback' => function () {
-					return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
-				},
-			)
-		);
-
-		register_rest_route(
-			'passster/v1',
-			'/term-password-lists',
-			array(
-				'methods'             => 'GET',
-				'callback'            => array( $this, 'get_term_password_lists_rest' ),
-				'permission_callback' => function () {
-					return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
-				},
-			)
-		);
-	}
-
-	/**
-	 * Save term meta via REST API.
-	 *
-	 * @param \WP_REST_Request $request Request object.
-	 * @return string
-	 */
-	public function save_term_meta_rest( \WP_REST_Request $request ) {
-		$params   = $request->get_params();
-		$term_id  = isset( $params['term_id'] ) ? absint( $params['term_id'] ) : 0;
-		$meta_key = isset( $params['meta_key'] ) ? sanitize_key( $params['meta_key'] ) : '';
-
-		if ( ! $term_id || ! $meta_key ) {
-			return wp_json_encode(
-				array(
-					'status'  => 400,
-					'message' => 'Missing term_id or meta_key',
-				)
-			);
-		}
-
-		if ( isset( $params['meta_value'] ) ) {
-			if ( 'passster_instruction' === $meta_key ) {
-				$meta_value = wp_kses_post( $params['meta_value'] );
-			} else {
-				$meta_value = sanitize_text_field( $params['meta_value'] );
-			}
-			update_term_meta( $term_id, $meta_key, $meta_value );
-		} elseif ( isset( $params['delete'] ) ) {
-			delete_term_meta( $term_id, $meta_key );
-		}
-
-		return wp_json_encode(
-			array(
-				'status'  => 200,
-				'message' => 'Ok',
-			)
-		);
-	}
-
-	/**
-	 * Get term meta via REST API.
-	 *
-	 * @param \WP_REST_Request $request Request object.
-	 * @return string
-	 */
-	public function get_term_meta_rest( \WP_REST_Request $request ) {
-		$params   = $request->get_params();
-		$term_id  = isset( $params['term_id'] ) ? absint( $params['term_id'] ) : 0;
-		$meta_key = isset( $params['meta_key'] ) ? sanitize_key( $params['meta_key'] ) : '';
-
-		if ( ! $term_id || ! $meta_key ) {
-			return wp_json_encode(
-				array(
-					'status'  => 400,
-					'message' => 'Missing term_id or meta_key',
-					'data'    => '',
-				)
-			);
-		}
-
-		$meta = get_term_meta( $term_id, $meta_key, true );
-
-		if ( ! empty( $meta ) ) {
-			return wp_json_encode(
-				array(
-					'status'  => 200,
-					'message' => 'Ok',
-					'data'    => $meta,
-				)
-			);
-		}
-
-		return wp_json_encode(
-			array(
-				'status'  => 400,
-				'message' => 'Empty value',
-				'data'    => '',
-			)
-		);
-	}
-
-	/**
-	 * Get password lists for term meta dropdowns via REST API.
-	 *
-	 * @return array
-	 */
-	public function get_term_password_lists_rest() {
-		$lists         = $this->get_password_lists();
-		$fetched_lists = array();
-
-		foreach ( $lists as $list ) {
-			$item        = new \stdClass();
-			$item->title = $list->post_title;
-			$item->id    = $list->ID;
-
-			$fetched_lists[] = $item;
-		}
-
-		return $fetched_lists;
-	}
-
-	// -------------------------------------------------------------------------
-	// Save Term Meta
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Save term meta on create/edit.
-	 *
-	 * @param int $term_id Term ID.
-	 * @return void
-	 */
-	public function save_term_meta( $term_id ) {
-		if ( ! current_user_can( 'manage_categories' ) ) {
-			return;
-		}
-
-		$activate = ! empty( $_POST['passster_activate_protection'] ) ? 1 : 0;
-		update_term_meta( $term_id, 'passster_activate_protection', $activate );
-
-		if ( $activate ) {
-			if ( isset( $_POST['passster_password'] ) ) {
-				update_term_meta( $term_id, 'passster_password', sanitize_text_field( wp_unslash( $_POST['passster_password'] ) ) );
-			}
-
-			if ( isset( $_POST['passster_redirect_url'] ) ) {
-				update_term_meta( $term_id, 'passster_redirect_url', esc_url_raw( wp_unslash( $_POST['passster_redirect_url'] ) ) );
-			}
-
-			// Overwrite defaults.
-			if ( isset( $_POST['passster_headline'] ) ) {
-				update_term_meta( $term_id, 'passster_headline', sanitize_text_field( wp_unslash( $_POST['passster_headline'] ) ) );
-			}
-
-			if ( isset( $_POST['passster_instruction'] ) ) {
-				update_term_meta( $term_id, 'passster_instruction', wp_kses_post( wp_unslash( $_POST['passster_instruction'] ) ) );
-			}
-
-			if ( isset( $_POST['passster_placeholder'] ) ) {
-				update_term_meta( $term_id, 'passster_placeholder', sanitize_text_field( wp_unslash( $_POST['passster_placeholder'] ) ) );
-			}
-
-			if ( isset( $_POST['passster_button'] ) ) {
-				update_term_meta( $term_id, 'passster_button', sanitize_text_field( wp_unslash( $_POST['passster_button'] ) ) );
-			}
-
-			// PRO fields.
-			if ( passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-				if ( isset( $_POST['passster_schedule_enabled'] ) ) {
-					update_term_meta( $term_id, 'passster_schedule_enabled', (bool) $_POST['passster_schedule_enabled'] );
-				}
-
-				if ( isset( $_POST['passster_schedule_start'] ) ) {
-					update_term_meta( $term_id, 'passster_schedule_start', sanitize_text_field( wp_unslash( $_POST['passster_schedule_start'] ) ) );
-				}
-
-				if ( isset( $_POST['passster_schedule_end'] ) ) {
-					update_term_meta( $term_id, 'passster_schedule_end', sanitize_text_field( wp_unslash( $_POST['passster_schedule_end'] ) ) );
-				}
-
-				if ( isset( $_POST['passster_protection_type'] ) ) {
-					update_term_meta( $term_id, 'passster_protection_type', sanitize_text_field( wp_unslash( $_POST['passster_protection_type'] ) ) );
-				}
-
-				if ( isset( $_POST['passster_passwords'] ) ) {
-					update_term_meta( $term_id, 'passster_passwords', sanitize_text_field( wp_unslash( $_POST['passster_passwords'] ) ) );
-				}
-
-				if ( isset( $_POST['passster_password_list'] ) ) {
-					update_term_meta( $term_id, 'passster_password_list', absint( $_POST['passster_password_list'] ) );
-				}
-
-				if ( isset( $_POST['passster_password_lists'] ) ) {
-					update_term_meta( $term_id, 'passster_password_lists', sanitize_text_field( wp_unslash( $_POST['passster_password_lists'] ) ) );
-				}
-			}
-		}
-	}
-
-	// -------------------------------------------------------------------------
-	// Admin Columns
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Add columns to taxonomy list table.
-	 *
-	 * @param array $columns Existing columns.
-	 * @return array
-	 */
-	public function add_columns( array $columns ): array {
-		$columns['passster_password'] = __( 'Password', 'content-protector' );
-
-		if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$columns['passster_protection_type'] = __( 'Protection Type', 'content-protector' );
-		}
-
-		return $columns;
-	}
-
-	/**
-	 * Render column content for taxonomy list table.
-	 *
-	 * @param string $content     Column content.
-	 * @param string $column_name Column name.
-	 * @param int    $term_id     Term ID.
-	 * @return string
-	 */
-	public function render_column( $content, $column_name, $term_id ) {
-		$activate = get_term_meta( $term_id, 'passster_activate_protection', true );
-
-		if ( ! $activate ) {
-			if ( 'passster_password' === $column_name || 'passster_protection_type' === $column_name ) {
-				return '-';
-			}
-			return $content;
-		}
-
-		$protection_type = get_term_meta( $term_id, 'passster_protection_type', true ) ?: 'password';
-
-		switch ( $column_name ) {
-			case 'passster_password':
-				if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-					switch ( $protection_type ) {
-						case 'password':
-							return esc_html( get_term_meta( $term_id, 'passster_password', true ) );
-						case 'passwords':
-							return esc_html( get_term_meta( $term_id, 'passster_passwords', true ) );
-						case 'password_list':
-							$list_id  = get_term_meta( $term_id, 'passster_password_list', true );
-							$edit_url = get_edit_post_link( $list_id );
-							return '<a href="' . esc_url( $edit_url ) . '">' . esc_html( $list_id ) . '</a>';
-						case 'password_lists':
-							$list_ids = get_term_meta( $term_id, 'passster_password_lists', true );
-							return esc_html( $list_ids );
-						case 'recaptcha':
-							return 'reCAPTCHA';
-						case 'turnstile':
-							return 'Turnstile';
-					}
-				} else {
-					return esc_html( get_term_meta( $term_id, 'passster_password', true ) );
-				}
-				break;
-
-			case 'passster_protection_type':
-				$types = array(
-					'password'       => __( 'Password', 'content-protector' ),
-					'passwords'      => __( 'Passwords', 'content-protector' ),
-					'password_list'  => __( 'Password List', 'content-protector' ),
-					'password_lists' => __( 'Password Lists', 'content-protector' ),
-					'recaptcha'      => __( 'reCaptcha', 'content-protector' ),
-					'turnstile'      => __( 'Turnstile', 'content-protector' ),
-				);
-				return esc_html( $types[ $protection_type ] ?? $protection_type );
-		}
-
-		return $content;
-	}
-
-	// -------------------------------------------------------------------------
-	// Row Actions
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Add Quick Settings link to term row actions.
-	 *
-	 * @param array    $actions Existing actions.
-	 * @param \WP_Term $term    Term object.
-	 * @return array
-	 */
-	public function add_row_actions( $actions, $term ) {
-		if ( current_user_can( 'manage_categories' ) ) {
-			$actions['passster_quick_settings'] = sprintf(
-				'<a href="#" class="passster-category-quick-settings" data-term-id="%d" data-nonce="%s">%s</a>',
-				$term->term_id,
-				wp_create_nonce( 'passster_quick_edit_cat_' . $term->term_id ),
-				__( 'Quick Settings', 'content-protector' )
-			);
-		}
-
-		return $actions;
-	}
-
-	// -------------------------------------------------------------------------
-	// Quick Edit Modal UI
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Output quick edit modal HTML, CSS and JS.
-	 *
-	 * @return void
-	 */
-	public function quick_edit_ui() {
-		$screen = get_current_screen();
-		if ( ! $screen ) {
-			return;
-		}
-
-		$taxonomies = $this->get_taxonomies();
-		if ( ! in_array( $screen->taxonomy, $taxonomies, true ) ) {
-			return;
-		}
-
-		$is_pro = \passster_fs()->is_plan_or_trial__premium_only( 'pro' );
-		$lists  = $is_pro ? $this->get_password_lists() : array();
-		?>
+		<?php 
+    }
+
+    // -------------------------------------------------------------------------
+    // Enqueue React Scripts for Term Edit
+    // -------------------------------------------------------------------------
+    /**
+     * Enqueue React scripts on term edit pages.
+     *
+     * @return void
+     */
+    public function add_term_meta_scripts() {
+        $screen = get_current_screen();
+        if ( !$screen || !in_array( $screen->base, array('term', 'edit-tags'), true ) ) {
+            return;
+        }
+        $taxonomies = $this->get_taxonomies();
+        if ( !in_array( $screen->taxonomy, $taxonomies, true ) ) {
+            return;
+        }
+        wp_enqueue_script(
+            'passster-term-meta-settings',
+            PASSSTER_URL . '/inc/admin/build/index.js',
+            array(
+                'wp-api',
+                'wp-components',
+                'wp-element',
+                'wp-api-fetch',
+                'wp-data',
+                'wp-i18n'
+            ),
+            PASSSTER_VERSION,
+            true
+        );
+        // On edit (term) page, get the term ID. On add new (edit-tags) page, term_id is 0.
+        if ( 'term' === $screen->base ) {
+            $term_id = ( isset( $_GET['tag_ID'] ) ? absint( $_GET['tag_ID'] ) : 0 );
+        } else {
+            $term_id = 0;
+        }
+        $options = get_option( 'passster' );
+        $meta = array(
+            'passster_activate_protection'         => get_term_meta( $term_id, 'passster_activate_protection', true ),
+            'passster_protection_type'             => get_term_meta( $term_id, 'passster_protection_type', true ),
+            'passster_password'                    => get_term_meta( $term_id, 'passster_password', true ),
+            'passster_headline'                    => get_term_meta( $term_id, 'passster_headline', true ),
+            'passster_instruction'                 => get_term_meta( $term_id, 'passster_instruction', true ),
+            'passster_placeholder'                 => get_term_meta( $term_id, 'passster_placeholder', true ),
+            'passster_button'                      => get_term_meta( $term_id, 'passster_button', true ),
+            'passster_redirect_url'                => get_term_meta( $term_id, 'passster_redirect_url', true ),
+            'passster_activate_overwrite_defaults' => get_term_meta( $term_id, 'passster_activate_overwrite_defaults', true ),
+            'passster_activate_misc_settings'      => get_term_meta( $term_id, 'passster_activate_misc_settings', true ),
+        );
+        $args = array(
+            'screen'  => 'term-meta',
+            'is_pro'  => \passster_fs()->is_plan_or_trial__premium_only( 'pro' ),
+            'meta'    => $meta,
+            'term_id' => $term_id,
+        );
+        if ( isset( $options['password_length'] ) ) {
+            $args['password_length'] = esc_html( $options['password_length'] );
+        } else {
+            $args['password_length'] = 12;
+        }
+        if ( isset( $options['include_uppercase'] ) ) {
+            $args['include_uppercase'] = esc_html( $options['include_uppercase'] );
+        } else {
+            $args['include_uppercase'] = true;
+        }
+        if ( isset( $options['include_numbers'] ) ) {
+            $args['include_numbers'] = esc_html( $options['include_numbers'] );
+        } else {
+            $args['include_numbers'] = true;
+        }
+        if ( isset( $options['include_symbols'] ) ) {
+            $args['include_symbols'] = esc_html( $options['include_symbols'] );
+        } else {
+            $args['include_symbols'] = true;
+        }
+        wp_localize_script( 'passster-term-meta-settings', 'options', $args );
+        if ( function_exists( 'wp_set_script_translations' ) ) {
+            wp_set_script_translations( 'passster-term-meta-settings', 'content-protector', PASSSTER_PATH . '/languages' );
+        }
+        wp_enqueue_style( 'passster-term-meta-style', PASSSTER_URL . '/inc/admin/build/index.css', array('wp-components') );
+    }
+
+    // -------------------------------------------------------------------------
+    // REST API Endpoints for Term Meta
+    // -------------------------------------------------------------------------
+    /**
+     * Register REST API routes for term meta.
+     *
+     * @return void
+     */
+    public function rest_api_init() {
+        register_rest_route( 'passster/v1', '/term-meta', array(
+            'methods'             => 'POST',
+            'callback'            => array($this, 'save_term_meta_rest'),
+            'permission_callback' => function () {
+                return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
+            },
+        ) );
+        register_rest_route( 'passster/v1', '/term-meta', array(
+            'methods'             => 'GET',
+            'callback'            => array($this, 'get_term_meta_rest'),
+            'permission_callback' => function () {
+                return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
+            },
+        ) );
+        register_rest_route( 'passster/v1', '/term-password-lists', array(
+            'methods'             => 'GET',
+            'callback'            => array($this, 'get_term_password_lists_rest'),
+            'permission_callback' => function () {
+                return current_user_can( apply_filters( 'passster_user_capability', 'manage_options' ) );
+            },
+        ) );
+    }
+
+    /**
+     * Save term meta via REST API.
+     *
+     * @param \WP_REST_Request $request Request object.
+     * @return string
+     */
+    public function save_term_meta_rest( \WP_REST_Request $request ) {
+        $params = $request->get_params();
+        $term_id = ( isset( $params['term_id'] ) ? absint( $params['term_id'] ) : 0 );
+        $meta_key = ( isset( $params['meta_key'] ) ? sanitize_key( $params['meta_key'] ) : '' );
+        if ( !$term_id || !$meta_key ) {
+            return wp_json_encode( array(
+                'status'  => 400,
+                'message' => 'Missing term_id or meta_key',
+            ) );
+        }
+        if ( isset( $params['meta_value'] ) ) {
+            if ( 'passster_instruction' === $meta_key ) {
+                $meta_value = wp_kses_post( $params['meta_value'] );
+            } else {
+                $meta_value = sanitize_text_field( $params['meta_value'] );
+            }
+            update_term_meta( $term_id, $meta_key, $meta_value );
+        } elseif ( isset( $params['delete'] ) ) {
+            delete_term_meta( $term_id, $meta_key );
+        }
+        return wp_json_encode( array(
+            'status'  => 200,
+            'message' => 'Ok',
+        ) );
+    }
+
+    /**
+     * Get term meta via REST API.
+     *
+     * @param \WP_REST_Request $request Request object.
+     * @return string
+     */
+    public function get_term_meta_rest( \WP_REST_Request $request ) {
+        $params = $request->get_params();
+        $term_id = ( isset( $params['term_id'] ) ? absint( $params['term_id'] ) : 0 );
+        $meta_key = ( isset( $params['meta_key'] ) ? sanitize_key( $params['meta_key'] ) : '' );
+        if ( !$term_id || !$meta_key ) {
+            return wp_json_encode( array(
+                'status'  => 400,
+                'message' => 'Missing term_id or meta_key',
+                'data'    => '',
+            ) );
+        }
+        $meta = get_term_meta( $term_id, $meta_key, true );
+        if ( !empty( $meta ) ) {
+            return wp_json_encode( array(
+                'status'  => 200,
+                'message' => 'Ok',
+                'data'    => $meta,
+            ) );
+        }
+        return wp_json_encode( array(
+            'status'  => 400,
+            'message' => 'Empty value',
+            'data'    => '',
+        ) );
+    }
+
+    /**
+     * Get password lists for term meta dropdowns via REST API.
+     *
+     * @return array
+     */
+    public function get_term_password_lists_rest() {
+        $lists = $this->get_password_lists();
+        $fetched_lists = array();
+        foreach ( $lists as $list ) {
+            $item = new \stdClass();
+            $item->title = $list->post_title;
+            $item->id = $list->ID;
+            $fetched_lists[] = $item;
+        }
+        return $fetched_lists;
+    }
+
+    // -------------------------------------------------------------------------
+    // Save Term Meta
+    // -------------------------------------------------------------------------
+    /**
+     * Save term meta on create/edit.
+     *
+     * @param int $term_id Term ID.
+     * @return void
+     */
+    public function save_term_meta( $term_id ) {
+        if ( !current_user_can( 'manage_categories' ) ) {
+            return;
+        }
+        $activate = ( !empty( $_POST['passster_activate_protection'] ) ? 1 : 0 );
+        update_term_meta( $term_id, 'passster_activate_protection', $activate );
+        if ( $activate ) {
+            if ( isset( $_POST['passster_password'] ) ) {
+                update_term_meta( $term_id, 'passster_password', sanitize_text_field( wp_unslash( $_POST['passster_password'] ) ) );
+            }
+            if ( isset( $_POST['passster_redirect_url'] ) ) {
+                update_term_meta( $term_id, 'passster_redirect_url', esc_url_raw( wp_unslash( $_POST['passster_redirect_url'] ) ) );
+            }
+            // Overwrite defaults.
+            if ( isset( $_POST['passster_headline'] ) ) {
+                update_term_meta( $term_id, 'passster_headline', sanitize_text_field( wp_unslash( $_POST['passster_headline'] ) ) );
+            }
+            if ( isset( $_POST['passster_instruction'] ) ) {
+                update_term_meta( $term_id, 'passster_instruction', wp_kses_post( wp_unslash( $_POST['passster_instruction'] ) ) );
+            }
+            if ( isset( $_POST['passster_placeholder'] ) ) {
+                update_term_meta( $term_id, 'passster_placeholder', sanitize_text_field( wp_unslash( $_POST['passster_placeholder'] ) ) );
+            }
+            if ( isset( $_POST['passster_button'] ) ) {
+                update_term_meta( $term_id, 'passster_button', sanitize_text_field( wp_unslash( $_POST['passster_button'] ) ) );
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Admin Columns
+    // -------------------------------------------------------------------------
+    /**
+     * Add columns to taxonomy list table.
+     *
+     * @param array $columns Existing columns.
+     * @return array
+     */
+    public function add_columns( array $columns ) : array {
+        $columns['passster_password'] = __( 'Password', 'content-protector' );
+        return $columns;
+    }
+
+    /**
+     * Render column content for taxonomy list table.
+     *
+     * @param string $content     Column content.
+     * @param string $column_name Column name.
+     * @param int    $term_id     Term ID.
+     * @return string
+     */
+    public function render_column( $content, $column_name, $term_id ) {
+        $activate = get_term_meta( $term_id, 'passster_activate_protection', true );
+        if ( !$activate ) {
+            if ( 'passster_password' === $column_name || 'passster_protection_type' === $column_name ) {
+                return '-';
+            }
+            return $content;
+        }
+        $protection_type = ( get_term_meta( $term_id, 'passster_protection_type', true ) ?: 'password' );
+        switch ( $column_name ) {
+            case 'passster_password':
+                return esc_html( get_term_meta( $term_id, 'passster_password', true ) );
+                break;
+            case 'passster_protection_type':
+                $types = array(
+                    'password'       => __( 'Password', 'content-protector' ),
+                    'passwords'      => __( 'Passwords', 'content-protector' ),
+                    'password_list'  => __( 'Password List', 'content-protector' ),
+                    'password_lists' => __( 'Password Lists', 'content-protector' ),
+                    'recaptcha'      => __( 'reCaptcha', 'content-protector' ),
+                    'turnstile'      => __( 'Turnstile', 'content-protector' ),
+                );
+                return esc_html( $types[$protection_type] ?? $protection_type );
+        }
+        return $content;
+    }
+
+    // -------------------------------------------------------------------------
+    // Row Actions
+    // -------------------------------------------------------------------------
+    /**
+     * Add Quick Settings link to term row actions.
+     *
+     * @param array    $actions Existing actions.
+     * @param \WP_Term $term    Term object.
+     * @return array
+     */
+    public function add_row_actions( $actions, $term ) {
+        if ( current_user_can( 'manage_categories' ) ) {
+            $actions['passster_quick_settings'] = sprintf(
+                '<a href="#" class="passster-category-quick-settings" data-term-id="%d" data-nonce="%s">%s</a>',
+                $term->term_id,
+                wp_create_nonce( 'passster_quick_edit_cat_' . $term->term_id ),
+                __( 'Quick Settings', 'content-protector' )
+            );
+        }
+        return $actions;
+    }
+
+    // -------------------------------------------------------------------------
+    // Quick Edit Modal UI
+    // -------------------------------------------------------------------------
+    /**
+     * Output quick edit modal HTML, CSS and JS.
+     *
+     * @return void
+     */
+    public function quick_edit_ui() {
+        $screen = get_current_screen();
+        if ( !$screen ) {
+            return;
+        }
+        $taxonomies = $this->get_taxonomies();
+        if ( !in_array( $screen->taxonomy, $taxonomies, true ) ) {
+            return;
+        }
+        $is_pro = \passster_fs()->is_plan_or_trial__premium_only( 'pro' );
+        $lists = ( $is_pro ? $this->get_password_lists() : array() );
+        ?>
 		<div id="passster-cat-quick-edit-modal" style="display:none;">
 			<div class="passster-cat-qe-backdrop"></div>
 			<div class="passster-cat-qe-panel">
 				<div class="passster-cat-qe-header">
-					<h3><?php esc_html_e( 'Passster - Quick Settings', 'content-protector' ); ?></h3>
+					<h3><?php 
+        esc_html_e( 'Passster - Quick Settings', 'content-protector' );
+        ?></h3>
 					<button type="button" class="passster-cat-qe-close">&times;</button>
 				</div>
 				<div class="passster-cat-qe-body">
@@ -877,56 +616,98 @@ class PS_Category_Lock {
 					<p class="passster-cat-qe-field">
 						<label>
 							<input type="checkbox" id="passster-cat-qe-activate">
-							<?php esc_html_e( 'Activate Protection', 'content-protector' ); ?>
+							<?php 
+        esc_html_e( 'Activate Protection', 'content-protector' );
+        ?>
 						</label>
 					</p>
 
 					<div class="passster-cat-qe-settings" style="display:none;">
-						<?php if ( $is_pro ) : ?>
+						<?php 
+        if ( $is_pro ) {
+            ?>
 						<p class="passster-cat-qe-field">
-							<label for="passster-cat-qe-type"><?php esc_html_e( 'Protection Type', 'content-protector' ); ?></label>
+							<label for="passster-cat-qe-type"><?php 
+            esc_html_e( 'Protection Type', 'content-protector' );
+            ?></label>
 							<select id="passster-cat-qe-type">
-								<option value="password"><?php esc_html_e( 'Password', 'content-protector' ); ?></option>
-								<option value="passwords"><?php esc_html_e( 'Passwords', 'content-protector' ); ?></option>
-								<option value="password_list"><?php esc_html_e( 'Password List', 'content-protector' ); ?></option>
-								<option value="password_lists"><?php esc_html_e( 'Password Lists', 'content-protector' ); ?></option>
+								<option value="password"><?php 
+            esc_html_e( 'Password', 'content-protector' );
+            ?></option>
+								<option value="passwords"><?php 
+            esc_html_e( 'Passwords', 'content-protector' );
+            ?></option>
+								<option value="password_list"><?php 
+            esc_html_e( 'Password List', 'content-protector' );
+            ?></option>
+								<option value="password_lists"><?php 
+            esc_html_e( 'Password Lists', 'content-protector' );
+            ?></option>
 								<option value="recaptcha">reCAPTCHA</option>
 								<option value="turnstile">Turnstile</option>
 							</select>
 						</p>
-						<?php endif; ?>
+						<?php 
+        }
+        ?>
 
 						<p class="passster-cat-qe-field passster-cat-qe-password-field">
-							<label for="passster-cat-qe-password"><?php esc_html_e( 'Password', 'content-protector' ); ?></label>
+							<label for="passster-cat-qe-password"><?php 
+        esc_html_e( 'Password', 'content-protector' );
+        ?></label>
 							<input type="text" id="passster-cat-qe-password" value="">
 						</p>
 
-						<?php if ( $is_pro ) : ?>
+						<?php 
+        if ( $is_pro ) {
+            ?>
 						<p class="passster-cat-qe-field passster-cat-qe-passwords-field" style="display:none;">
-							<label for="passster-cat-qe-passwords"><?php esc_html_e( 'Passwords (comma-separated)', 'content-protector' ); ?></label>
+							<label for="passster-cat-qe-passwords"><?php 
+            esc_html_e( 'Passwords (comma-separated)', 'content-protector' );
+            ?></label>
 							<input type="text" id="passster-cat-qe-passwords" value="">
 						</p>
 
 						<p class="passster-cat-qe-field passster-cat-qe-list-field" style="display:none;">
-							<label for="passster-cat-qe-list"><?php esc_html_e( 'Password List', 'content-protector' ); ?></label>
+							<label for="passster-cat-qe-list"><?php 
+            esc_html_e( 'Password List', 'content-protector' );
+            ?></label>
 							<select id="passster-cat-qe-list">
-								<option value="0"><?php esc_html_e( '— Select —', 'content-protector' ); ?></option>
-								<?php foreach ( $lists as $list ) : ?>
-									<option value="<?php echo esc_attr( $list->ID ); ?>"><?php echo esc_html( $list->post_title ); ?></option>
-								<?php endforeach; ?>
+								<option value="0"><?php 
+            esc_html_e( '— Select —', 'content-protector' );
+            ?></option>
+								<?php 
+            foreach ( $lists as $list ) {
+                ?>
+									<option value="<?php 
+                echo esc_attr( $list->ID );
+                ?>"><?php 
+                echo esc_html( $list->post_title );
+                ?></option>
+								<?php 
+            }
+            ?>
 							</select>
 						</p>
 
 						<p class="passster-cat-qe-field passster-cat-qe-lists-field" style="display:none;">
-							<label for="passster-cat-qe-lists"><?php esc_html_e( 'Password Lists (comma-separated IDs)', 'content-protector' ); ?></label>
+							<label for="passster-cat-qe-lists"><?php 
+            esc_html_e( 'Password Lists (comma-separated IDs)', 'content-protector' );
+            ?></label>
 							<input type="text" id="passster-cat-qe-lists" value="">
 						</p>
-						<?php endif; ?>
+						<?php 
+        }
+        ?>
 					</div>
 				</div>
 				<div class="passster-cat-qe-footer">
-					<button type="button" class="button passster-cat-qe-cancel"><?php esc_html_e( 'Cancel', 'content-protector' ); ?></button>
-					<button type="button" class="button button-primary passster-cat-qe-save"><?php esc_html_e( 'Save', 'content-protector' ); ?></button>
+					<button type="button" class="button passster-cat-qe-cancel"><?php 
+        esc_html_e( 'Cancel', 'content-protector' );
+        ?></button>
+					<button type="button" class="button button-primary passster-cat-qe-save"><?php 
+        esc_html_e( 'Save', 'content-protector' );
+        ?></button>
 					<span class="spinner"></span>
 				</div>
 			</div>
@@ -974,7 +755,9 @@ class PS_Category_Lock {
 			var $modal = $('#passster-cat-quick-edit-modal');
 			var $activate = $('#passster-cat-qe-activate');
 			var $typeSelect = $('#passster-cat-qe-type');
-			var isPro = <?php echo $is_pro ? 'true' : 'false'; ?>;
+			var isPro = <?php 
+        echo ( $is_pro ? 'true' : 'false' );
+        ?>;
 
 			function toggleTypeFields() {
 				if (!isPro) return;
@@ -1078,536 +861,379 @@ class PS_Category_Lock {
 		});
 		</script>
 
-		<?php
-	}
+		<?php 
+    }
+
+    // -------------------------------------------------------------------------
+    // AJAX Quick Edit Handler
+    // -------------------------------------------------------------------------
+    /**
+     * AJAX handler for quick edit category settings.
+     *
+     * @return void
+     */
+    public function ajax_quick_edit_category() {
+        $term_id = ( isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0 );
+        $nonce = ( isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '' );
+        $action = ( isset( $_POST['edit_action'] ) ? sanitize_text_field( wp_unslash( $_POST['edit_action'] ) ) : 'get' );
+        if ( !wp_verify_nonce( $nonce, 'passster_quick_edit_cat_' . $term_id ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Security check failed.', 'content-protector' ),
+            ) );
+        }
+        if ( !current_user_can( 'manage_categories' ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Permission denied.', 'content-protector' ),
+            ) );
+        }
+        $term = get_term( $term_id );
+        if ( !$term || is_wp_error( $term ) ) {
+            wp_send_json_error( array(
+                'message' => __( 'Invalid term.', 'content-protector' ),
+            ) );
+        }
+        if ( 'get' === $action ) {
+            $data = array(
+                'term_id'         => $term_id,
+                'activate'        => (bool) get_term_meta( $term_id, 'passster_activate_protection', true ),
+                'password'        => get_term_meta( $term_id, 'passster_password', true ),
+                'protection_type' => ( get_term_meta( $term_id, 'passster_protection_type', true ) ?: 'password' ),
+                'passwords'       => get_term_meta( $term_id, 'passster_passwords', true ),
+                'password_list'   => get_term_meta( $term_id, 'passster_password_list', true ),
+                'password_lists'  => get_term_meta( $term_id, 'passster_password_lists', true ),
+            );
+            wp_send_json_success( $data );
+        }
+        if ( 'save' === $action ) {
+            $activate = ( isset( $_POST['activate'] ) ? absint( $_POST['activate'] ) : 0 );
+            update_term_meta( $term_id, 'passster_activate_protection', $activate );
+            if ( $activate ) {
+                $password = ( isset( $_POST['password'] ) ? sanitize_text_field( wp_unslash( $_POST['password'] ) ) : '' );
+                update_term_meta( $term_id, 'passster_password', $password );
+            }
+            wp_send_json_success( array(
+                'message' => __( 'Settings saved.', 'content-protector' ),
+            ) );
+        }
+        wp_send_json_error( array(
+            'message' => __( 'Invalid action.', 'content-protector' ),
+        ) );
+    }
+
+    // -------------------------------------------------------------------------
+    // Frontend: Protect Posts in Protected Categories
+    // -------------------------------------------------------------------------
+    /**
+     * Filter the_content for posts belonging to a protected category.
+     * Runs at priority 11, after PS_Public (priority 10).
+     *
+     * @param string $content Post content.
+     * @return string
+     */
+    public function filter_content_by_category( $content ) {
+        $term_data = $this->get_current_post_category_lock();
+        if ( !$term_data ) {
+            return $content;
+        }
+        $shortcode = $this->build_shortcode_from_term( $term_data['term_id'], $content );
+        return do_shortcode( $shortcode );
+    }
+
+    /**
+     * Replace plain-text output (get_the_excerpt, feeds) of a category-locked post.
+     *
+     * @param string $text Excerpt or feed content.
+     * @return string
+     */
+    public function filter_text_by_category( $text ) {
+        return ( $this->get_current_post_category_lock() ? PS_Helper::get_protected_text() : $text );
+    }
+
+    /**
+     * @return array|null
+     */
+    private function get_current_post_category_lock() {
+        if ( is_admin() || $this->is_locked_archive() ) {
+            return null;
+        }
+        $post_id = get_the_id();
+        if ( !$post_id ) {
+            return null;
+        }
+        // Block editor previews read REST content; keep them unlocked for users who can edit the post.
+        if ( defined( 'REST_REQUEST' ) && REST_REQUEST && current_user_can( 'edit_post', $post_id ) ) {
+            return null;
+        }
+        return $this->get_active_category_lock( $post_id );
+    }
+
+    /**
+     * Whether protect_category_archive() already replaced the whole archive with the form.
+     * Feeds bypass template replacement, so each item still has to be locked there.
+     *
+     * @return bool
+     */
+    private function is_locked_archive() : bool {
+        if ( is_feed() || !is_category() && !is_tax() ) {
+            return false;
+        }
+        return '' !== self::$protected_form || '' !== self::$woo_protected_form;
+    }
+
+    /**
+     * Whether a protected term's schedule (Pro) currently applies.
+     *
+     * @param int $term_id Term ID.
+     * @return bool
+     */
+    private function is_term_in_schedule( int $term_id ) : bool {
+        return true;
+    }
+
+    /**
+     * Protected terms whose lock currently applies, grouped by taxonomy. Their descendants are locked too.
+     *
+     * @return array<string, int[]>
+     */
+    public function get_locked_term_ids() : array {
+        $taxonomies = $this->get_taxonomies();
+        if ( !$taxonomies ) {
+            return array();
+        }
+        $terms = get_terms( array(
+            'taxonomy'   => array_values( $taxonomies ),
+            'hide_empty' => false,
+            'meta_key'   => 'passster_activate_protection',
+        ) );
+        $locked = array();
+        foreach ( ( is_wp_error( $terms ) ? array() : $terms ) as $term ) {
+            if ( get_term_meta( $term->term_id, 'passster_activate_protection', true ) && $this->is_term_in_schedule( $term->term_id ) ) {
+                $locked[$term->taxonomy][] = (int) $term->term_id;
+            }
+        }
+        return $locked;
+    }
+
+    /**
+     * @param int $post_id Post ID.
+     * @return array|null
+     */
+    public function get_active_category_lock( int $post_id ) {
+        $post_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
+        if ( $post_protection ) {
+            return null;
+        }
+        $term_data = $this->get_protected_term_for_post( $post_id );
+        if ( !$term_data ) {
+            return null;
+        }
+        if ( !$this->is_term_in_schedule( $term_data['term_id'] ) ) {
+            return null;
+        }
+        $atts = $this->build_atts_from_term( $term_data['term_id'] );
+        if ( PS_Conditional::is_valid( $atts ) ) {
+            return null;
+        }
+        return $term_data;
+    }
+
+    /**
+     * Protect category archive pages.
+     *
+     * @return void
+     */
+    public function protect_category_archive() {
+        if ( is_admin() ) {
+            return;
+        }
+        // WooCommerce single product: if the product belongs to a locked product_cat,
+        // suppress all WooCommerce product hooks and show the password form inline.
+        if ( class_exists( 'WooCommerce' ) && is_singular( 'product' ) ) {
+            $post_id = get_the_ID();
+            $term_data = ( $post_id ? $this->get_protected_term_for_post( $post_id ) : null );
+            if ( $term_data && 'product_cat' === $term_data['taxonomy'] ) {
+                $atts = $this->build_atts_from_term( $term_data['term_id'] );
+                if ( !PS_Conditional::is_valid( $atts ) ) {
+                    $shortcode = $this->build_shortcode_from_term( $term_data['term_id'], '' );
+                    self::$woo_protected_form = do_shortcode( $shortcode );
+                    // Replace the entire single-product template with the protected form.
+                    add_filter( 'template_include', array($this, 'use_protected_category_template'), 99 );
+                }
+            }
+            return;
+        }
+        if ( !is_category() && !is_tax() ) {
+            return;
+        }
+        $term = get_queried_object();
+        if ( !$term || !is_a( $term, 'WP_Term' ) ) {
+            return;
+        }
+        // Only handle hierarchical taxonomies.
+        $taxonomy_obj = get_taxonomy( $term->taxonomy );
+        if ( !$taxonomy_obj || !$taxonomy_obj->hierarchical || !$taxonomy_obj->public ) {
+            return;
+        }
+        // Check the term itself and then its ancestors for protection.
+        $protected_term_id = $this->get_active_protected_term_id( $term );
+        if ( !$protected_term_id ) {
+            return;
+        }
+        // Use the protected term (may be an ancestor) for all subsequent meta lookups.
+        $term = get_term( $protected_term_id );
+        if ( !$term || is_wp_error( $term ) ) {
+            return;
+        }
+        $atts = $this->build_atts_from_term( $term->term_id );
+        if ( PS_Conditional::is_valid( $atts ) ) {
+            return;
+        }
+        // A locked archive must not hand out its posts' URLs through WP 7.2 random content redirects.
+        add_filter( 'wp_enable_random_content_redirect', '__return_false' );
+        // Check for redirect.
+        $redirect = get_term_meta( $term->term_id, 'passster_redirect_url', true );
+        if ( !empty( $redirect ) ) {
+            wp_redirect( esc_url_raw( $redirect ) );
+            exit;
+        }
+        $shortcode = $this->build_shortcode_from_term( $term->term_id, '' );
+        $form_html = do_shortcode( $shortcode );
+        // WooCommerce product category archives use their own template system and never
+        // call the_content() on the main query posts, so the virtual-post trick doesn't work.
+        // Instead, inject the form via WooCommerce's own template hooks and suppress the product loop.
+        if ( class_exists( 'WooCommerce' ) && 'product_cat' === $term->taxonomy ) {
+            self::$woo_protected_form = $form_html;
+            // Replace WooCommerce's entire archive template with a minimal one that shows only the form.
+            add_filter( 'template_include', array($this, 'use_protected_category_template'), 99 );
+            return;
+        }
+        self::$protected_form = $form_html;
+        if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
+            // FSE/block themes: let the block template render normally; replace only the
+            // core/query block (the post loop) with the password form. This preserves the
+            // theme's own header/footer block templates.
+            add_filter(
+                'render_block',
+                array($this, 'replace_query_block_with_form'),
+                10,
+                2
+            );
+        } else {
+            // Classic themes: swap the archive template for a minimal protected-category
+            // template that calls get_header()/get_footer() from the active theme.
+            add_filter( 'template_include', array($this, 'use_protected_regular_category_template'), 99 );
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Methods
+    // -------------------------------------------------------------------------
+    /**
+     * Check a term and its ancestors for active protection.
+     *
+     * @param \WP_Term $term Term to check (and walk up from).
+     * @return int|null The protected term ID (itself or an ancestor), or null if none.
+     */
+    public function get_active_protected_term_id( \WP_Term $term ) {
+        $ids_to_check = array_merge( array($term->term_id), get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) );
+        foreach ( $ids_to_check as $check_id ) {
+            if ( get_term_meta( $check_id, 'passster_activate_protection', true ) ) {
+                return $check_id;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the first protected term for a given post.
+     *
+     * @param int $post_id Post ID.
+     * @return array|null Array with 'term_id' and 'taxonomy', or null.
+     */
+    public function get_protected_term_for_post( int $post_id ) {
+        $taxonomies = $this->get_taxonomies();
+        foreach ( $taxonomies as $taxonomy ) {
+            $terms = get_the_terms( $post_id, $taxonomy );
+            if ( !$terms || is_wp_error( $terms ) ) {
+                continue;
+            }
+            foreach ( $terms as $term ) {
+                // Check the term itself, then walk up its ancestor chain.
+                $protected_term_id = $this->get_active_protected_term_id( $term );
+                if ( $protected_term_id ) {
+                    return array(
+                        'term_id'  => $protected_term_id,
+                        'taxonomy' => $taxonomy,
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Build $atts array from term meta (for PS_Conditional::is_valid).
+     *
+     * @param int $term_id Term ID.
+     * @return array
+     */
+    private function build_atts_from_term( int $term_id ) : array {
+        $atts = array();
+        $atts['password'] = get_term_meta( $term_id, 'passster_password', true );
+        return $atts;
+    }
+
+    /**
+     * Build a passster shortcode string from term meta.
+     *
+     * @param int    $term_id Term ID.
+     * @param string $content Content to wrap.
+     * @return string
+     */
+    private function build_shortcode_from_term( int $term_id, string $content ) : string {
+        $options = get_option( 'passster' );
+        $shortcode = '[passster ';
+        $password = get_term_meta( $term_id, 'passster_password', true );
+        $shortcode .= 'password="' . PS_Helper::shortcode_attr( $password ) . '" ';
+        $shortcode .= 'protection="full" ';
+        $shortcode .= 'term_id="' . $term_id . '" ';
+        // Redirect.
+        $redirect = get_term_meta( $term_id, 'passster_redirect_url', true );
+        if ( !empty( $redirect ) ) {
+            $shortcode .= 'redirect="' . PS_Helper::shortcode_attr( esc_url( $redirect ) ) . '" ';
+        }
+        // Overwrite defaults.
+        $headline = get_term_meta( $term_id, 'passster_headline', true );
+        if ( !empty( $headline ) ) {
+            $shortcode .= 'headline="' . PS_Helper::shortcode_attr( $headline ) . '" ';
+        }
+        $instruction = get_term_meta( $term_id, 'passster_instruction', true );
+        if ( !empty( $instruction ) ) {
+            $shortcode .= 'instruction="' . base64_encode( $instruction ) . '" ';
+        }
+        $placeholder = get_term_meta( $term_id, 'passster_placeholder', true );
+        if ( !empty( $placeholder ) ) {
+            $shortcode .= 'placeholder="' . PS_Helper::shortcode_attr( $placeholder ) . '" ';
+        }
+        $button = get_term_meta( $term_id, 'passster_button', true );
+        if ( !empty( $button ) ) {
+            $shortcode .= 'button="' . PS_Helper::shortcode_attr( $button ) . '" ';
+        }
+        $shortcode .= ']' . $content . '[/passster]';
+        return $shortcode;
+    }
+
+    /**
+     * Get published password lists.
+     *
+     * @return array
+     */
+    private function get_password_lists() : array {
+        return get_posts( array(
+            'post_type'      => 'password_lists',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+        ) );
+    }
 
-	// -------------------------------------------------------------------------
-	// AJAX Quick Edit Handler
-	// -------------------------------------------------------------------------
-
-	/**
-	 * AJAX handler for quick edit category settings.
-	 *
-	 * @return void
-	 */
-	public function ajax_quick_edit_category() {
-		$term_id = isset( $_POST['term_id'] ) ? absint( $_POST['term_id'] ) : 0;
-		$nonce   = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
-		$action  = isset( $_POST['edit_action'] ) ? sanitize_text_field( wp_unslash( $_POST['edit_action'] ) ) : 'get';
-
-		if ( ! wp_verify_nonce( $nonce, 'passster_quick_edit_cat_' . $term_id ) ) {
-			wp_send_json_error( array( 'message' => __( 'Security check failed.', 'content-protector' ) ) );
-		}
-
-		if ( ! current_user_can( 'manage_categories' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'content-protector' ) ) );
-		}
-
-		$term = get_term( $term_id );
-		if ( ! $term || is_wp_error( $term ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid term.', 'content-protector' ) ) );
-		}
-
-		if ( 'get' === $action ) {
-			$data = array(
-				'term_id'         => $term_id,
-				'activate'        => (bool) get_term_meta( $term_id, 'passster_activate_protection', true ),
-				'password'        => get_term_meta( $term_id, 'passster_password', true ),
-				'protection_type' => get_term_meta( $term_id, 'passster_protection_type', true ) ?: 'password',
-				'passwords'       => get_term_meta( $term_id, 'passster_passwords', true ),
-				'password_list'   => get_term_meta( $term_id, 'passster_password_list', true ),
-				'password_lists'  => get_term_meta( $term_id, 'passster_password_lists', true ),
-			);
-
-			wp_send_json_success( $data );
-		}
-
-		if ( 'save' === $action ) {
-			$activate = isset( $_POST['activate'] ) ? absint( $_POST['activate'] ) : 0;
-			update_term_meta( $term_id, 'passster_activate_protection', $activate );
-
-			if ( $activate ) {
-				$password = isset( $_POST['password'] ) ? sanitize_text_field( wp_unslash( $_POST['password'] ) ) : '';
-				update_term_meta( $term_id, 'passster_password', $password );
-
-				if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-					$protection_type = isset( $_POST['protection_type'] ) ? sanitize_text_field( wp_unslash( $_POST['protection_type'] ) ) : 'password';
-					update_term_meta( $term_id, 'passster_protection_type', $protection_type );
-
-					$passwords = isset( $_POST['passwords'] ) ? sanitize_text_field( wp_unslash( $_POST['passwords'] ) ) : '';
-					update_term_meta( $term_id, 'passster_passwords', $passwords );
-
-					$password_list = isset( $_POST['password_list'] ) ? absint( $_POST['password_list'] ) : 0;
-					update_term_meta( $term_id, 'passster_password_list', $password_list );
-
-					$password_lists = isset( $_POST['password_lists'] ) ? sanitize_text_field( wp_unslash( $_POST['password_lists'] ) ) : '';
-					update_term_meta( $term_id, 'passster_password_lists', $password_lists );
-				}
-			}
-
-			wp_send_json_success( array( 'message' => __( 'Settings saved.', 'content-protector' ) ) );
-		}
-
-		wp_send_json_error( array( 'message' => __( 'Invalid action.', 'content-protector' ) ) );
-	}
-
-	// -------------------------------------------------------------------------
-	// Frontend: Protect Posts in Protected Categories
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Filter the_content for posts belonging to a protected category.
-	 * Runs at priority 11, after PS_Public (priority 10).
-	 *
-	 * @param string $content Post content.
-	 * @return string
-	 */
-	public function filter_content_by_category( $content ) {
-		$term_data = $this->get_current_post_category_lock();
-		if ( ! $term_data ) {
-			return $content;
-		}
-
-		$shortcode = $this->build_shortcode_from_term( $term_data['term_id'], $content );
-
-		return do_shortcode( $shortcode );
-	}
-
-	/**
-	 * Replace plain-text output (get_the_excerpt, feeds) of a category-locked post.
-	 *
-	 * @param string $text Excerpt or feed content.
-	 * @return string
-	 */
-	public function filter_text_by_category( $text ) {
-		return $this->get_current_post_category_lock() ? PS_Helper::get_protected_text() : $text;
-	}
-
-	/**
-	 * @return array|null
-	 */
-	private function get_current_post_category_lock() {
-		if ( is_admin() || $this->is_locked_archive() ) {
-			return null;
-		}
-
-		$post_id = get_the_id();
-		if ( ! $post_id ) {
-			return null;
-		}
-
-		// Block editor previews read REST content; keep them unlocked for users who can edit the post.
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST && current_user_can( 'edit_post', $post_id ) ) {
-			return null;
-		}
-
-		return $this->get_active_category_lock( $post_id );
-	}
-
-	/**
-	 * Whether protect_category_archive() already replaced the whole archive with the form.
-	 * Feeds bypass template replacement, so each item still has to be locked there.
-	 *
-	 * @return bool
-	 */
-	private function is_locked_archive(): bool {
-		if ( is_feed() || ( ! is_category() && ! is_tax() ) ) {
-			return false;
-		}
-
-		return '' !== self::$protected_form || '' !== self::$woo_protected_form;
-	}
-
-	/**
-	 * Whether a protected term's schedule (Pro) currently applies.
-	 *
-	 * @param int $term_id Term ID.
-	 * @return bool
-	 */
-	private function is_term_in_schedule( int $term_id ): bool {
-		if ( passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$schedule_enabled = get_term_meta( $term_id, 'passster_schedule_enabled', true );
-			if ( $schedule_enabled ) {
-				$schedule_start = get_term_meta( $term_id, 'passster_schedule_start', true );
-				$schedule_end   = get_term_meta( $term_id, 'passster_schedule_end', true );
-				$now            = current_time( 'timestamp' );
-
-				if ( ! empty( $schedule_start ) && $now < strtotime( $schedule_start ) ) {
-					return false;
-				}
-
-				if ( ! empty( $schedule_end ) && $now > strtotime( $schedule_end ) ) {
-					return false;
-				}
-			}
-		}
-
-		return true;
-	}
-
-	/**
-	 * Protected terms whose lock currently applies, grouped by taxonomy. Their descendants are locked too.
-	 *
-	 * @return array<string, int[]>
-	 */
-	public function get_locked_term_ids(): array {
-		$taxonomies = $this->get_taxonomies();
-		if ( ! $taxonomies ) {
-			return array();
-		}
-
-		$terms = get_terms(
-			array(
-				'taxonomy'   => array_values( $taxonomies ),
-				'hide_empty' => false,
-				'meta_key'   => 'passster_activate_protection', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-			)
-		);
-
-		$locked = array();
-		foreach ( is_wp_error( $terms ) ? array() : $terms as $term ) {
-			if ( get_term_meta( $term->term_id, 'passster_activate_protection', true ) && $this->is_term_in_schedule( $term->term_id ) ) {
-				$locked[ $term->taxonomy ][] = (int) $term->term_id;
-			}
-		}
-
-		return $locked;
-	}
-
-	/**
-	 * @param int $post_id Post ID.
-	 * @return array|null
-	 */
-	public function get_active_category_lock( int $post_id ) {
-		$post_protection = get_post_meta( $post_id, 'passster_activate_protection', true );
-		if ( $post_protection ) {
-			return null;
-		}
-
-		$term_data = $this->get_protected_term_for_post( $post_id );
-		if ( ! $term_data ) {
-			return null;
-		}
-
-		if ( ! $this->is_term_in_schedule( $term_data['term_id'] ) ) {
-			return null;
-		}
-
-		$atts = $this->build_atts_from_term( $term_data['term_id'] );
-
-		if ( PS_Conditional::is_valid( $atts ) ) {
-			return null;
-		}
-
-		return $term_data;
-	}
-
-	/**
-	 * Protect category archive pages.
-	 *
-	 * @return void
-	 */
-	public function protect_category_archive() {
-		if ( is_admin() ) {
-			return;
-		}
-
-		// WooCommerce single product: if the product belongs to a locked product_cat,
-		// suppress all WooCommerce product hooks and show the password form inline.
-		if ( class_exists( 'WooCommerce' ) && is_singular( 'product' ) ) {
-			$post_id   = get_the_ID();
-			$term_data = $post_id ? $this->get_protected_term_for_post( $post_id ) : null;
-			if ( $term_data && 'product_cat' === $term_data['taxonomy'] ) {
-				$atts = $this->build_atts_from_term( $term_data['term_id'] );
-				if ( ! PS_Conditional::is_valid( $atts ) ) {
-					$shortcode                = $this->build_shortcode_from_term( $term_data['term_id'], '' );
-					self::$woo_protected_form = do_shortcode( $shortcode );
-
-					// Replace the entire single-product template with the protected form.
-					add_filter( 'template_include', array( $this, 'use_protected_category_template' ), 99 );
-				}
-			}
-			return;
-		}
-
-		if ( ! is_category() && ! is_tax() ) {
-			return;
-		}
-
-		$term = get_queried_object();
-		if ( ! $term || ! is_a( $term, 'WP_Term' ) ) {
-			return;
-		}
-
-		// Only handle hierarchical taxonomies.
-		$taxonomy_obj = get_taxonomy( $term->taxonomy );
-		if ( ! $taxonomy_obj || ! $taxonomy_obj->hierarchical || ! $taxonomy_obj->public ) {
-			return;
-		}
-
-		// Check the term itself and then its ancestors for protection.
-		$protected_term_id = $this->get_active_protected_term_id( $term );
-		if ( ! $protected_term_id ) {
-			return;
-		}
-		// Use the protected term (may be an ancestor) for all subsequent meta lookups.
-		$term = get_term( $protected_term_id );
-		if ( ! $term || is_wp_error( $term ) ) {
-			return;
-		}
-
-		// Schedule check (PRO only) - if outside scheduled period, don't protect archive.
-		if ( passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$schedule_enabled = get_term_meta( $term->term_id, 'passster_schedule_enabled', true );
-			if ( $schedule_enabled ) {
-				$schedule_start = get_term_meta( $term->term_id, 'passster_schedule_start', true );
-				$schedule_end   = get_term_meta( $term->term_id, 'passster_schedule_end', true );
-				$now            = current_time( 'timestamp' );
-				$in_schedule    = true;
-
-				if ( ! empty( $schedule_start ) && $now < strtotime( $schedule_start ) ) {
-					$in_schedule = false;
-				}
-
-				if ( ! empty( $schedule_end ) && $now > strtotime( $schedule_end ) ) {
-					$in_schedule = false;
-				}
-
-				if ( ! $in_schedule ) {
-					return;
-				}
-			}
-		}
-
-		$atts = $this->build_atts_from_term( $term->term_id );
-
-		if ( PS_Conditional::is_valid( $atts ) ) {
-			return;
-		}
-
-		// A locked archive must not hand out its posts' URLs through WP 7.2 random content redirects.
-		add_filter( 'wp_enable_random_content_redirect', '__return_false' );
-
-		// Check for redirect.
-		$redirect = get_term_meta( $term->term_id, 'passster_redirect_url', true );
-		if ( ! empty( $redirect ) ) {
-			wp_redirect( esc_url_raw( $redirect ) );
-			exit;
-		}
-
-		$shortcode = $this->build_shortcode_from_term( $term->term_id, '' );
-		$form_html = do_shortcode( $shortcode );
-
-		// WooCommerce product category archives use their own template system and never
-		// call the_content() on the main query posts, so the virtual-post trick doesn't work.
-		// Instead, inject the form via WooCommerce's own template hooks and suppress the product loop.
-		if ( class_exists( 'WooCommerce' ) && 'product_cat' === $term->taxonomy ) {
-			self::$woo_protected_form = $form_html;
-
-			// Replace WooCommerce's entire archive template with a minimal one that shows only the form.
-			add_filter( 'template_include', array( $this, 'use_protected_category_template' ), 99 );
-
-			return;
-		}
-
-		self::$protected_form = $form_html;
-
-		if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
-			// FSE/block themes: let the block template render normally; replace only the
-			// core/query block (the post loop) with the password form. This preserves the
-			// theme's own header/footer block templates.
-			add_filter( 'render_block', array( $this, 'replace_query_block_with_form' ), 10, 2 );
-		} else {
-			// Classic themes: swap the archive template for a minimal protected-category
-			// template that calls get_header()/get_footer() from the active theme.
-			add_filter( 'template_include', array( $this, 'use_protected_regular_category_template' ), 99 );
-		}
-	}
-
-	// -------------------------------------------------------------------------
-	// Helper Methods
-	// -------------------------------------------------------------------------
-
-	/**
-	 * Check a term and its ancestors for active protection.
-	 *
-	 * @param \WP_Term $term Term to check (and walk up from).
-	 * @return int|null The protected term ID (itself or an ancestor), or null if none.
-	 */
-	public function get_active_protected_term_id( \WP_Term $term ) {
-		$ids_to_check = array_merge( array( $term->term_id ), get_ancestors( $term->term_id, $term->taxonomy, 'taxonomy' ) );
-
-		foreach ( $ids_to_check as $check_id ) {
-			if ( get_term_meta( $check_id, 'passster_activate_protection', true ) ) {
-				return $check_id;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Get the first protected term for a given post.
-	 *
-	 * @param int $post_id Post ID.
-	 * @return array|null Array with 'term_id' and 'taxonomy', or null.
-	 */
-	public function get_protected_term_for_post( int $post_id ) {
-		$taxonomies = $this->get_taxonomies();
-
-		foreach ( $taxonomies as $taxonomy ) {
-			$terms = get_the_terms( $post_id, $taxonomy );
-			if ( ! $terms || is_wp_error( $terms ) ) {
-				continue;
-			}
-
-			foreach ( $terms as $term ) {
-				// Check the term itself, then walk up its ancestor chain.
-				$protected_term_id = $this->get_active_protected_term_id( $term );
-				if ( $protected_term_id ) {
-					return array(
-						'term_id'  => $protected_term_id,
-						'taxonomy' => $taxonomy,
-					);
-				}
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Build $atts array from term meta (for PS_Conditional::is_valid).
-	 *
-	 * @param int $term_id Term ID.
-	 * @return array
-	 */
-	private function build_atts_from_term( int $term_id ): array {
-		$atts = array();
-
-		if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$protection_type = get_term_meta( $term_id, 'passster_protection_type', true ) ?: 'password';
-
-			switch ( $protection_type ) {
-				case 'password':
-					$atts['password'] = get_term_meta( $term_id, 'passster_password', true );
-					break;
-				case 'passwords':
-					$atts['passwords'] = get_term_meta( $term_id, 'passster_passwords', true );
-					break;
-				case 'password_list':
-					$atts['password_list'] = get_term_meta( $term_id, 'passster_password_list', true );
-					break;
-				case 'password_lists':
-					$lists = get_term_meta( $term_id, 'passster_password_lists', true );
-					// Convert comma-separated to pipe-separated for PS_Conditional.
-					$atts['password_lists'] = str_replace( ',', '|', $lists );
-					break;
-				case 'recaptcha':
-					$atts['recaptcha'] = true;
-					break;
-				case 'turnstile':
-					$atts['turnstile'] = true;
-					break;
-			}
-		} else {
-			$atts['password'] = get_term_meta( $term_id, 'passster_password', true );
-		}
-
-		return $atts;
-	}
-
-	/**
-	 * Build a passster shortcode string from term meta.
-	 *
-	 * @param int    $term_id Term ID.
-	 * @param string $content Content to wrap.
-	 * @return string
-	 */
-	private function build_shortcode_from_term( int $term_id, string $content ): string {
-		$options = get_option( 'passster' );
-
-		$shortcode = '[passster ';
-
-		if ( \passster_fs()->is_plan_or_trial__premium_only( 'pro' ) ) {
-			$protection_type = get_term_meta( $term_id, 'passster_protection_type', true ) ?: 'password';
-
-			switch ( $protection_type ) {
-				case 'password':
-					$password   = get_term_meta( $term_id, 'passster_password', true );
-					$shortcode .= 'password="' . PS_Helper::shortcode_attr( $password ) . '" ';
-					break;
-				case 'passwords':
-					$passwords  = get_term_meta( $term_id, 'passster_passwords', true );
-					$shortcode .= 'passwords="' . PS_Helper::shortcode_attr( $passwords ) . '" ';
-					break;
-				case 'password_list':
-					$list_id    = get_term_meta( $term_id, 'passster_password_list', true );
-					$shortcode .= 'password_list="' . PS_Helper::shortcode_attr( $list_id ) . '" ';
-					break;
-				case 'password_lists':
-					$list_ids   = get_term_meta( $term_id, 'passster_password_lists', true );
-					$shortcode .= 'password_lists="' . PS_Helper::shortcode_attr( str_replace( ',', '|', $list_ids ) ) . '" ';
-					break;
-				case 'recaptcha':
-					$shortcode .= 'recaptcha="true" ';
-					break;
-				case 'turnstile':
-					$shortcode .= 'turnstile="true" ';
-					break;
-			}
-		} else {
-			$password   = get_term_meta( $term_id, 'passster_password', true );
-			$shortcode .= 'password="' . PS_Helper::shortcode_attr( $password ) . '" ';
-		}
-
-		$shortcode .= 'protection="full" ';
-		$shortcode .= 'term_id="' . $term_id . '" ';
-
-		// Redirect.
-		$redirect = get_term_meta( $term_id, 'passster_redirect_url', true );
-		if ( ! empty( $redirect ) ) {
-			$shortcode .= 'redirect="' . PS_Helper::shortcode_attr( esc_url( $redirect ) ) . '" ';
-		}
-
-		// Overwrite defaults.
-		$headline = get_term_meta( $term_id, 'passster_headline', true );
-		if ( ! empty( $headline ) ) {
-			$shortcode .= 'headline="' . PS_Helper::shortcode_attr( $headline ) . '" ';
-		}
-
-		$instruction = get_term_meta( $term_id, 'passster_instruction', true );
-		if ( ! empty( $instruction ) ) {
-			$shortcode .= 'instruction="' . base64_encode( $instruction ) . '" ';
-		}
-
-		$placeholder = get_term_meta( $term_id, 'passster_placeholder', true );
-		if ( ! empty( $placeholder ) ) {
-			$shortcode .= 'placeholder="' . PS_Helper::shortcode_attr( $placeholder ) . '" ';
-		}
-
-		$button = get_term_meta( $term_id, 'passster_button', true );
-		if ( ! empty( $button ) ) {
-			$shortcode .= 'button="' . PS_Helper::shortcode_attr( $button ) . '" ';
-		}
-
-		$shortcode .= ']' . $content . '[/passster]';
-
-		return $shortcode;
-	}
-
-	/**
-	 * Get published password lists.
-	 *
-	 * @return array
-	 */
-	private function get_password_lists(): array {
-		return get_posts(
-			array(
-				'post_type'      => 'password_lists',
-				'post_status'    => 'publish',
-				'posts_per_page' => -1,
-			)
-		);
-	}
 }
